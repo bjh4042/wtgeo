@@ -167,6 +167,60 @@ export const places: Place[] = [
     description: '거제시 중심의 우편·금융 서비스를 제공하는 우체국입니다.',
     address: '경상남도 거제시 중곡로 58', lat: 34.8825, lng: 128.6225, grade: 4,
   },
+
+  // 체험학습
+  {
+    id: 'e1', name: '거제자연휴양림', category: 'experience',
+    description: '자연 속에서 숲 체험, 산책, 야영 등 다양한 자연 체험활동을 할 수 있는 휴양림입니다.',
+    address: '경상남도 거제시 동부면 부춘리', lat: 34.8300, lng: 128.6700, grade: 'all',
+  },
+  {
+    id: 'e2', name: '거제어촌민속전시관', category: 'experience',
+    description: '거제도의 어촌 문화와 어업 역사를 배울 수 있는 전시관입니다. 어구, 배 모형 등 다양한 전시물이 있습니다.',
+    address: '경상남도 거제시 일운면 지세포리', lat: 34.8480, lng: 128.7050, grade: 3,
+  },
+  {
+    id: 'e3', name: '거제해양관광개발공사 해양레저체험', category: 'experience',
+    description: '카약, 요트, 투명카누 등 다양한 해양 레저를 직접 체험할 수 있는 곳입니다.',
+    address: '경상남도 거제시 일운면 구조라리', lat: 34.8060, lng: 128.7130, grade: 'all',
+  },
+  {
+    id: 'e4', name: '거제도 짚라인', category: 'experience',
+    description: '거제도의 아름다운 경치를 감상하며 짚라인을 타는 스릴 넘치는 체험시설입니다.',
+    address: '경상남도 거제시 남부면 저구리', lat: 34.7450, lng: 128.6350, grade: 'all',
+  },
+  {
+    id: 'e5', name: '거제 조선해양문화관', category: 'experience',
+    description: '거제도의 조선산업 역사와 해양문화를 체험할 수 있는 문화관입니다. 배 만들기 체험도 가능합니다.',
+    address: '경상남도 거제시 장목면 유호리', lat: 34.9700, lng: 128.6800, grade: 4,
+  },
+  {
+    id: 'e6', name: '거제 동백숲길', category: 'experience',
+    description: '겨울부터 봄까지 동백꽃이 만발하는 아름다운 숲길로, 자연관찰 학습에 좋습니다.',
+    address: '경상남도 거제시 장목면 대금리', lat: 34.9600, lng: 128.6600, grade: 3,
+  },
+
+  // 전통시장/먹거리
+  {
+    id: 'm1', name: '고현시장', category: 'market',
+    description: '거제 최대 규모의 전통시장으로, 신선한 해산물과 다양한 먹거리를 즐길 수 있습니다.',
+    address: '경상남도 거제시 고현동', lat: 34.8850, lng: 128.6230, grade: 'all',
+  },
+  {
+    id: 'm2', name: '옥포시장', category: 'market',
+    description: '옥포 지역의 전통시장으로, 지역 특산물과 길거리 음식이 유명합니다.',
+    address: '경상남도 거제시 옥포동', lat: 34.8970, lng: 128.6900, grade: 'all',
+  },
+  {
+    id: 'm3', name: '거제 수산물시장', category: 'market',
+    description: '싱싱한 회와 해산물을 저렴하게 즐길 수 있는 수산물 전문 시장입니다.',
+    address: '경상남도 거제시 고현동', lat: 34.8860, lng: 128.6250, grade: 'all',
+  },
+  {
+    id: 'm4', name: '장승포시장', category: 'market',
+    description: '장승포 지역의 전통시장으로, 어묵, 떡, 건어물 등 다양한 특산품을 판매합니다.',
+    address: '경상남도 거제시 장승포동', lat: 34.8560, lng: 128.7000, grade: 'all',
+  },
 ];
 
 export function getPlacesByGrade(grade: 3 | 4): Place[] {
