@@ -1,4 +1,4 @@
-export type PlaceCategory = 'tourism' | 'nature' | 'culture' | 'public';
+export type PlaceCategory = 'tourism' | 'nature' | 'culture' | 'public' | 'experience' | 'market';
 
 export interface Place {
   id: string;
