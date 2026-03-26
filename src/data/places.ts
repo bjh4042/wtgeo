@@ -9,6 +9,7 @@ export interface Place {
   lat: number;
   lng: number;
   grade?: 3 | 4 | 'all';
+  imageUrl?: string;
 }
 
 export const categoryLabels: Record<PlaceCategory, string> = {
@@ -29,8 +30,23 @@ export const categoryColors: Record<PlaceCategory, string> = {
   market: '#C62828',
 };
 
+// Kakao 정적 지도 이미지 URL 생성
+export function getStaticMapUrl(lat: number, lng: number, width = 400, height = 200): string {
+  return `https://dapi.kakao.com/v2/maps/staticmap?appkey=e59d21f6d3e29ccff958317c0b44fcbb&center=${lng},${lat}&level=3&size=${width}x${height}&maptype=roadview_hybrid&markers=type:d|size:small|pos:${lng} ${lat}`;
+}
+
+// Kakao 로드뷰 URL 생성
+export function getRoadViewUrl(lat: number, lng: number): string {
+  return `https://map.kakao.com/link/roadview/${lat},${lng}`;
+}
+
+// Kakao 길찾기 URL 생성
+export function getDirectionUrl(lat: number, lng: number, name: string): string {
+  return `https://map.kakao.com/link/to/${encodeURIComponent(name)},${lat},${lng}`;
+}
+
 export const places: Place[] = [
-  // 관광 명소
+  // ===== 관광 명소 =====
   {
     id: 't1', name: '바람의 언덕', category: 'tourism',
     description: '거제 남부면 도장포마을에 위치한 아름다운 언덕으로, 탁 트인 바다 전망과 바람개비가 유명합니다.',
@@ -72,7 +88,7 @@ export const places: Place[] = [
     address: '경상남도 거제시 남부면 여차리', lat: 34.7038, lng: 128.6101, grade: 'all',
   },
 
-  // 자연/지리
+  // ===== 자연/지리 =====
   {
     id: 'n1', name: '계룡산', category: 'nature',
     description: '거제시의 최고봉(566m)으로, 산세가 닭의 볏을 닮아 계룡산이라 불립니다.',
@@ -104,7 +120,7 @@ export const places: Place[] = [
     address: '경상남도 거제시 일운면 와현리', lat: 34.7854, lng: 128.7141, grade: 'all',
   },
 
-  // 문화/역사
+  // ===== 문화/역사 =====
   {
     id: 'c1', name: '거제포로수용소 유적공원', category: 'culture',
     description: '한국전쟁 당시 포로를 수용했던 곳으로, 전쟁의 역사를 배울 수 있는 유적공원입니다.',
@@ -131,31 +147,65 @@ export const places: Place[] = [
     address: '경상남도 거제시 둔덕면 산방리', lat: 34.8688, lng: 128.4985, grade: 3,
   },
 
-  // 관공서
+  // ===== 4학년 경남 문화/역사 =====
+  {
+    id: 'c6', name: '한산도 이충무공유적', category: 'culture',
+    description: '이순신 장군이 삼도수군통제영을 설치하고 한산대첩을 이끌었던 역사적 장소입니다.',
+    address: '경상남도 통영시 한산면 두억리', lat: 34.7938, lng: 128.4721, grade: 4,
+  },
+  {
+    id: 'c7', name: '합천 해인사', category: 'culture',
+    description: '유네스코 세계문화유산 팔만대장경을 보관하고 있는 한국의 대표적인 사찰입니다.',
+    address: '경상남도 합천군 가야면 치인리', lat: 35.8009, lng: 128.0975, grade: 4,
+  },
+  {
+    id: 'c8', name: '진주성', category: 'culture',
+    description: '임진왜란 진주대첩의 격전지로, 논개의 의로운 이야기가 전해지는 역사적 장소입니다.',
+    address: '경상남도 진주시 본성동', lat: 35.1896, lng: 128.0800, grade: 4,
+  },
+
+  // ===== 4학년 경남 관광 =====
+  {
+    id: 't9', name: '남해 독일마을', category: 'tourism',
+    description: '1960~70년대 독일에서 일한 한국인 광부·간호사들의 이야기를 담은 마을입니다.',
+    address: '경상남도 남해군 삼동면 물건리', lat: 34.8001, lng: 128.0385, grade: 4,
+  },
+  {
+    id: 't10', name: '통영 동피랑벽화마을', category: 'tourism',
+    description: '알록달록한 벽화로 유명한 통영의 언덕마을로, 바다 전망이 아름답습니다.',
+    address: '경상남도 통영시 동호동', lat: 34.8453, lng: 128.4276, grade: 4,
+  },
+  {
+    id: 't11', name: '통영 케이블카', category: 'tourism',
+    description: '한려수도의 아름다운 풍경을 한눈에 볼 수 있는 국내 최장 해상 케이블카입니다.',
+    address: '경상남도 통영시 도남동', lat: 34.8269, lng: 128.4253, grade: 4,
+  },
+
+  // ===== 관공서 (3학년: 거제시) =====
   {
     id: 'p1', name: '거제시청', category: 'public',
-    description: '거제시의 행정을 담당하는 시청입니다.',
-    address: '경상남도 거제시 계룡로 125', lat: 34.8805, lng: 128.6211, grade: 4,
+    description: '거제시의 행정을 총괄하는 시청입니다. 시민들의 다양한 행정 업무를 처리합니다.',
+    address: '경상남도 거제시 계룡로 125', lat: 34.8805, lng: 128.6211, grade: 'all',
   },
   {
     id: 'p2', name: '거제경찰서', category: 'public',
     description: '거제시 일대의 치안을 담당하는 경찰서입니다.',
-    address: '경상남도 거제시 진목1길 2', lat: 34.8987, lng: 128.6866, grade: 4,
+    address: '경상남도 거제시 진목1길 2', lat: 34.8987, lng: 128.6866, grade: 'all',
   },
   {
     id: 'p3', name: '거제소방서', category: 'public',
     description: '거제시의 화재 예방과 구조·구급 업무를 담당하는 소방서입니다.',
-    address: '경상남도 거제시 계룡로 89', lat: 34.8961, lng: 128.6862, grade: 4,
+    address: '경상남도 거제시 계룡로 89', lat: 34.8961, lng: 128.6862, grade: 'all',
   },
   {
     id: 'p4', name: '거제시보건소', category: 'public',
     description: '거제시민의 건강을 위한 보건의료서비스를 제공하는 기관입니다.',
-    address: '경상남도 거제시 중곡1로 18', lat: 34.8919, lng: 128.6367, grade: 4,
+    address: '경상남도 거제시 중곡1로 18', lat: 34.8919, lng: 128.6367, grade: 'all',
   },
   {
     id: 'p5', name: '거제교육지원청', category: 'public',
     description: '거제시 관내 초·중등학교의 교육행정을 담당하는 기관입니다.',
-    address: '경상남도 거제시 계룡로 71', lat: 34.8799, lng: 128.6266, grade: 4,
+    address: '경상남도 거제시 계룡로 71', lat: 34.8799, lng: 128.6266, grade: 'all',
   },
   {
     id: 'p6', name: '거제시립도서관', category: 'public',
@@ -165,10 +215,47 @@ export const places: Place[] = [
   {
     id: 'p7', name: '거제우체국', category: 'public',
     description: '거제시 중심의 우편·금융 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 중곡로 58', lat: 34.8843, lng: 128.6231, grade: 4,
+    address: '경상남도 거제시 중곡로 58', lat: 34.8843, lng: 128.6231, grade: 'all',
+  },
+  {
+    id: 'p8', name: '거제시의회', category: 'public',
+    description: '거제시 주민의 대표기관으로, 조례 제정과 시정 감시 역할을 합니다.',
+    address: '경상남도 거제시 고현동', lat: 34.8811, lng: 128.6210, grade: 'all',
+  },
+  {
+    id: 'p9', name: '거제세무서', category: 'public',
+    description: '거제시 관내 세금 관련 업무를 처리하는 국세청 소속 기관입니다.',
+    address: '경상남도 거제시 고현동', lat: 34.8822, lng: 128.6198, grade: 'all',
   },
 
-  // 체험학습
+  // ===== 관공서 (4학년: 경상남도) =====
+  {
+    id: 'p10', name: '경상남도청', category: 'public',
+    description: '경상남도의 행정을 총괄하는 도청으로, 창원시에 위치해 있습니다.',
+    address: '경상남도 창원시 의창구 사림동 1', lat: 35.2378, lng: 128.6919, grade: 4,
+  },
+  {
+    id: 'p11', name: '경상남도교육청', category: 'public',
+    description: '경상남도 전체의 교육행정을 총괄하는 기관입니다.',
+    address: '경상남도 창원시 성산구 용호동', lat: 35.2345, lng: 128.6880, grade: 4,
+  },
+  {
+    id: 'p12', name: '경상남도의회', category: 'public',
+    description: '경상남도민의 대표기관으로, 도정을 심의·의결하는 지방의회입니다.',
+    address: '경상남도 창원시 의창구 사림동', lat: 35.2365, lng: 128.6944, grade: 4,
+  },
+  {
+    id: 'p13', name: '경남경찰청', category: 'public',
+    description: '경상남도 전체의 치안을 총괄하는 경찰청입니다.',
+    address: '경상남도 창원시 의창구 사림동', lat: 35.2374, lng: 128.6936, grade: 4,
+  },
+  {
+    id: 'p14', name: '창원지방법원', category: 'public',
+    description: '경상남도 관할의 사법기관으로, 재판 업무를 담당하는 법원입니다.',
+    address: '경상남도 창원시 성산구 사파동', lat: 35.2243, lng: 128.7010, grade: 4,
+  },
+
+  // ===== 체험학습 =====
   {
     id: 'e1', name: '거제자연휴양림', category: 'experience',
     description: '자연 속에서 숲 체험, 산책, 야영 등 다양한 자연 체험활동을 할 수 있는 휴양림입니다.',
@@ -199,8 +286,13 @@ export const places: Place[] = [
     description: '겨울부터 봄까지 동백꽃이 만발하는 아름다운 숲길로, 자연관찰 학습에 좋습니다.',
     address: '경상남도 거제시 장목면 대금리', lat: 34.7379, lng: 128.6728, grade: 3,
   },
+  {
+    id: 'e7', name: '김해 가야테마파크', category: 'experience',
+    description: '가야 문화를 체험할 수 있는 테마파크로, 역사 학습과 놀이를 함께 즐길 수 있습니다.',
+    address: '경상남도 김해시 어방동', lat: 35.2507, lng: 128.8930, grade: 4,
+  },
 
-  // 전통시장/먹거리
+  // ===== 전통시장/먹거리 =====
   {
     id: 'm1', name: '고현시장', category: 'market',
     description: '거제 최대 규모의 전통시장으로, 신선한 해산물과 다양한 먹거리를 즐길 수 있습니다.',
