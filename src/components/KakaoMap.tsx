@@ -76,7 +76,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
       markersRef.current.forEach(m => m.setMap(null));
       markersRef.current = [];
     };
-  }, [isLoaded, school]);
+  }, [isLoaded, school, grade]);
 
   // Add place markers
   useEffect(() => {
