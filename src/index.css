@@ -80,12 +80,18 @@
 
 @layer components {
   .consonant-btn {
-    @apply flex items-center justify-center rounded-lg font-bold text-2xl transition-all duration-200 cursor-pointer select-none;
+    @apply flex items-center justify-center rounded-lg font-bold text-xl md:text-2xl transition-all duration-200 cursor-pointer select-none;
     background-color: hsl(var(--consonant-bg));
     color: hsl(var(--consonant-text));
     box-shadow: 0 4px 0 hsl(var(--consonant-shadow)), 0 6px 12px hsl(0 0% 0% / 0.15);
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
+  }
+  @media (min-width: 768px) {
+    .consonant-btn {
+      width: 72px;
+      height: 72px;
+    }
   }
   .consonant-btn:hover {
     background-color: hsl(var(--consonant-hover));
@@ -95,6 +101,10 @@
   .consonant-btn:active {
     transform: translateY(2px);
     box-shadow: 0 2px 0 hsl(var(--consonant-shadow)), 0 3px 6px hsl(0 0% 0% / 0.1);
+  }
+
+  .safe-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 
   .header-bar {

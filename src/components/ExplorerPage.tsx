@@ -8,7 +8,7 @@ import GradeSelector from '@/components/GradeSelector';
 import KakaoMap from '@/components/KakaoMap';
 import PlaceFilter from '@/components/PlaceFilter';
 import PlaceCard from '@/components/PlaceCard';
-import { ArrowLeft, Home } from 'lucide-react';
+import { Home, List, X } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -18,6 +18,7 @@ const ExplorerPage = () => {
   const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
   const [selectedGrade, setSelectedGrade] = useState<3 | 4 | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const handleConsonantSelect = (c: string) => {
     setSelectedConsonant(c);
@@ -36,6 +37,7 @@ const ExplorerPage = () => {
 
   const handlePlaceSelect = useCallback((place: Place) => {
     setSelectedPlace(place);
+    setShowMobileSidebar(false);
   }, []);
 
   const handleReset = () => {
@@ -44,6 +46,7 @@ const ExplorerPage = () => {
     setSelectedSchool(null);
     setSelectedGrade(null);
     setSelectedPlace(null);
+    setShowMobileSidebar(false);
   };
 
   return (
@@ -51,7 +54,7 @@ const ExplorerPage = () => {
       <AppHeader schoolName={step === 'explore' ? selectedSchool?.name : undefined} />
 
       {step !== 'explore' ? (
-        <main className="flex-1 flex items-center justify-center p-6 overflow-auto">
+        <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
           <div className="w-full max-w-2xl">
             {step === 'consonant' && (
               <ConsonantFilter onSelect={handleConsonantSelect} />
@@ -74,8 +77,8 @@ const ExplorerPage = () => {
         </main>
       ) : (
         <main className="flex-1 flex overflow-hidden relative">
-          {/* Sidebar */}
-          <aside className="w-72 border-r bg-card flex flex-col overflow-hidden z-10 shadow-lg">
+          {/* Desktop Sidebar */}
+          <aside className="hidden md:flex w-72 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
             <div className="p-4 border-b flex items-center justify-between">
               <button className="back-btn" onClick={handleReset}>
                 <Home size={16} />
@@ -97,6 +100,47 @@ const ExplorerPage = () => {
             </div>
           </aside>
 
+          {/* Mobile bottom bar */}
+          <div className="md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col">
+            {/* Mobile sidebar panel */}
+            {showMobileSidebar && (
+              <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[60vh] overflow-auto p-4 animate-slide-up">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold text-foreground">장소 목록</span>
+                  <button onClick={() => setShowMobileSidebar(false)} className="text-muted-foreground cursor-pointer">
+                    <X size={20} />
+                  </button>
+                </div>
+                {selectedGrade && (
+                  <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />
+                )}
+              </div>
+            )}
+
+            {/* Mobile toolbar */}
+            <div className="bg-card border-t px-4 py-2 flex items-center justify-between gap-2 safe-bottom">
+              <button className="back-btn" onClick={handleReset}>
+                <Home size={16} />
+                처음으로
+              </button>
+              <span className="text-xs font-semibold px-2 py-1 rounded-full"
+                style={{
+                  backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))',
+                  color: 'white',
+                }}
+              >
+                {selectedGrade}학년
+              </span>
+              <button
+                className="flex items-center gap-1 text-sm font-medium cursor-pointer text-primary"
+                onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+              >
+                <List size={18} />
+                장소
+              </button>
+            </div>
+          </div>
+
           {/* Map */}
           <div className="flex-1 relative">
             {selectedSchool && selectedGrade && (
@@ -110,7 +154,7 @@ const ExplorerPage = () => {
 
             {/* Place card overlay */}
             {selectedPlace && (
-              <div className="absolute bottom-4 left-4 z-20">
+              <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
                 <PlaceCard place={selectedPlace} onClose={() => setSelectedPlace(null)} />
               </div>
             )}
