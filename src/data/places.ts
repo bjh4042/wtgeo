@@ -16,6 +16,8 @@ export const categoryLabels: Record<PlaceCategory, string> = {
   nature: '🌿 자연/지리',
   culture: '🏛️ 문화/역사',
   public: '🏢 관공서',
+  experience: '🎒 체험학습',
+  market: '🛒 전통시장/먹거리',
 };
 
 export const categoryColors: Record<PlaceCategory, string> = {
@@ -23,6 +25,8 @@ export const categoryColors: Record<PlaceCategory, string> = {
   nature: '#2E7D32',
   culture: '#6A1B9A',
   public: '#1565C0',
+  experience: '#E65100',
+  market: '#C62828',
 };
 
 export const places: Place[] = [
