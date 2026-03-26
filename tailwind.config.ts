@@ -47,6 +47,15 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        header: "hsl(var(--header-bg))",
+        consonant: {
+          DEFAULT: "hsl(var(--consonant-bg))",
+          hover: "hsl(var(--consonant-hover))",
+        },
+        grade: {
+          "3": "hsl(var(--grade-3))",
+          "4": "hsl(var(--grade-4))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
