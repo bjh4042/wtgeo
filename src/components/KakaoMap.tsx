@@ -16,7 +16,7 @@ interface KakaoMapProps {
   onPlaceSelect: (place: Place) => void;
 }
 
-const KAKAO_API_KEY = ''; // 여기에 Kakao JavaScript API 키를 입력하세요
+const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
 const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
