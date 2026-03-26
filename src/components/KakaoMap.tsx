@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Place, categoryColors, getPlacesByGrade } from '@/data/places';
+import { Place, categoryColors, categoryIcons, getPlacesByGrade } from '@/data/places';
 import { School } from '@/data/schools';
 import { MapPin } from 'lucide-react';
 
@@ -21,7 +21,7 @@ const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
+  const overlaysRef = useRef<{ overlay: any; place: Place; element: HTMLDivElement }[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,51 +73,57 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
     schoolInfo.open(mapInstance.current, schoolMarker);
 
     return () => {
-      markersRef.current.forEach(m => m.setMap(null));
-      markersRef.current = [];
+      overlaysRef.current.forEach(({ overlay }) => overlay.setMap(null));
+      overlaysRef.current = [];
     };
   }, [isLoaded, school, grade]);
 
-  // Add place markers
+  // Add place markers with category colors
   useEffect(() => {
     if (!isLoaded || !mapInstance.current) return;
 
-    markersRef.current.forEach(m => m.setMap(null));
-    markersRef.current = [];
+    overlaysRef.current.forEach(({ overlay }) => overlay.setMap(null));
+    overlaysRef.current = [];
 
     const places = getPlacesByGrade(grade);
 
     places.forEach((place) => {
       const position = new window.kakao.maps.LatLng(place.lat, place.lng);
       const color = categoryColors[place.category];
+      const icon = categoryIcons[place.category];
+      const isSelected = selectedPlace?.id === place.id;
 
-      const markerContent = document.createElement('div');
-      markerContent.innerHTML = `
-        <div style="
+      const markerEl = document.createElement('div');
+      markerEl.innerHTML = `
+        <div class="kakao-marker ${isSelected ? 'kakao-marker-selected' : ''}" style="
           background:${color};
           color:white;
-          padding:4px 10px;
+          padding:${isSelected ? '6px 14px' : '4px 10px'};
           border-radius:20px;
-          font-size:11px;
+          font-size:${isSelected ? '13px' : '11px'};
           font-weight:600;
           white-space:nowrap;
           cursor:pointer;
-          box-shadow:0 2px 8px rgba(0,0,0,0.2);
-          transform:translateX(-50%);
-        ">${place.name}</div>
+          box-shadow:${isSelected ? `0 4px 16px ${color}80` : '0 2px 8px rgba(0,0,0,0.2)'};
+          transform:translateX(-50%) ${isSelected ? 'scale(1.15)' : 'scale(1)'};
+          transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+          border:${isSelected ? '2px solid white' : 'none'};
+          z-index:${isSelected ? '100' : '1'};
+        ">${icon} ${place.name}</div>
       `;
 
       const overlay = new window.kakao.maps.CustomOverlay({
         position,
-        content: markerContent,
+        content: markerEl,
         yAnchor: 1.3,
+        zIndex: isSelected ? 100 : 1,
         map: mapInstance.current,
       });
 
-      markerContent.addEventListener('click', () => onPlaceSelect(place));
-      markersRef.current.push(overlay);
+      markerEl.addEventListener('click', () => onPlaceSelect(place));
+      overlaysRef.current.push({ overlay, place, element: markerEl });
     });
-  }, [isLoaded, grade, onPlaceSelect]);
+  }, [isLoaded, grade, onPlaceSelect, selectedPlace]);
 
   // Pan to selected place
   useEffect(() => {
@@ -125,8 +131,21 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
 
     const position = new window.kakao.maps.LatLng(selectedPlace.lat, selectedPlace.lng);
     mapInstance.current.panTo(position);
-    mapInstance.current.setLevel(5);
-  }, [isLoaded, selectedPlace]);
+
+    // Adjust zoom for far-away places (4th grade provincial)
+    if (grade === 4) {
+      const schoolPos = new window.kakao.maps.LatLng(school.lat, school.lng);
+      const poly = new window.kakao.maps.Polyline({ path: [schoolPos, position] });
+      const dist = poly.getLength(); // meters
+      if (dist > 50000) {
+        mapInstance.current.setLevel(10);
+      } else {
+        mapInstance.current.setLevel(5);
+      }
+    } else {
+      mapInstance.current.setLevel(5);
+    }
+  }, [isLoaded, selectedPlace, grade, school]);
 
   if (error === 'API_KEY_MISSING') {
     return (
@@ -150,7 +169,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
             developers.kakao.com에서 발급받기 →
           </a>
         </div>
-        {/* Show places list as fallback */}
         <div className="mt-4 w-full max-w-md">
           <PlaceListFallback grade={grade} onPlaceSelect={onPlaceSelect} />
         </div>

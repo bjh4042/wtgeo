@@ -30,10 +30,14 @@ export const categoryColors: Record<PlaceCategory, string> = {
   market: '#C62828',
 };
 
-// Kakao 정적 지도 이미지 URL 생성
-export function getStaticMapUrl(lat: number, lng: number, width = 400, height = 200): string {
-  return `https://dapi.kakao.com/v2/maps/staticmap?appkey=e59d21f6d3e29ccff958317c0b44fcbb&center=${lng},${lat}&level=3&size=${width}x${height}&maptype=roadview_hybrid&markers=type:d|size:small|pos:${lng} ${lat}`;
-}
+export const categoryIcons: Record<PlaceCategory, string> = {
+  tourism: '🏖️',
+  nature: '🌿',
+  culture: '🏛️',
+  public: '🏢',
+  experience: '🎒',
+  market: '🛒',
+};
 
 // Kakao 로드뷰 URL 생성
 export function getRoadViewUrl(lat: number, lng: number): string {
@@ -45,27 +49,49 @@ export function getDirectionUrl(lat: number, lng: number, name: string): string 
   return `https://map.kakao.com/link/to/${encodeURIComponent(name)},${lat},${lng}`;
 }
 
+// 두 좌표 간 직선 거리 계산 (km)
+export function getDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// 예상 이동 시간 (차량 평균 40km/h 기준)
+export function getEstimatedTime(distanceKm: number): string {
+  const minutes = Math.round(distanceKm / 40 * 60);
+  if (minutes < 60) return `약 ${minutes}분`;
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `약 ${hours}시간 ${mins}분` : `약 ${hours}시간`;
+}
+
 export const places: Place[] = [
   // ===== 관광 명소 =====
   {
     id: 't1', name: '바람의 언덕', category: 'tourism',
     description: '거제 남부면 도장포마을에 위치한 아름다운 언덕으로, 탁 트인 바다 전망과 바람개비가 유명합니다.',
     address: '경상남도 거제시 남부면 갈곶리', lat: 34.7416, lng: 128.6625, grade: 'all',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Windy_hill_geoje.jpg/640px-Windy_hill_geoje.jpg',
   },
   {
     id: 't2', name: '외도 보타니아', category: 'tourism',
     description: '거제도 남쪽에 위치한 해상식물공원으로, 아열대 식물과 아름다운 정원이 조성되어 있습니다.',
     address: '경상남도 거제시 일운면 외도길 17', lat: 34.7695, lng: 128.7114, grade: 'all',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Oedo-Botania.jpg/640px-Oedo-Botania.jpg',
   },
   {
     id: 't3', name: '해금강', category: 'tourism',
     description: '거제도 남동쪽 바다에 솟아있는 바위섬으로, 기암절벽과 해식동굴이 장관을 이룹니다.',
     address: '경상남도 거제시 남부면 갈곶리', lat: 34.7378, lng: 128.6732, grade: 'all',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Haegeumgang_Island.jpg/640px-Haegeumgang_Island.jpg',
   },
   {
     id: 't4', name: '학동흑진주몽돌해변', category: 'tourism',
     description: '검은 몽돌(자갈)이 깔린 아름다운 해변으로, 파도가 몽돌을 굴리는 소리가 특별합니다.',
     address: '경상남도 거제시 동부면 학동리', lat: 34.7747, lng: 128.6415, grade: 'all',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Hakdong_Mongdol_Beach.jpg/640px-Hakdong_Mongdol_Beach.jpg',
   },
   {
     id: 't5', name: '신선대', category: 'tourism',
@@ -125,6 +151,7 @@ export const places: Place[] = [
     id: 'c1', name: '거제포로수용소 유적공원', category: 'culture',
     description: '한국전쟁 당시 포로를 수용했던 곳으로, 전쟁의 역사를 배울 수 있는 유적공원입니다.',
     address: '경상남도 거제시 계룡로 61', lat: 34.8764, lng: 128.6254, grade: 4,
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Geoje_POW_Camp.JPG/640px-Geoje_POW_Camp.JPG',
   },
   {
     id: 'c2', name: '옥포대첩기념공원', category: 'culture',
@@ -157,11 +184,13 @@ export const places: Place[] = [
     id: 'c7', name: '합천 해인사', category: 'culture',
     description: '유네스코 세계문화유산 팔만대장경을 보관하고 있는 한국의 대표적인 사찰입니다.',
     address: '경상남도 합천군 가야면 치인리', lat: 35.8009, lng: 128.0975, grade: 4,
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Korea-Hapcheon-Haeinsa-01.jpg/640px-Korea-Hapcheon-Haeinsa-01.jpg',
   },
   {
     id: 'c8', name: '진주성', category: 'culture',
     description: '임진왜란 진주대첩의 격전지로, 논개의 의로운 이야기가 전해지는 역사적 장소입니다.',
     address: '경상남도 진주시 본성동', lat: 35.1896, lng: 128.0800, grade: 4,
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Jinjuseong_Fortress.jpg/640px-Jinjuseong_Fortress.jpg',
   },
 
   // ===== 4학년 경남 관광 =====
@@ -169,6 +198,7 @@ export const places: Place[] = [
     id: 't9', name: '남해 독일마을', category: 'tourism',
     description: '1960~70년대 독일에서 일한 한국인 광부·간호사들의 이야기를 담은 마을입니다.',
     address: '경상남도 남해군 삼동면 물건리', lat: 34.8001, lng: 128.0385, grade: 4,
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/German_Village_in_Namhae.jpg/640px-German_Village_in_Namhae.jpg',
   },
   {
     id: 't10', name: '통영 동피랑벽화마을', category: 'tourism',
