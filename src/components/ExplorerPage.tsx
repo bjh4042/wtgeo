@@ -153,9 +153,9 @@ const ExplorerPage = () => {
             )}
 
             {/* Place card overlay */}
-            {selectedPlace && (
+            {selectedPlace && selectedSchool && (
               <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
-                <PlaceCard place={selectedPlace} onClose={() => setSelectedPlace(null)} />
+                <PlaceCard place={selectedPlace} school={selectedSchool} onClose={() => setSelectedPlace(null)} />
               </div>
             )}
           </div>
