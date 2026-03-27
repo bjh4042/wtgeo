@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { School } from '@/data/schools';
 import { Place } from '@/data/places';
 import AppHeader from '@/components/AppHeader';
@@ -8,7 +8,10 @@ import GradeSelector from '@/components/GradeSelector';
 import KakaoMap from '@/components/KakaoMap';
 import PlaceFilter from '@/components/PlaceFilter';
 import PlaceCard from '@/components/PlaceCard';
-import { Home, List, X } from 'lucide-react';
+import AdminPanel from '@/components/AdminPanel';
+import NoticePopup from '@/components/NoticePopup';
+import { incrementVisitorCount, getVisitorCount } from '@/components/AdminPanel';
+import { Home, List, X, Users } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -19,6 +22,13 @@ const ExplorerPage = () => {
   const [selectedGrade, setSelectedGrade] = useState<3 | 4 | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [zoomIn, setZoomIn] = useState(false);
+  const [visitorCount, setVisitorCount] = useState(0);
+
+  useEffect(() => {
+    const count = incrementVisitorCount();
+    setVisitorCount(count);
+  }, []);
 
   const handleConsonantSelect = (c: string) => {
     setSelectedConsonant(c);
@@ -32,6 +42,7 @@ const ExplorerPage = () => {
 
   const handleGradeSelect = (grade: 3 | 4) => {
     setSelectedGrade(grade);
+    setZoomIn(true);
     setStep('explore');
   };
 
@@ -47,11 +58,15 @@ const ExplorerPage = () => {
     setSelectedGrade(null);
     setSelectedPlace(null);
     setShowMobileSidebar(false);
+    setZoomIn(false);
   };
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <AppHeader schoolName={step === 'explore' ? selectedSchool?.name : undefined} />
+
+      {/* 공지사항 팝업 */}
+      <NoticePopup />
 
       {step !== 'explore' ? (
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
@@ -102,7 +117,6 @@ const ExplorerPage = () => {
 
           {/* Mobile bottom bar */}
           <div className="md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col">
-            {/* Mobile sidebar panel */}
             {showMobileSidebar && (
               <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[60vh] overflow-auto p-4 animate-slide-up">
                 <div className="flex items-center justify-between mb-3">
@@ -117,7 +131,6 @@ const ExplorerPage = () => {
               </div>
             )}
 
-            {/* Mobile toolbar */}
             <div className="bg-card border-t px-4 py-2 flex items-center justify-between gap-2 safe-bottom">
               <button className="back-btn" onClick={handleReset}>
                 <Home size={16} />
@@ -149,10 +162,11 @@ const ExplorerPage = () => {
                 grade={selectedGrade}
                 selectedPlace={selectedPlace}
                 onPlaceSelect={handlePlaceSelect}
+                zoomIn={zoomIn}
+                onZoomComplete={() => setZoomIn(false)}
               />
             )}
 
-            {/* Place card overlay */}
             {selectedPlace && selectedSchool && (
               <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
                 <PlaceCard place={selectedPlace} school={selectedSchool} onClose={() => setSelectedPlace(null)} />
@@ -164,8 +178,18 @@ const ExplorerPage = () => {
 
       {/* Footer */}
       {step !== 'explore' && (
-        <footer className="text-center py-3 text-xs text-muted-foreground">
-          Developed with ❤️ for 거제 탐험대
+        <footer className="text-center py-3 text-xs text-muted-foreground space-y-1">
+          <div className="flex items-center justify-center gap-3">
+            <span className="flex items-center gap-1">
+              <Users size={12} />
+              방문자 {visitorCount.toLocaleString()}명
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <span>Developed with ❤️ for 거제 탐험대</span>
+            <span className="text-muted-foreground/30">|</span>
+            <AdminPanel />
+          </div>
         </footer>
       )}
     </div>

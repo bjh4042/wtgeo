@@ -14,11 +14,13 @@ interface KakaoMapProps {
   grade: 3 | 4;
   selectedPlace: Place | null;
   onPlaceSelect: (place: Place) => void;
+  zoomIn?: boolean;
+  onZoomComplete?: () => void;
 }
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
-const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps) => {
+const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, zoomIn, onZoomComplete }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<{ overlay: any; place: Place; element: HTMLDivElement }[]>([]);
@@ -49,14 +51,19 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
     document.head.appendChild(script);
   }, []);
 
-  // Initialize map
+  // Initialize map with zoom-in animation
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
 
     const center = new window.kakao.maps.LatLng(school.lat, school.lng);
+
+    // If zoomIn, start from far and animate in
+    const startLevel = zoomIn ? 13 : (grade === 4 ? 10 : 7);
+    const targetLevel = grade === 4 ? 10 : 7;
+
     const options = {
       center,
-      level: grade === 4 ? 10 : 7,
+      level: startLevel,
     };
 
     mapInstance.current = new window.kakao.maps.Map(mapRef.current, options);
@@ -71,6 +78,21 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
       content: `<div style="padding:8px 12px;font-size:13px;font-weight:bold;white-space:nowrap;">🏫 ${school.name}</div>`,
     });
     schoolInfo.open(mapInstance.current, schoolMarker);
+
+    // Animated zoom-in
+    if (zoomIn && startLevel > targetLevel) {
+      let currentLevel = startLevel;
+      const zoomStep = () => {
+        if (currentLevel > targetLevel) {
+          currentLevel--;
+          mapInstance.current.setLevel(currentLevel, { animate: true });
+          setTimeout(zoomStep, 250);
+        } else {
+          onZoomComplete?.();
+        }
+      };
+      setTimeout(zoomStep, 400);
+    }
 
     return () => {
       overlaysRef.current.forEach(({ overlay }) => overlay.setMap(null));
@@ -132,11 +154,10 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
     const position = new window.kakao.maps.LatLng(selectedPlace.lat, selectedPlace.lng);
     mapInstance.current.panTo(position);
 
-    // Adjust zoom for far-away places (4th grade provincial)
     if (grade === 4) {
       const schoolPos = new window.kakao.maps.LatLng(school.lat, school.lng);
       const poly = new window.kakao.maps.Polyline({ path: [schoolPos, position] });
-      const dist = poly.getLength(); // meters
+      const dist = poly.getLength();
       if (dist > 50000) {
         mapInstance.current.setLevel(10);
       } else {
@@ -160,14 +181,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
             <code className="bg-muted px-2 py-0.5 rounded text-xs">KAKAO_API_KEY</code> 변수에 
             Kakao JavaScript API 키를 입력해주세요.
           </p>
-          <a
-            href="https://developers.kakao.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-3 text-sm font-medium text-primary hover:underline"
-          >
-            developers.kakao.com에서 발급받기 →
-          </a>
         </div>
         <div className="mt-4 w-full max-w-md">
           <PlaceListFallback grade={grade} onPlaceSelect={onPlaceSelect} />
@@ -187,7 +200,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect }: KakaoMapProps
   return <div ref={mapRef} className="w-full h-full rounded-xl" />;
 };
 
-// Fallback when no API key
 function PlaceListFallback({ grade, onPlaceSelect }: { grade: 3 | 4; onPlaceSelect: (p: Place) => void }) {
   const places = getPlacesByGrade(grade);
   return (
