@@ -10,7 +10,8 @@ export interface Place {
   lng: number;
   grade?: 3 | 4 | 'all';
   imageUrl?: string;
-  origin?: string; // 지역 유래
+  origin?: string;
+  referenceUrl?: string;
 }
 
 export const categoryLabels: Record<PlaceCategory, string> = {
@@ -40,17 +41,14 @@ export const categoryIcons: Record<PlaceCategory, string> = {
   market: '🛒',
 };
 
-// Kakao 로드뷰 URL 생성
 export function getRoadViewUrl(lat: number, lng: number): string {
   return `https://map.kakao.com/link/roadview/${lat},${lng}`;
 }
 
-// Kakao 길찾기 URL 생성
 export function getDirectionUrl(lat: number, lng: number, name: string): string {
   return `https://map.kakao.com/link/to/${encodeURIComponent(name)},${lat},${lng}`;
 }
 
-// 두 좌표 간 직선 거리 계산 (km)
 export function getDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -59,7 +57,6 @@ export function getDistance(lat1: number, lng1: number, lat2: number, lng2: numb
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// 예상 이동 시간 (차량 평균 40km/h 기준)
 export function getEstimatedTime(distanceKm: number): string {
   const minutes = Math.round(distanceKm / 40 * 60);
   if (minutes < 60) return `약 ${minutes}분`;
@@ -73,9 +70,10 @@ export const places: Place[] = [
   {
     id: 't1', name: '바람의 언덕', category: 'tourism',
     description: '거제 남부면 도장포마을에 위치한 아름다운 언덕으로, 탁 트인 바다 전망과 바람개비가 유명합니다.',
-    address: '경상남도 거제시 남부면 갈곶리', lat: 34.7416, lng: 128.6625, grade: 'all',
+    address: '경상남도 거제시 남부면 갈곶리 산14-47', lat: 34.7416, lng: 128.6625, grade: 'all',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Windy_hill_geoje.jpg/640px-Windy_hill_geoje.jpg',
     origin: '바다에서 불어오는 바람이 유난히 강하게 부는 언덕이라 하여 "바람의 언덕"이라 불리게 되었습니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 't2', name: '외도 보타니아', category: 'tourism',
@@ -83,74 +81,84 @@ export const places: Place[] = [
     address: '경상남도 거제시 일운면 외도길 17', lat: 34.7695, lng: 128.7114, grade: 'all',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Oedo-Botania.jpg/640px-Oedo-Botania.jpg',
     origin: '1969년 태풍을 피해 이 섬에 머문 이창호·최호숙 부부가 30년에 걸쳐 가꾼 해상식물공원입니다.',
+    referenceUrl: 'https://www.oedobotania.com',
   },
   {
     id: 't3', name: '해금강', category: 'tourism',
-    description: '거제도 남동쪽 바다에 솟아있는 바위섬으로, 기암절벽과 해식동굴이 장관을 이룹니다.',
-    address: '경상남도 거제시 남부면 갈곶리', lat: 34.7378, lng: 128.6732, grade: 'all',
+    description: '거제도 남동쪽 바다에 솟아있는 바위섬으로, 기암절벽과 해식동굴이 장관을 이룹니다. 명승 제2호.',
+    address: '경상남도 거제시 남부면 갈곶리 산1', lat: 34.7378, lng: 128.6732, grade: 'all',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Haegeumgang_Island.jpg/640px-Haegeumgang_Island.jpg',
     origin: '바다의 금강산이라는 뜻으로, 그 경치가 금강산에 비견될 만큼 아름다워 "해금강"이라 이름 붙었습니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 't4', name: '학동흑진주몽돌해변', category: 'tourism',
     description: '검은 몽돌(자갈)이 깔린 아름다운 해변으로, 파도가 몽돌을 굴리는 소리가 특별합니다.',
-    address: '경상남도 거제시 동부면 학동리', lat: 34.7747, lng: 128.6415, grade: 'all',
+    address: '경상남도 거제시 동부면 학동리 276-5', lat: 34.7747, lng: 128.6415, grade: 'all',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Hakdong_Mongdol_Beach.jpg/640px-Hakdong_Mongdol_Beach.jpg',
     origin: '흑진주처럼 검고 윤기나는 몽돌이 해변에 깔려 있어 "흑진주몽돌해변"이라 불립니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 't5', name: '신선대', category: 'tourism',
     description: '신선이 놀았다는 전설이 있는 바위 전망대로, 탁 트인 남해 전경을 감상할 수 있습니다.',
-    address: '경상남도 거제시 남부면 갈곶리', lat: 34.7382, lng: 128.6628, grade: 'all',
+    address: '경상남도 거제시 남부면 갈곶리 산21-23', lat: 34.7382, lng: 128.6628, grade: 'all',
     origin: '옛날 신선들이 이곳의 경치에 반해 내려와 놀았다는 전설에서 유래되었습니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 't6', name: '거제 맹종죽 테마파크', category: 'tourism',
     description: '울창한 대나무숲 속을 산책할 수 있는 테마파크로, 사계절 푸른 맹종죽이 아름답습니다.',
-    address: '경상남도 거제시 하청면 유계리', lat: 34.9677, lng: 128.6505, grade: 'all',
+    address: '경상남도 거제시 하청면 거제북로 700', lat: 34.9677, lng: 128.6505, grade: 'all',
     origin: '맹종죽(孟宗竹)은 효자 맹종이 겨울에 어머니를 위해 죽순을 구했다는 고사에서 이름이 유래되었습니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 't7', name: '거제 씨월드', category: 'tourism',
     description: '다양한 해양생물을 관찰하고 체험할 수 있는 해양테마파크입니다.',
     address: '경상남도 거제시 일운면 지세포해안로 15', lat: 34.8359, lng: 128.7015, grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 't8', name: '여차홍포해안', category: 'tourism',
     description: '여차~홍포 구간의 해안 절경으로, 기암괴석과 푸른 바다가 어우러진 비경을 자랑합니다.',
-    address: '경상남도 거제시 남부면 여차리', lat: 34.7038, lng: 128.6101, grade: 'all',
+    address: '경상남도 거제시 남부면 다포리 산38-145', lat: 34.7038, lng: 128.6101, grade: 'all',
     origin: '여차(汝次)는 "너의 차례"라는 뜻으로, 이 마을에 도착하면 쉬어갈 차례라는 의미에서 유래되었습니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 't9', name: '거제 해맞이 공원', category: 'tourism',
+    id: 't9', name: '거제 해맞이 공원(양지암)', category: 'tourism',
     description: '일출 명소로 유명한 공원으로, 동해 방향으로 아름다운 해맞이를 감상할 수 있습니다.',
-    address: '경상남도 거제시 장승포동', lat: 34.8660, lng: 128.7340, grade: 'all',
+    address: '경상남도 거제시 능포동 산61-3', lat: 34.8660, lng: 128.7340, grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
 
   // ===== 자연/지리 =====
   {
     id: 'n1', name: '계룡산', category: 'nature',
     description: '거제시의 최고봉(566m)으로, 산세가 닭의 볏을 닮아 계룡산이라 불립니다.',
-    address: '경상남도 거제시 동부면', lat: 34.8710, lng: 128.6076, grade: 3,
+    address: '경상남도 거제시 거제면 옥산리', lat: 34.8710, lng: 128.6076, grade: 3,
     origin: '산의 능선이 닭의 볏(鷄)과 용(龍)의 형상을 닮았다 하여 "계룡산"이라 불립니다.',
   },
   {
     id: 'n2', name: '노자산', category: 'nature',
     description: '거제도에서 두 번째로 높은 산(565m)으로, 정상에서 거제도 전경을 조망할 수 있습니다.',
-    address: '경상남도 거제시 연초면', lat: 34.7845, lng: 128.6162, grade: 3,
+    address: '경상남도 거제시 동부면 구천리', lat: 34.7845, lng: 128.6162, grade: 3,
     origin: '노자(老子)가 이 산에서 수행했다는 전설에서 이름이 유래되었습니다.',
   },
   {
     id: 'n3', name: '구조라해수욕장', category: 'nature',
     description: '고운 모래사장과 잔잔한 파도가 특징인 해수욕장으로, 가족 단위 여행객에게 인기가 많습니다.',
-    address: '경상남도 거제시 일운면 구조라리', lat: 34.8070, lng: 128.6929, grade: 'all',
+    address: '경상남도 거제시 일운면 구조라리 500-1', lat: 34.8070, lng: 128.6929, grade: 'all',
     origin: '"구조라"는 아홉(九)개의 낚시(釣) 바위가 나란히(羅) 있다는 뜻에서 유래되었습니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'n4', name: '와현해수욕장', category: 'nature',
     description: '맑은 물과 고운 모래가 아름다운 해수욕장으로, 거제도 동쪽에 위치하고 있습니다.',
-    address: '경상남도 거제시 일운면 와현리', lat: 34.8127, lng: 128.7086, grade: 'all',
+    address: '경상남도 거제시 일운면 와현리 619-1', lat: 34.8127, lng: 128.7086, grade: 'all',
     origin: '마을 뒤의 산이 누워(臥) 있는 고개(峴) 같다 하여 "와현"이라 불리게 되었습니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'n5', name: '칠천도', category: 'nature',
@@ -161,19 +169,20 @@ export const places: Place[] = [
   {
     id: 'n6', name: '내도', category: 'nature',
     description: '외도 근처에 위치한 작은 섬으로, 자연 그대로의 모습을 간직하고 있습니다.',
-    address: '경상남도 거제시 일운면 와현리', lat: 34.7854, lng: 128.7141, grade: 'all',
+    address: '경상남도 거제시 일운면 와현리 (내도길)', lat: 34.7854, lng: 128.7141, grade: 'all',
   },
   {
     id: 'n7', name: '대금산', category: 'nature',
     description: '거제도 남서쪽에 위치한 산(437m)으로, 정상에서 다도해의 아름다운 전경을 감상할 수 있습니다.',
-    address: '경상남도 거제시 장목면', lat: 34.7600, lng: 128.6200, grade: 3,
+    address: '경상남도 거제시 장목면 대금리', lat: 34.7600, lng: 128.6200, grade: 3,
     origin: '산에서 금(金)이 많이 났다 하여 "대금산(大金山)"이라 불리게 되었습니다.',
   },
   {
     id: 'n8', name: '공곶이', category: 'nature',
     description: '수선화와 동백이 아름다운 해안 정원으로, 숲길 산책과 바다 풍경을 동시에 즐길 수 있습니다.',
-    address: '경상남도 거제시 일운면 예구리', lat: 34.7680, lng: 128.7050, grade: 'all',
+    address: '경상남도 거제시 일운면 와현리 87', lat: 34.7680, lng: 128.7050, grade: 'all',
     origin: '곶(串)은 바다로 뻗은 땅을 뜻하며, 활(弓) 모양으로 생긴 곶이라 "공곶이"라 합니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
 
   // ===== 문화/역사 =====
@@ -183,41 +192,48 @@ export const places: Place[] = [
     address: '경상남도 거제시 계룡로 61', lat: 34.8764, lng: 128.6254, grade: 'all',
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Geoje_POW_Camp.JPG/640px-Geoje_POW_Camp.JPG',
     origin: '1950년 한국전쟁 당시 유엔군이 인민군과 중공군 포로를 수용하기 위해 설치한 수용소입니다.',
+    referenceUrl: 'https://www.pow.or.kr',
   },
   {
     id: 'c2', name: '옥포대첩기념공원', category: 'culture',
     description: '1592년 임진왜란 최초의 해전 승리인 옥포해전을 기념하는 공원으로, 이순신 장군의 업적을 기리고 있습니다.',
-    address: '경상남도 거제시 옥포2동', lat: 34.9021, lng: 128.7144, grade: 'all',
+    address: '경상남도 거제시 팔랑포2길 87', lat: 34.9021, lng: 128.7144, grade: 'all',
     origin: '1592년 5월 7일 이순신 장군이 옥포만에서 왜선 26척을 격파한 첫 승전을 기념합니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'c3', name: '거제박물관', category: 'culture',
     description: '거제도의 선사시대부터 현대까지의 역사와 문화유산을 전시하는 박물관입니다.',
-    address: '경상남도 거제시 거제대로 3658', lat: 34.8940, lng: 128.6862, grade: 'all',
+    address: '경상남도 거제시 옥포대첩로 43', lat: 34.8940, lng: 128.6862, grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'c4', name: '거제향교', category: 'culture',
     description: '조선 태조 7년(1398)에 창건된 유교 교육기관으로, 거제 지역의 대표적인 전통 교육시설입니다.',
-    address: '경상남도 거제시 거제면 서정리', lat: 34.8526, lng: 128.5898, grade: 3,
+    address: '경상남도 거제시 거제면 향교길 23-4', lat: 34.8526, lng: 128.5898, grade: 3,
     origin: '조선시대 지방의 인재를 양성하기 위해 세운 국립 교육기관으로, 공자를 모시는 사당도 함께 있습니다.',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'c5', name: '거제 둔덕기성', category: 'culture',
     description: '고려시대에 축성된 성곽으로, 사적 제509호로 지정되어 있습니다. 고려 의종이 유배되었던 곳입니다.',
-    address: '경상남도 거제시 둔덕면 산방리', lat: 34.8688, lng: 128.4985, grade: 3,
+    address: '경상남도 거제시 둔덕면 거림리 산95', lat: 34.8688, lng: 128.4985, grade: 3,
     origin: '고려 18대 왕 의종이 정변으로 폐위된 후 이곳에 유배되어 지내다 세상을 떠난 역사적 장소입니다.',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'c9', name: '거제 기성관', category: 'culture',
     description: '조선시대 거제현의 관아 건물로, 관리들이 업무를 보던 곳입니다. 경상남도 유형문화재 제81호입니다.',
-    address: '경상남도 거제시 거제면 동상리', lat: 34.8520, lng: 128.5910, grade: 3,
+    address: '경상남도 거제시 거제면 동상리 546', lat: 34.8520, lng: 128.5910, grade: 3,
     origin: '거제(巨濟)의 옛 이름 "기성(岐城)"에서 따온 이름으로, 거제현의 중심 관아였습니다.',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'c10', name: '칠천량해전공원', category: 'culture',
     description: '1597년 정유재란 때 조선 수군이 대패한 칠천량해전을 기억하는 공원입니다.',
-    address: '경상남도 거제시 하청면 칠천도', lat: 34.9870, lng: 128.6340, grade: 'all',
+    address: '경상남도 거제시 하청면 칠천로 265-39', lat: 34.9870, lng: 128.6340, grade: 'all',
     origin: '칠천량(漆川梁)은 칠천도와 거제도 사이의 좁은 바다를 가리키며, 1597년 원균이 이끈 조선 수군이 일본에 대패한 곳입니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
 
   // ===== 4학년 경남 문화/역사 =====
@@ -296,47 +312,47 @@ export const places: Place[] = [
   {
     id: 'p2', name: '거제경찰서', category: 'public',
     description: '거제시 일대의 치안을 담당하는 경찰서로, 시민의 안전을 지키는 기관입니다.',
-    address: '경상남도 거제시 진목1길 2', lat: 34.8987, lng: 128.6866, grade: 'all',
+    address: '경상남도 거제시 옥포대첩로 71', lat: 34.8987, lng: 128.6866, grade: 'all',
   },
   {
     id: 'p3', name: '거제소방서', category: 'public',
     description: '거제시의 화재 예방, 진압, 구조·구급 업무를 담당하는 소방서입니다. 119에 신고하면 출동합니다.',
-    address: '경상남도 거제시 계룡로 89', lat: 34.8961, lng: 128.6862, grade: 'all',
+    address: '경상남도 거제시 연초면 거제대로 4267', lat: 34.9120, lng: 128.6500, grade: 'all',
   },
   {
     id: 'p4', name: '거제시보건소', category: 'public',
     description: '거제시민의 건강을 위한 예방접종, 건강검진 등 보건의료서비스를 제공하는 기관입니다.',
-    address: '경상남도 거제시 중곡1로 18', lat: 34.8919, lng: 128.6367, grade: 'all',
+    address: '경상남도 거제시 수양로 71', lat: 34.8870, lng: 128.6420, grade: 'all',
   },
   {
     id: 'p5', name: '거제교육지원청', category: 'public',
     description: '거제시 관내 초·중·고등학교의 교육행정을 담당하는 기관으로, 학교와 선생님들을 지원합니다.',
-    address: '경상남도 거제시 계룡로 71', lat: 34.8799, lng: 128.6266, grade: 'all',
+    address: '경상남도 거제시 고현천로 115', lat: 34.8799, lng: 128.6266, grade: 'all',
   },
   {
-    id: 'p6', name: '거제시립도서관', category: 'public',
+    id: 'p6', name: '거제시립도서관(장평)', category: 'public',
     description: '거제시민을 위한 공공도서관으로, 다양한 도서 대출과 독서·문화 프로그램을 운영합니다.',
-    address: '경상남도 거제시 거제대로 3728', lat: 34.8699, lng: 128.7312, grade: 'all',
+    address: '경상남도 거제시 장평3로 21', lat: 34.8930, lng: 128.6070, grade: 'all',
   },
   {
     id: 'p7', name: '거제우체국', category: 'public',
     description: '편지, 택배 등 우편 서비스와 금융 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 중곡로 58', lat: 34.8843, lng: 128.6231, grade: 'all',
+    address: '경상남도 거제시 거제중앙로 1799', lat: 34.8843, lng: 128.6231, grade: 'all',
   },
   {
     id: 'p8', name: '거제시의회', category: 'public',
     description: '거제시 주민이 뽑은 시의원들이 모여 시의 중요한 일을 의논하고 결정하는 기관입니다.',
-    address: '경상남도 거제시 고현동', lat: 34.8811, lng: 128.6210, grade: 'all',
+    address: '경상남도 거제시 계룡로 125', lat: 34.8811, lng: 128.6210, grade: 'all',
   },
   {
-    id: 'p9', name: '거제세무서', category: 'public',
+    id: 'p9', name: '거제세무서(통영세무서 거제지서)', category: 'public',
     description: '거제시 관내 세금(국세) 관련 업무를 처리하는 국세청 소속 기관입니다.',
-    address: '경상남도 거제시 고현동', lat: 34.8822, lng: 128.6198, grade: 'all',
+    address: '경상남도 거제시 거제중앙로 1713', lat: 34.8822, lng: 128.6198, grade: 'all',
   },
   {
     id: 'p15', name: '거제시 평생학습센터', category: 'public',
     description: '거제 시민들이 다양한 교육과 문화 프로그램에 참여할 수 있는 평생교육 기관입니다.',
-    address: '경상남도 거제시 고현동', lat: 34.8790, lng: 128.6230, grade: 3,
+    address: '경상남도 거제시 계룡로 125', lat: 34.8790, lng: 128.6230, grade: 3,
   },
 
   // ===== 관공서 (4학년: 경상남도) =====
@@ -371,67 +387,68 @@ export const places: Place[] = [
   {
     id: 'e1', name: '거제자연휴양림', category: 'experience',
     description: '자연 속에서 숲 체험, 산책, 야영 등 다양한 자연 체험활동을 할 수 있는 휴양림입니다.',
-    address: '경상남도 거제시 동부면 부춘리', lat: 34.7857, lng: 128.6259, grade: 'all',
+    address: '경상남도 거제시 동부면 노자산길 315', lat: 34.7857, lng: 128.6259, grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'e2', name: '거제어촌민속전시관', category: 'experience',
     description: '거제도의 어촌 문화와 어업 역사를 배우고, 전통 어구를 직접 볼 수 있는 전시관입니다.',
-    address: '경상남도 거제시 일운면 지세포리', lat: 34.8336, lng: 128.7018, grade: 3,
+    address: '경상남도 거제시 일운면 지세포해안로 41', lat: 34.8336, lng: 128.7018, grade: 3,
     origin: '거제도는 예로부터 풍부한 어장을 가진 섬으로, 어촌 문화가 깊이 뿌리내린 곳입니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'e3', name: '거제해양레저체험', category: 'experience',
+    id: 'e3', name: '거제해양레저체험(요트학교)', category: 'experience',
     description: '카약, 요트, 투명카누 등 다양한 해양 레저를 직접 체험할 수 있는 곳입니다.',
-    address: '경상남도 거제시 일운면 구조라리', lat: 34.8070, lng: 128.6929, grade: 'all',
+    address: '경상남도 거제시 일운면 지세포해안로 41', lat: 34.8336, lng: 128.7018, grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'e4', name: '거제도 짚라인', category: 'experience',
+    id: 'e4', name: '거제도 짚라인(덕포 씨라인)', category: 'experience',
     description: '거제도의 아름다운 바다 경치를 감상하며 짚라인을 타는 스릴 넘치는 체험시설입니다.',
-    address: '경상남도 거제시 남부면 저구리', lat: 34.7416, lng: 128.6625, grade: 'all',
+    address: '경상남도 거제시 옥포대첩로 422-2', lat: 34.8960, lng: 128.6900, grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'e5', name: '조선해양문화관', category: 'experience',
+    id: 'e5', name: '거제 해양생태체험관(조선해양문화관)', category: 'experience',
     description: '거제도의 조선산업 역사와 해양문화를 체험할 수 있는 문화관으로, 배 만들기 체험도 가능합니다.',
-    address: '경상남도 거제시 장목면 유호리', lat: 34.8349, lng: 128.7016, grade: 4,
-    origin: '거제도는 대우조선해양, 삼성중공업 등 세계적 조선소가 있는 "조선의 메카"입니다.',
+    address: '경상남도 거제시 일운면 지세포해안로 41', lat: 34.8349, lng: 128.7016, grade: 'all',
+    origin: '거제도는 한화오션, 삼성중공업 등 세계적 조선소가 있는 "조선의 메카"입니다.',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'e6', name: '거제 동백숲길', category: 'experience',
+    id: 'e6', name: '거제 동백숲길(지심도)', category: 'experience',
     description: '겨울부터 봄까지 동백꽃이 만발하는 아름다운 숲길로, 자연관찰 학습에 좋습니다.',
-    address: '경상남도 거제시 장목면 대금리', lat: 34.7379, lng: 128.6728, grade: 3,
+    address: '경상남도 거제시 일운면 옥림리', lat: 34.8050, lng: 128.7300, grade: 3,
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'e7', name: '김해 가야테마파크', category: 'experience',
     description: '가야 문화를 체험할 수 있는 테마파크로, 역사 학습과 놀이를 함께 즐길 수 있습니다.',
     address: '경상남도 김해시 어방동', lat: 35.2507, lng: 128.8930, grade: 4,
   },
-  {
-    id: 'e8', name: '거제 해양생태체험관', category: 'experience',
-    description: '거제 바다의 다양한 해양생태계를 관찰하고 체험할 수 있는 교육 시설입니다.',
-    address: '경상남도 거제시 일운면', lat: 34.8150, lng: 128.7000, grade: 3,
-  },
 
   // ===== 전통시장/먹거리 =====
   {
     id: 'm1', name: '고현시장', category: 'market',
     description: '거제 최대 규모의 전통시장으로, 신선한 해산물, 과일, 반찬 등 다양한 먹거리를 즐길 수 있습니다.',
-    address: '경상남도 거제시 고현동', lat: 34.8854, lng: 128.6240, grade: 'all',
+    address: '경상남도 거제시 거제중앙로 1883-2', lat: 34.8854, lng: 128.6240, grade: 'all',
     origin: '거제의 행정중심지 고현에 자연스럽게 형성된 전통시장으로, 5일장 전통을 이어가고 있습니다.',
   },
   {
     id: 'm2', name: '옥포시장', category: 'market',
     description: '옥포 지역의 전통시장으로, 지역 특산물과 길거리 음식이 유명합니다.',
-    address: '경상남도 거제시 옥포동', lat: 34.8940, lng: 128.6892, grade: 'all',
+    address: '경상남도 거제시 옥포로 202', lat: 34.8940, lng: 128.6892, grade: 'all',
   },
   {
     id: 'm3', name: '거제 수산물시장', category: 'market',
     description: '싱싱한 회와 해산물을 저렴하게 즐길 수 있는 수산물 전문 시장입니다.',
-    address: '경상남도 거제시 고현동', lat: 34.8899, lng: 128.6093, grade: 'all',
+    address: '경상남도 거제시 거제중앙로 1883-2', lat: 34.8860, lng: 128.6245, grade: 'all',
   },
   {
     id: 'm4', name: '장승포시장', category: 'market',
     description: '장승포 지역의 전통시장으로, 어묵, 떡, 건어물 등 다양한 특산품을 판매합니다.',
-    address: '경상남도 거제시 장승포동', lat: 34.8678, lng: 128.7296, grade: 'all',
+    address: '경상남도 거제시 장승포로 38', lat: 34.8678, lng: 128.7296, grade: 'all',
     origin: '장승포(長承浦)는 "긴 포구"라는 뜻으로, 옛날부터 배가 드나들던 항구 마을입니다.',
   },
 ];

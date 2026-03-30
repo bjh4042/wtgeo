@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { quizQuestions, QuizQuestion } from '@/data/quiz';
+import { QuizQuestion, getRandomQuestions } from '@/data/quiz';
 
 interface QuizPopupProps {
   onClose: () => void;
@@ -10,8 +10,9 @@ type QuizState = 'intro' | 'playing' | 'result';
 
 const QuizPopup = ({ onClose }: QuizPopupProps) => {
   const [state, setState] = useState<QuizState>('intro');
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQ, setCurrentQ] = useState(0);
-  const [answers, setAnswers] = useState<(number | null)[]>(Array(quizQuestions.length).fill(null));
+  const [answers, setAnswers] = useState<(number | null)[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const [score, setScore] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -22,14 +23,17 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
   }, []);
 
   const startQuiz = () => {
-    setState('playing');
+    const randomQs = getRandomQuestions(10);
+    setQuestions(randomQs);
+    setAnswers(Array(10).fill(null));
     setCurrentQ(0);
-    setAnswers(Array(quizQuestions.length).fill(null));
     setElapsed(0);
+    setScore(0);
+    setState('playing');
     timerRef.current = setInterval(() => {
       setElapsed(prev => {
         if (prev >= maxTime - 1) {
-          finishQuiz();
+          finishQuizWithAnswers(randomQs);
           return maxTime;
         }
         return prev + 1;
@@ -37,11 +41,16 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
     }, 1000);
   };
 
-  const finishQuiz = () => {
+  const finishQuizWithAnswers = (qs?: QuizQuestion[]) => {
     if (timerRef.current) clearInterval(timerRef.current);
-    const s = answers.reduce((acc, a, i) => acc + (a === quizQuestions[i].answer ? 1 : 0), 0);
+    const qList = qs || questions;
+    const s = answers.reduce((acc, a, i) => acc + (a === qList[i]?.answer ? 1 : 0), 0);
     setScore(s);
     setState('result');
+  };
+
+  const finishQuiz = () => {
+    finishQuizWithAnswers();
   };
 
   const selectAnswer = (ansIdx: number) => {
@@ -49,18 +58,20 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
     newAnswers[currentQ] = ansIdx;
     setAnswers(newAnswers);
 
-    // Auto-advance after short delay
     setTimeout(() => {
-      if (currentQ < quizQuestions.length - 1) {
+      if (currentQ < questions.length - 1) {
         setCurrentQ(currentQ + 1);
       }
     }, 300);
   };
 
   const getGrade = () => {
-    if (elapsed <= 60) return { grade: 'S', color: '#FFD700', emoji: '🏆' };
-    if (elapsed <= 180) return { grade: 'A', color: '#4CAF50', emoji: '🎖️' };
-    return { grade: 'B', color: '#2196F3', emoji: '👍' };
+    // S: 9-10점 AND 1분 이내
+    // A: 7-8점 AND 3분 이내 OR 9-10점 AND 3분 이내
+    // B: 나머지
+    if (score >= 9 && elapsed <= 60) return { grade: 'S', color: '#FFD700', emoji: '🏆', label: '최고예요! 거제 박사!' };
+    if (score >= 7 && elapsed <= 180) return { grade: 'A', color: '#4CAF50', emoji: '🎖️', label: '잘했어요! 거제 전문가!' };
+    return { grade: 'B', color: '#2196F3', emoji: '👍', label: '좋아요! 조금 더 공부해봐요!' };
   };
 
   const formatTime = (s: number) => {
@@ -69,7 +80,7 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const q = quizQuestions[currentQ];
+  const q = questions[currentQ];
   const allAnswered = answers.every(a => a !== null);
 
   return (
@@ -83,12 +94,12 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
             </div>
             <div className="space-y-3 text-sm text-muted-foreground">
               <p>거제시에 대해 얼마나 알고 있나요?</p>
-              <p>📝 총 <strong className="text-foreground">10문제</strong> (OX + 선다형)</p>
+              <p>📝 총 20문제 중 <strong className="text-foreground">랜덤 10문제</strong> 출제 (OX + 선다형)</p>
               <p>⏱️ 제한시간 <strong className="text-foreground">10분</strong></p>
               <div className="p-3 rounded-lg bg-muted/50 space-y-1">
-                <p className="font-semibold text-foreground">등급 기준</p>
-                <p>🏆 <strong>S등급</strong>: 1분 이내</p>
-                <p>🎖️ <strong>A등급</strong>: 1분 1초 ~ 3분</p>
+                <p className="font-semibold text-foreground">등급 기준 (점수 + 시간)</p>
+                <p>🏆 <strong>S등급</strong>: 9문제 이상 정답 + 1분 이내</p>
+                <p>🎖️ <strong>A등급</strong>: 7문제 이상 정답 + 3분 이내</p>
                 <p>👍 <strong>B등급</strong>: 그 외</p>
               </div>
             </div>
@@ -105,8 +116,7 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
           <>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-bold px-2.5 py-1 rounded-full bg-destructive/10 text-destructive">{currentQ + 1}</span>
-                <span className="text-xs font-medium text-muted-foreground">{score}점</span>
+                <span className="text-sm font-bold px-2.5 py-1 rounded-full bg-destructive/10 text-destructive">{currentQ + 1}/{questions.length}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
@@ -152,7 +162,7 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
                 ← 이전
               </button>
               <div className="flex gap-1">
-                {quizQuestions.map((_, i) => (
+                {questions.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentQ(i)}
@@ -166,7 +176,7 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
                   </button>
                 ))}
               </div>
-              {currentQ < quizQuestions.length - 1 ? (
+              {currentQ < questions.length - 1 ? (
                 <button
                   onClick={() => setCurrentQ(currentQ + 1)}
                   className="text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground cursor-pointer"
@@ -200,12 +210,12 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
               >
                 {getGrade().grade}
               </div>
-              <p className="text-sm text-muted-foreground">{getGrade().emoji} {getGrade().grade}등급</p>
+              <p className="text-sm text-muted-foreground">{getGrade().emoji} {getGrade().label}</p>
             </div>
 
             <div className="grid grid-cols-3 gap-2 mb-4">
               <div className="text-center p-2 rounded-lg bg-muted/50">
-                <p className="text-lg font-bold text-foreground">{score}/{quizQuestions.length}</p>
+                <p className="text-lg font-bold text-foreground">{score}/{questions.length}</p>
                 <p className="text-xs text-muted-foreground">정답</p>
               </div>
               <div className="text-center p-2 rounded-lg bg-muted/50">
@@ -219,7 +229,7 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
             </div>
 
             <div className="space-y-2 max-h-60 overflow-auto">
-              {quizQuestions.map((q, i) => {
+              {questions.map((q, i) => {
                 const correct = answers[i] === q.answer;
                 return (
                   <div key={q.id} className={`p-2.5 rounded-lg border text-xs ${correct ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>

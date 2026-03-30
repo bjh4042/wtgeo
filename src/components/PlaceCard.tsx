@@ -25,28 +25,16 @@ const PlaceCard = ({ place, school, onClose }: PlaceCardProps) => {
 
   return (
     <div className="place-card animate-slide-up max-w-sm">
-      {/* 장소 사진 */}
       {place.imageUrl && !imgError ? (
         <div className="relative -mx-4 -mt-4 mb-3 rounded-t-xl overflow-hidden">
-          <img
-            src={place.imageUrl}
-            alt={place.name}
-            className="w-full h-36 object-cover"
-            onError={() => setImgError(true)}
-          />
-          <div
-            className="absolute top-2 left-2 text-xs font-bold px-2 py-1 rounded-full text-white"
-            style={{ backgroundColor: color }}
-          >
+          <img src={place.imageUrl} alt={place.name} className="w-full h-36 object-cover" onError={() => setImgError(true)} />
+          <div className="absolute top-2 left-2 text-xs font-bold px-2 py-1 rounded-full text-white" style={{ backgroundColor: color }}>
             {icon} {categoryLabel}
           </div>
         </div>
       ) : (
         <div className="flex items-start justify-between mb-3">
-          <span
-            className="category-badge text-xs font-bold px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: color + '20', color }}
-          >
+          <span className="category-badge text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: color + '20', color }}>
             {icon} {categoryLabel}
           </span>
         </div>
@@ -54,26 +42,16 @@ const PlaceCard = ({ place, school, onClose }: PlaceCardProps) => {
 
       <div className="flex items-start justify-between mb-2">
         <h3 className="text-lg font-bold text-foreground">{place.name}</h3>
-        <button
-          onClick={onClose}
-          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer ml-2 flex-shrink-0"
-        >
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer ml-2 flex-shrink-0">
           <X size={20} />
         </button>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
-        {place.description}
-      </p>
+      <p className="text-sm text-muted-foreground mb-2 leading-relaxed">{place.description}</p>
 
-      {/* 유래 정보 */}
       {place.origin && (
         <div className="mb-2">
-          <button
-            onClick={() => setShowOrigin(!showOrigin)}
-            className="flex items-center gap-1 text-xs font-semibold cursor-pointer transition-colors"
-            style={{ color }}
-          >
+          <button onClick={() => setShowOrigin(!showOrigin)} className="flex items-center gap-1 text-xs font-semibold cursor-pointer transition-colors" style={{ color }}>
             <BookOpen size={13} />
             {showOrigin ? '유래 접기' : '📖 유래 보기'}
           </button>
@@ -90,47 +68,30 @@ const PlaceCard = ({ place, school, onClose }: PlaceCardProps) => {
         <span>{place.address}</span>
       </div>
 
-      {/* 거리 및 이동시간 */}
       <div className="flex items-center gap-3 text-xs mb-3 px-2 py-1.5 rounded-lg bg-muted/50">
         <span className="flex items-center gap-1 text-primary font-medium">
-          <Route size={13} />
-          {distanceText}
+          <Route size={13} />{distanceText}
         </span>
         <span className="flex items-center gap-1 text-muted-foreground">
-          <Clock size={13} />
-          🚗 {estimatedTime}
+          <Clock size={13} />🚗 {estimatedTime}
         </span>
       </div>
 
-      {/* 액션 버튼 */}
-      <div className="flex gap-2">
-        <a
-          href={roadViewUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-        >
-          <Eye size={14} />
-          로드뷰
+      <div className="flex gap-2 flex-wrap">
+        <a href={roadViewUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+          <Eye size={14} />로드뷰
         </a>
-        <a
-          href={directionUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
-        >
-          <Navigation size={14} />
-          길찾기
+        <a href={directionUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">
+          <Navigation size={14} />길찾기
         </a>
-        <a
-          href={`https://map.kakao.com/link/map/${encodeURIComponent(place.name)},${place.lat},${place.lng}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
-        >
-          <ExternalLink size={14} />
-          지도
+        <a href={`https://map.kakao.com/link/map/${encodeURIComponent(place.name)},${place.lat},${place.lng}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">
+          <ExternalLink size={14} />지도
         </a>
+        {place.referenceUrl && (
+          <a href={place.referenceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border hover:bg-muted/50 transition-colors" style={{ color }}>
+            <ExternalLink size={14} />관련 사이트
+          </a>
+        )}
       </div>
     </div>
   );
