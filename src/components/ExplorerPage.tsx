@@ -99,7 +99,6 @@ const ExplorerPage = () => {
         </main>
       ) : (
         <main className="flex-1 flex flex-col overflow-hidden relative">
-          {/* Category tabs */}
           <div className="bg-card border-b z-20 shadow-sm">
             <CategoryTabs activeCategory={activeContentCategory} onCategoryChange={handleCategoryChange} />
           </div>
@@ -164,14 +163,12 @@ const ExplorerPage = () => {
                 />
               )}
 
-              {/* Place card */}
               {selectedPlace && selectedSchool && (
                 <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
                   <PlaceCard place={selectedPlace} school={selectedSchool} onClose={() => setSelectedPlace(null)} />
                 </div>
               )}
 
-              {/* Content card */}
               {selectedContent && (
                 <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
                   <ContentCard content={selectedContent} onClose={() => setSelectedContent(null)} />
@@ -189,7 +186,7 @@ const ExplorerPage = () => {
             <span className="flex items-center gap-1"><Users size={12} /> 방문자 {visitorCount.toLocaleString()}명</span>
           </div>
           <div className="flex items-center justify-center gap-2">
-            <span>Developed with ❤️ for 거제 탐험대</span>
+            <span>© 2025 수박쌤. 원작: 인디스쿨 니카쌤. All rights reserved.</span>
             <span className="text-muted-foreground/30">|</span>
             <AdminPanel />
           </div>

@@ -10,10 +10,11 @@ export interface MapContent {
   lng: number;
   icon: string;
   imageUrl?: string;
-  oldImageUrl?: string; // 옛날과 오늘날용
+  oldImageUrl?: string;
   oldImageCaption?: string;
   source?: string;
   grade?: 3 | 4 | 'all';
+  referenceUrl?: string;
 }
 
 export const contentCategoryLabels: Record<ContentCategory, string> = {
@@ -43,7 +44,7 @@ export const contentCategoryColors: Record<ContentCategory, string> = {
   nature: '#2E7D32',
 };
 
-// ===== 옛이야기 (거제시 공식 사이트 & 거제문화원 출처) =====
+// ===== 옛이야기 =====
 export const stories: MapContent[] = [
   {
     id: 'story1', name: '서불과차', contentType: 'story',
@@ -51,6 +52,7 @@ export const stories: MapContent[] = [
     lat: 34.7378, lng: 128.6732, icon: '📜',
     source: '거제문화원, 거제시 어린이 홈페이지',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'story2', name: '늙은 여우를 물리친 노인', contentType: 'story',
@@ -58,6 +60,7 @@ export const stories: MapContent[] = [
     lat: 34.8800, lng: 128.6300, icon: '🦊',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'story3', name: '망부석의 슬픈 이야기', contentType: 'story',
@@ -65,6 +68,7 @@ export const stories: MapContent[] = [
     lat: 34.8100, lng: 128.7000, icon: '🪨',
     source: '거제문화원',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'story4', name: '까마귀 섬, 소병대도', contentType: 'story',
@@ -72,6 +76,7 @@ export const stories: MapContent[] = [
     lat: 34.7500, lng: 128.7200, icon: '🏝️',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'story5', name: '산방산과 삼신굴', contentType: 'story',
@@ -79,6 +84,7 @@ export const stories: MapContent[] = [
     lat: 34.8688, lng: 128.4985, icon: '⛰️',
     source: '거제문화원',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'story6', name: '벼락바위', contentType: 'story',
@@ -86,6 +92,7 @@ export const stories: MapContent[] = [
     lat: 34.8200, lng: 128.6100, icon: '⚡',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'story7', name: '형제도', contentType: 'story',
@@ -93,6 +100,7 @@ export const stories: MapContent[] = [
     lat: 34.7300, lng: 128.6800, icon: '🏝️',
     source: '거제문화원',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'story8', name: '울음이재', contentType: 'story',
@@ -100,20 +108,23 @@ export const stories: MapContent[] = [
     lat: 34.8500, lng: 128.5500, icon: '😢',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
-    id: 'story9', name: '조라 지역 지명 전설', contentType: 'story',
+    id: 'story9', name: '구조라 지명 전설', contentType: 'story',
     description: '구조라 지역의 지명에 얽힌 전설입니다. 아홉 개의 낚시바위가 나란히 있어 "구조라"라 불리게 되었다고 합니다.',
     lat: 34.8070, lng: 128.6929, icon: '🎣',
     source: '거제문화원',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
-    id: 'story10', name: '용의 치 전설', contentType: 'story',
+    id: 'story10', name: '용의 이빨 전설', contentType: 'story',
     description: '용이 이빨을 드러내며 하늘로 올라갔다는 전설이 있는 곳입니다. 거제 해안의 뾰족한 바위들이 용의 이빨을 닮았다고 합니다.',
     lat: 34.7600, lng: 128.6500, icon: '🐉',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
 ];
 
@@ -124,64 +135,74 @@ export const placenames: MapContent[] = [
     description: '거제의 옛 이름은 "기성(岐城)" 또는 "상군(裳郡)"이었습니다. "거제(巨濟)"는 "크게 건넌다"는 뜻으로, 이 큰 섬을 건너야 한다는 의미에서 유래되었습니다.',
     lat: 34.8805, lng: 128.6211, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
   },
   {
     id: 'pn2', name: '고현(古縣)', contentType: 'placename',
     description: '고현은 "옛 현청이 있던 곳"이라는 뜻입니다. 조선시대 거제현의 관아가 이곳에 있었기 때문에 붙여진 이름입니다.',
     lat: 34.8854, lng: 128.6240, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn3', name: '옥포(玉浦)', contentType: 'placename',
     description: '옥(玉)처럼 아름다운 포구(浦)라는 뜻입니다. 맑은 바닷물이 옥빛처럼 빛났다고 하여 붙여진 이름입니다. 임진왜란 최초 승전지이기도 합니다.',
     lat: 34.9021, lng: 128.7144, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn4', name: '장승포(長承浦)', contentType: 'placename',
     description: '"긴(長) 포구(浦)"라는 뜻으로, 예로부터 배가 드나들던 긴 항구 마을입니다. 장승이 서 있던 포구라는 설도 있습니다.',
     lat: 34.8678, lng: 128.7296, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn5', name: '둔덕(屯德)', contentType: 'placename',
     description: '"덕(德)이 모이는(屯) 곳"이라는 뜻입니다. 고려 의종이 유배와 이곳에서 덕을 쌓았다는 이야기에서 유래되었습니다.',
     lat: 34.8688, lng: 128.4985, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn6', name: '사등(沙等)', contentType: 'placename',
     description: '모래(沙)가 고르게(等) 펼쳐진 곳이라는 뜻입니다. 넓은 모래밭이 있어 붙여진 이름입니다.',
     lat: 34.9200, lng: 128.5800, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn7', name: '하청(河清)', contentType: 'placename',
     description: '"맑은(清) 강(河)"이라는 뜻으로, 이 지역을 흐르는 하천이 맑아서 붙여진 이름입니다.',
-    lat: 34.9677, lng: 128.6505, icon: '📌',
+    lat: 34.9570, lng: 128.6550, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn8', name: '연초(延草)', contentType: 'placename',
     description: '풀(草)이 넓게(延) 펼쳐진 곳이라는 뜻입니다. 예로부터 넓은 초원이 있어 붙여진 이름입니다.',
-    lat: 34.7845, lng: 128.6162, icon: '📌',
+    lat: 34.9120, lng: 128.6520, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn9', name: '일운(一運)', contentType: 'placename',
     description: '"하나의(一) 운(運)"이라는 뜻으로, 좋은 운이 모이는 곳이라는 의미에서 유래되었습니다.',
-    lat: 34.8127, lng: 128.7086, icon: '📌',
+    lat: 34.8290, lng: 128.7060, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pn10', name: '남부(南部)', contentType: 'placename',
     description: '거제도의 남쪽 지역이라는 뜻으로, 바람의 언덕, 해금강 등 유명 관광지가 모여 있는 곳입니다.',
     lat: 34.7416, lng: 128.6625, icon: '📌',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
 ];
 
-// ===== 국가유산 (문화재청 등 공식 출처) =====
+// ===== 국가유산 =====
 export const heritages: MapContent[] = [
   {
     id: 'h1', name: '거제 둔덕기성', contentType: 'heritage',
@@ -189,6 +210,7 @@ export const heritages: MapContent[] = [
     lat: 34.8688, lng: 128.4985, icon: '🏯',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'h2', name: '거제 기성관', contentType: 'heritage',
@@ -196,6 +218,7 @@ export const heritages: MapContent[] = [
     lat: 34.8520, lng: 128.5910, icon: '🏛️',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'h3', name: '거제 옥포대첩비', contentType: 'heritage',
@@ -203,13 +226,15 @@ export const heritages: MapContent[] = [
     lat: 34.9021, lng: 128.7144, icon: '🪨',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
-    id: 'h4', name: '거제 거제면 반곡서원', contentType: 'heritage',
+    id: 'h4', name: '거제 반곡서원', contentType: 'heritage',
     description: '경상남도 문화재자료 제78호. 조선 중기에 건립된 서원으로, 유학자들을 기리기 위한 교육기관이었습니다.',
     lat: 34.8550, lng: 128.5850, icon: '📚',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'h5', name: '거제 둔덕면 석조여래좌상', contentType: 'heritage',
@@ -217,6 +242,7 @@ export const heritages: MapContent[] = [
     lat: 34.8650, lng: 128.5000, icon: '🙏',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'h6', name: '해금강', contentType: 'heritage',
@@ -224,6 +250,7 @@ export const heritages: MapContent[] = [
     lat: 34.7378, lng: 128.6732, icon: '🏞️',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'h7', name: '거제 가라산봉수대', contentType: 'heritage',
@@ -231,6 +258,7 @@ export const heritages: MapContent[] = [
     lat: 34.7900, lng: 128.6800, icon: '🔥',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'h8', name: '거제향교', contentType: 'heritage',
@@ -238,6 +266,7 @@ export const heritages: MapContent[] = [
     lat: 34.8526, lng: 128.5898, icon: '🎓',
     source: '문화재청 국가문화유산포털',
     grade: 'all',
+    referenceUrl: 'https://www.heritage.go.kr',
   },
 ];
 
@@ -249,6 +278,7 @@ export const pastPresent: MapContent[] = [
     lat: 34.8764, lng: 128.6254, icon: '📷',
     oldImageCaption: '1951년 거제포로수용소 전경',
     grade: 'all',
+    referenceUrl: 'https://www.pow.or.kr',
   },
   {
     id: 'pp2', name: '옥포조선소', contentType: 'pastpresent',
@@ -256,6 +286,7 @@ export const pastPresent: MapContent[] = [
     lat: 34.9100, lng: 128.7200, icon: '📷',
     oldImageCaption: '1970년대 옥포 어촌 마을',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'pp3', name: '거제대교', contentType: 'pastpresent',
@@ -263,6 +294,7 @@ export const pastPresent: MapContent[] = [
     lat: 34.8400, lng: 128.4800, icon: '📷',
     oldImageCaption: '1971년 거제대교 개통식',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'pp4', name: '고현 시가지', contentType: 'pastpresent',
@@ -270,6 +302,7 @@ export const pastPresent: MapContent[] = [
     lat: 34.8854, lng: 128.6240, icon: '📷',
     oldImageCaption: '1980년대 고현 시가지',
     grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'pp5', name: '장승포항', contentType: 'pastpresent',
@@ -277,6 +310,7 @@ export const pastPresent: MapContent[] = [
     lat: 34.8678, lng: 128.7296, icon: '📷',
     oldImageCaption: '1960년대 장승포항',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
 ];
 
@@ -287,48 +321,56 @@ export const natureContent: MapContent[] = [
     description: '거제시 최고봉으로, 산세가 닭의 볏과 용의 형상을 닮았다 하여 계룡산이라 불립니다. 다양한 등산로가 있으며, 정상에서 거제도 전경을 조망할 수 있습니다.',
     lat: 34.8710, lng: 128.6076, icon: '⛰️',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'nat2', name: '노자산(565m)', contentType: 'nature',
     description: '거제도 두 번째 높은 산으로, 정상에서 남해바다와 거제도 일대를 한눈에 볼 수 있습니다. 사계절 등산을 즐길 수 있는 명산입니다.',
     lat: 34.7845, lng: 128.6162, icon: '⛰️',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'nat3', name: '대금산(437m)', contentType: 'nature',
     description: '거제도 남서쪽에 위치한 산으로, 정상에서 다도해의 아름다운 전경을 감상할 수 있습니다. 산에서 금이 많이 났다 하여 대금산이라 불립니다.',
     lat: 34.7600, lng: 128.6200, icon: '⛰️',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'nat4', name: '거제 해안 습지', contentType: 'nature',
     description: '거제도 곳곳에 발달한 해안 습지는 다양한 철새와 해양 생물이 서식하는 생태 보고입니다. 갯벌에서 조개, 게 등을 관찰할 수 있습니다.',
     lat: 34.9200, lng: 128.6000, icon: '🦀',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'nat5', name: '동백나무 군락지', contentType: 'nature',
-    description: '거제도는 동백나무가 자생하는 남쪽 한계선에 위치해 있어, 겨울부터 봄까지 아름다운 동백꽃을 볼 수 있습니다.',
-    lat: 34.7379, lng: 128.6728, icon: '🌺',
+    description: '거제도는 동백나무가 자생하는 남쪽 한계선에 위치해 있어, 겨울부터 봄까지 아름다운 동백꽃을 볼 수 있습니다. 지심도가 대표적입니다.',
+    lat: 34.8050, lng: 128.7300, icon: '🌺',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'nat6', name: '칠천도 갯벌', contentType: 'nature',
     description: '칠천도 주변의 갯벌은 다양한 해양 생물이 서식하는 자연 생태계입니다. 썰물 때 넓은 갯벌이 드러나 자연관찰 학습에 좋습니다.',
     lat: 34.9885, lng: 128.6358, icon: '🐚',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'nat7', name: '공곶이 수선화 군락', contentType: 'nature',
     description: '일운면 공곶이에는 수선화, 동백 등이 자연적으로 군락을 이루고 있어 봄철 아름다운 꽃길을 걸을 수 있습니다.',
     lat: 34.7680, lng: 128.7050, icon: '🌼',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'nat8', name: '구조라 해양생태', contentType: 'nature',
     description: '구조라 앞바다는 맑은 수질과 풍부한 해양 생태계를 자랑합니다. 해양 생물 관찰과 스노클링을 즐길 수 있는 곳입니다.',
     lat: 34.8070, lng: 128.6929, icon: '🐠',
     grade: 'all',
+    referenceUrl: 'https://tour.geoje.go.kr',
   },
 ];
 

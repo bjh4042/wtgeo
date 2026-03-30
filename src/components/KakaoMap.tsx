@@ -24,6 +24,23 @@ interface KakaoMapProps {
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
+// 줌 단계 설정: 32km(12) → 2km(8) → 150m(4) → 30m(2)
+const ZOOM_STAGES = [
+  { level: 12, delay: 1800 },
+  { level: 8, delay: 1800 },
+  { level: 4, delay: 1800 },
+  { level: 2, delay: 800 },
+];
+
+function getZoomMessage(stageIndex: number, district: string): string {
+  switch (stageIndex) {
+    case 0: return '🇰🇷 대한민국';
+    case 1: return '📍 경상남도 거제시';
+    case 2: return `🏫 우리 학교는 ${district}에 있어요!`;
+    default: return '';
+  }
+}
+
 const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeContentCategory, zoomIn, onZoomComplete }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
@@ -31,6 +48,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   const scaleRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [zoomMessage, setZoomMessage] = useState<string | null>(null);
 
   // Load Kakao Maps SDK
   useEffect(() => {
@@ -60,8 +78,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
     const center = new window.kakao.maps.LatLng(school.lat, school.lng);
-    const startLevel = zoomIn ? 13 : (grade === 4 ? 10 : 7);
-    const targetLevel = grade === 4 ? 10 : 5;
+    const startLevel = zoomIn ? ZOOM_STAGES[0].level : (grade === 4 ? 10 : 5);
 
     mapInstance.current = new window.kakao.maps.Map(mapRef.current, { center, level: startLevel });
 
@@ -76,19 +93,50 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     window.kakao.maps.event.addListener(mapInstance.current, 'zoom_changed', updateScale);
     updateScale();
 
-    // Animated zoom-in
-    if (zoomIn && startLevel > targetLevel) {
-      let currentLevel = startLevel;
-      const zoomStep = () => {
-        if (currentLevel > targetLevel) {
-          currentLevel--;
-          mapInstance.current.setLevel(currentLevel, { animate: true });
-          setTimeout(zoomStep, 250);
-        } else {
+    // 4-stage animated zoom-in
+    if (zoomIn) {
+      let stageIdx = 0;
+      // Show first message immediately
+      setZoomMessage(getZoomMessage(0, school.district));
+
+      const runStage = () => {
+        if (stageIdx >= ZOOM_STAGES.length) {
+          setZoomMessage(null);
           onZoomComplete?.();
+          return;
+        }
+
+        const stage = ZOOM_STAGES[stageIdx];
+        // Animate to this level
+        const currentLevel = mapInstance.current.getLevel();
+        if (currentLevel !== stage.level) {
+          // Smooth zoom
+          let lvl = currentLevel;
+          const step = () => {
+            if (lvl > stage.level) {
+              lvl--;
+              mapInstance.current.setLevel(lvl, { animate: true });
+              setTimeout(step, 150);
+            } else {
+              // Show message for this stage
+              const msg = getZoomMessage(stageIdx, school.district);
+              if (msg) setZoomMessage(msg);
+              else setZoomMessage(null);
+              stageIdx++;
+              setTimeout(runStage, stage.delay);
+            }
+          };
+          step();
+        } else {
+          const msg = getZoomMessage(stageIdx, school.district);
+          if (msg) setZoomMessage(msg);
+          else setZoomMessage(null);
+          stageIdx++;
+          setTimeout(runStage, stage.delay);
         }
       };
-      setTimeout(zoomStep, 400);
+
+      setTimeout(runStage, 1200);
     }
 
     return () => {
@@ -97,7 +145,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     };
   }, [isLoaded, school, grade]);
 
-  // Add markers based on active category
+  // Add markers
   useEffect(() => {
     if (!isLoaded || !mapInstance.current) return;
 
@@ -105,7 +153,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     overlaysRef.current = [];
 
     if (activeContentCategory === 'place') {
-      // Show place markers
       const places = getPlacesByGrade(grade);
       places.forEach((place) => {
         const position = new window.kakao.maps.LatLng(place.lat, place.lng);
@@ -134,7 +181,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         overlaysRef.current.push(overlay);
       });
     } else {
-      // Show content markers
       const items = getContentByCategory(activeContentCategory, grade);
       const color = contentCategoryColors[activeContentCategory];
       const catIcon = contentCategoryIcons[activeContentCategory];
@@ -202,6 +248,16 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   return (
     <div className="w-full h-full relative">
       <div ref={mapRef} className="w-full h-full rounded-xl" />
+
+      {/* Zoom message overlay */}
+      {zoomMessage && (
+        <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+          <div className="bg-card/95 backdrop-blur-md text-foreground text-xl md:text-2xl font-black px-8 py-5 rounded-2xl shadow-2xl animate-scale-in border-2 border-primary/20">
+            {zoomMessage}
+          </div>
+        </div>
+      )}
+
       {/* Scale indicator */}
       <div
         ref={scaleRef}

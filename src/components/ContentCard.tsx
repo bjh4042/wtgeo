@@ -67,6 +67,20 @@ const ContentCard = ({ content, onClose }: ContentCardProps) => {
           📎 출처: {content.source}
         </p>
       )}
+
+      {/* 관련 링크 */}
+      {content.referenceUrl && (
+        <a
+          href={content.referenceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border bg-muted/30 hover:bg-muted/60 transition-colors"
+          style={{ color }}
+        >
+          <ExternalLink size={13} />
+          관련 사이트 바로가기
+        </a>
+      )}
     </div>
   );
 };
