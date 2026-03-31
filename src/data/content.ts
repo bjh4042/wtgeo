@@ -44,7 +44,7 @@ export const contentCategoryColors: Record<ContentCategory, string> = {
   nature: '#2E7D32',
 };
 
-// ===== 옛이야기 =====
+// ===== 옛이야기 (16개 - 거제시 어린이 홈페이지 기준) =====
 export const stories: MapContent[] = [
   {
     id: 'story1', name: '서불과차', contentType: 'story',
@@ -60,7 +60,7 @@ export const stories: MapContent[] = [
     lat: 34.8800, lng: 128.6300, icon: '🦊',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804002000000',
   },
   {
     id: 'story3', name: '망부석의 슬픈 이야기', contentType: 'story',
@@ -68,7 +68,7 @@ export const stories: MapContent[] = [
     lat: 34.8100, lng: 128.7000, icon: '🪨',
     source: '거제문화원',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804003000000',
   },
   {
     id: 'story4', name: '까마귀 섬, 소병대도', contentType: 'story',
@@ -76,7 +76,7 @@ export const stories: MapContent[] = [
     lat: 34.7500, lng: 128.7200, icon: '🏝️',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804004000000',
   },
   {
     id: 'story5', name: '산방산과 삼신굴', contentType: 'story',
@@ -84,7 +84,7 @@ export const stories: MapContent[] = [
     lat: 34.8688, lng: 128.4985, icon: '⛰️',
     source: '거제문화원',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804005000000',
   },
   {
     id: 'story6', name: '벼락바위', contentType: 'story',
@@ -92,7 +92,7 @@ export const stories: MapContent[] = [
     lat: 34.8200, lng: 128.6100, icon: '⚡',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804006000000',
   },
   {
     id: 'story7', name: '형제도', contentType: 'story',
@@ -100,7 +100,7 @@ export const stories: MapContent[] = [
     lat: 34.7300, lng: 128.6800, icon: '🏝️',
     source: '거제문화원',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804007000000',
   },
   {
     id: 'story8', name: '울음이재', contentType: 'story',
@@ -108,23 +108,71 @@ export const stories: MapContent[] = [
     lat: 34.8500, lng: 128.5500, icon: '😢',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804008000000',
   },
   {
-    id: 'story9', name: '구조라 지명 전설', contentType: 'story',
+    id: 'story9', name: '비파반석', contentType: 'story',
+    description: '비파(琵琶) 모양의 큰 바위에 얽힌 이야기입니다. 옛날 선녀가 하늘에서 내려와 이 바위에서 비파를 타며 노래했다는 전설이 전해집니다.',
+    lat: 34.8400, lng: 128.5900, icon: '🎵',
+    source: '거제시 어린이 홈페이지',
+    grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804009000000',
+  },
+  {
+    id: 'story10', name: '조라 지역 지명 전설', contentType: 'story',
     description: '구조라 지역의 지명에 얽힌 전설입니다. 아홉 개의 낚시바위가 나란히 있어 "구조라"라 불리게 되었다고 합니다.',
     lat: 34.8070, lng: 128.6929, icon: '🎣',
     source: '거제문화원',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804010000000',
   },
   {
-    id: 'story10', name: '용의 이빨 전설', contentType: 'story',
-    description: '용이 이빨을 드러내며 하늘로 올라갔다는 전설이 있는 곳입니다. 거제 해안의 뾰족한 바위들이 용의 이빨을 닮았다고 합니다.',
+    id: 'story11', name: '뱀쥐섬', contentType: 'story',
+    description: '뱀과 쥐가 서로 싸우다 섬이 되었다는 전설이 있는 곳입니다. 거제도 앞바다의 작은 섬으로, 그 모양이 뱀과 쥐를 닮았다고 합니다.',
+    lat: 34.8600, lng: 128.7100, icon: '🐍',
+    source: '거제시 어린이 홈페이지',
+    grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804011000000',
+  },
+  {
+    id: 'story12', name: '아주천 전설', contentType: 'story',
+    description: '아주동을 흐르는 아주천에 얽힌 전설입니다. 옛날 이 하천에서 용이 승천했다는 이야기가 전해지며, 마을 사람들이 풍년을 기원하던 곳입니다.',
+    lat: 34.8650, lng: 128.6900, icon: '🐲',
+    source: '거제시 어린이 홈페이지',
+    grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804012000000',
+  },
+  {
+    id: 'story13', name: '밀바다들과 돌틈', contentType: 'story',
+    description: '거제도의 밀물과 썰물에 의해 만들어진 바다와 들판, 그리고 바위 사이 돌틈에 얽힌 이야기입니다. 자연의 신비로운 힘을 보여주는 전설입니다.',
+    lat: 34.7800, lng: 128.6400, icon: '🌊',
+    source: '거제시 어린이 홈페이지',
+    grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804013000000',
+  },
+  {
+    id: 'story14', name: '전하도', contentType: 'story',
+    description: '임금(殿下)이 머물렀다 하여 "전하도"라 불리는 섬에 얽힌 이야기입니다. 고려 의종이 거제도로 유배 올 때 잠시 머물렀다는 전설이 전해집니다.',
+    lat: 34.8700, lng: 128.5100, icon: '👑',
+    source: '거제시 어린이 홈페이지',
+    grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804014000000',
+  },
+  {
+    id: 'story15', name: '돼지가 된 학', contentType: 'story',
+    description: '학동(鶴洞)마을에 내려온 학이 돼지로 변했다는 전설입니다. 아름다운 학이 마을의 탐욕 때문에 돼지로 변했다는 교훈적인 이야기가 전해집니다.',
+    lat: 34.7747, lng: 128.6415, icon: '🐷',
+    source: '거제시 어린이 홈페이지',
+    grade: 'all',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804015000000',
+  },
+  {
+    id: 'story16', name: '용의 치 전설', contentType: 'story',
+    description: '용이 이빨(치, 齒)을 드러내며 하늘로 올라갔다는 전설이 있는 곳입니다. 거제 해안의 뾰족한 바위들이 용의 이빨을 닮았다고 합니다.',
     lat: 34.7600, lng: 128.6500, icon: '🐉',
     source: '거제시 어린이 홈페이지',
     grade: 'all',
-    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804001000000',
+    referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804016000000',
   },
 ];
 

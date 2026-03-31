@@ -27,7 +27,7 @@ const ExplorerPage = () => {
   const [selectedGrade, setSelectedGrade] = useState<3 | 4 | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedContent, setSelectedContent] = useState<MapContent | null>(null);
-  const [activeContentCategory, setActiveContentCategory] = useState<ContentCategory>('place');
+  const [activeCategories, setActiveCategories] = useState<ContentCategory[]>(['place']);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [zoomIn, setZoomIn] = useState(false);
   const [visitorCount, setVisitorCount] = useState(0);
@@ -55,10 +55,15 @@ const ExplorerPage = () => {
     setShowMobileSidebar(false);
   }, []);
 
-  const handleCategoryChange = (cat: ContentCategory) => {
-    setActiveContentCategory(cat);
-    setSelectedPlace(null);
-    setSelectedContent(null);
+  const handleCategoryToggle = (cat: ContentCategory) => {
+    setActiveCategories(prev => {
+      if (prev.includes(cat)) {
+        // Don't allow deselecting all
+        if (prev.length === 1) return prev;
+        return prev.filter(c => c !== cat);
+      }
+      return [...prev, cat];
+    });
   };
 
   const handleReset = () => {
@@ -68,7 +73,7 @@ const ExplorerPage = () => {
     setSelectedGrade(null);
     setSelectedPlace(null);
     setSelectedContent(null);
-    setActiveContentCategory('place');
+    setActiveCategories(['place']);
     setShowMobileSidebar(false);
     setZoomIn(false);
   };
@@ -100,7 +105,7 @@ const ExplorerPage = () => {
       ) : (
         <main className="flex-1 flex flex-col overflow-hidden relative">
           <div className="bg-card border-b z-20 shadow-sm">
-            <CategoryTabs activeCategory={activeContentCategory} onCategoryChange={handleCategoryChange} />
+            <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
           </div>
 
           <div className="flex-1 flex overflow-hidden relative">
@@ -157,7 +162,7 @@ const ExplorerPage = () => {
                   onPlaceSelect={handlePlaceSelect}
                   selectedContent={selectedContent}
                   onContentSelect={handleContentSelect}
-                  activeContentCategory={activeContentCategory}
+                  activeCategories={activeCategories}
                   zoomIn={zoomIn}
                   onZoomComplete={() => setZoomIn(false)}
                 />

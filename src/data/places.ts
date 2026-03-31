@@ -204,13 +204,13 @@ export const places: Place[] = [
   {
     id: 'c3', name: '거제박물관', category: 'culture',
     description: '거제도의 선사시대부터 현대까지의 역사와 문화유산을 전시하는 박물관입니다.',
-    address: '경상남도 거제시 옥포대첩로 43', lat: 34.8940, lng: 128.6862, grade: 'all',
+    address: '경상남도 거제시 거제대로 3791', lat: 34.8960, lng: 128.6900, grade: 'all',
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
     id: 'c4', name: '거제향교', category: 'culture',
     description: '조선 태조 7년(1398)에 창건된 유교 교육기관으로, 거제 지역의 대표적인 전통 교육시설입니다.',
-    address: '경상남도 거제시 거제면 향교길 23-4', lat: 34.8526, lng: 128.5898, grade: 3,
+    address: '경상남도 거제시 기성로7길 10', lat: 34.8526, lng: 128.5898, grade: 3,
     origin: '조선시대 지방의 인재를 양성하기 위해 세운 국립 교육기관으로, 공자를 모시는 사당도 함께 있습니다.',
     referenceUrl: 'https://www.heritage.go.kr',
   },
@@ -308,6 +308,7 @@ export const places: Place[] = [
     description: '거제시의 행정을 총괄하는 시청입니다. 시장과 공무원들이 시민을 위한 다양한 정책을 만들고 실행합니다.',
     address: '경상남도 거제시 계룡로 125', lat: 34.8805, lng: 128.6211, grade: 'all',
     origin: '1989년 거제군에서 거제시로 승격되면서 현재의 거제시청이 설립되었습니다.',
+    referenceUrl: 'https://www.geoje.go.kr',
   },
   {
     id: 'p2', name: '거제경찰서', category: 'public',
@@ -317,27 +318,28 @@ export const places: Place[] = [
   {
     id: 'p3', name: '거제소방서', category: 'public',
     description: '거제시의 화재 예방, 진압, 구조·구급 업무를 담당하는 소방서입니다. 119에 신고하면 출동합니다.',
-    address: '경상남도 거제시 연초면 거제대로 4267', lat: 34.9120, lng: 128.6500, grade: 'all',
+    address: '경상남도 거제시 진목로 1 (옥포동)', lat: 34.8960, lng: 128.6880, grade: 'all',
   },
   {
     id: 'p4', name: '거제시보건소', category: 'public',
     description: '거제시민의 건강을 위한 예방접종, 건강검진 등 보건의료서비스를 제공하는 기관입니다.',
-    address: '경상남도 거제시 수양로 71', lat: 34.8870, lng: 128.6420, grade: 'all',
+    address: '경상남도 거제시 수양로 506 (양정동)', lat: 34.8720, lng: 128.6180, grade: 'all',
   },
   {
     id: 'p5', name: '거제교육지원청', category: 'public',
     description: '거제시 관내 초·중·고등학교의 교육행정을 담당하는 기관으로, 학교와 선생님들을 지원합니다.',
-    address: '경상남도 거제시 고현천로 115', lat: 34.8799, lng: 128.6266, grade: 'all',
+    address: '경상남도 거제시 거제중앙로 1809 (고현동)', lat: 34.8840, lng: 128.6230, grade: 'all',
+    referenceUrl: 'https://geoje.gne.go.kr',
   },
   {
     id: 'p6', name: '거제시립도서관(장평)', category: 'public',
     description: '거제시민을 위한 공공도서관으로, 다양한 도서 대출과 독서·문화 프로그램을 운영합니다.',
-    address: '경상남도 거제시 장평3로 21', lat: 34.8930, lng: 128.6070, grade: 'all',
+    address: '경상남도 거제시 장평3로 10 (장평동)', lat: 34.8930, lng: 128.6060, grade: 'all',
   },
   {
     id: 'p7', name: '거제우체국', category: 'public',
     description: '편지, 택배 등 우편 서비스와 금융 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 거제중앙로 1799', lat: 34.8843, lng: 128.6231, grade: 'all',
+    address: '경상남도 거제시 거제중앙로17길 19 (고현동)', lat: 34.8840, lng: 128.6240, grade: 'all',
   },
   {
     id: 'p8', name: '거제시의회', category: 'public',
@@ -347,7 +349,7 @@ export const places: Place[] = [
   {
     id: 'p9', name: '거제세무서(통영세무서 거제지서)', category: 'public',
     description: '거제시 관내 세금(국세) 관련 업무를 처리하는 국세청 소속 기관입니다.',
-    address: '경상남도 거제시 거제중앙로 1713', lat: 34.8822, lng: 128.6198, grade: 'all',
+    address: '경상남도 거제시 계룡로11길 9 (고현동)', lat: 34.8800, lng: 128.6210, grade: 'all',
   },
   {
     id: 'p15', name: '거제시 평생학습센터', category: 'public',
