@@ -1,5 +1,6 @@
 import { getAvailableConsonants } from '@/data/schools';
 import { Monitor } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 
 interface ConsonantFilterProps {
   onSelect: (consonant: string) => void;
