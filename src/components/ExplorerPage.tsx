@@ -15,8 +15,9 @@ import AdminPanel from '@/components/AdminPanel';
 import NoticePopup from '@/components/NoticePopup';
 import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
-import { incrementVisitorCount, getVisitorCount } from '@/components/AdminPanel';
-import { Home, List, X, Users } from 'lucide-react';
+import GyeongnamExplorer from '@/components/GyeongnamExplorer';
+import { incrementVisitorCount } from '@/components/AdminPanel';
+import { Home, List, X, Users, Map } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -33,6 +34,7 @@ const ExplorerPage = () => {
   const [visitorCount, setVisitorCount] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSources, setShowSources] = useState(false);
+  const [showGyeongnam, setShowGyeongnam] = useState(false);
 
   useEffect(() => {
     const count = incrementVisitorCount();
@@ -58,7 +60,6 @@ const ExplorerPage = () => {
   const handleCategoryToggle = (cat: ContentCategory) => {
     setActiveCategories(prev => {
       if (prev.includes(cat)) {
-        // Don't allow deselecting all
         if (prev.length === 1) return prev;
         return prev.filter(c => c !== cat);
       }
@@ -89,6 +90,7 @@ const ExplorerPage = () => {
       <NoticePopup />
       {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} />}
       {showSources && <SourcesPopup onClose={() => setShowSources(false)} />}
+      {showGyeongnam && <GyeongnamExplorer onClose={() => setShowGyeongnam(false)} />}
 
       {step !== 'explore' ? (
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
@@ -105,7 +107,19 @@ const ExplorerPage = () => {
       ) : (
         <main className="flex-1 flex flex-col overflow-hidden relative">
           <div className="bg-card border-b z-20 shadow-sm">
-            <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
+            <div className="flex items-center">
+              <div className="flex-1 overflow-x-auto">
+                <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
+              </div>
+              {selectedGrade === 4 && (
+                <button
+                  onClick={() => setShowGyeongnam(true)}
+                  className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 mr-2 rounded-full text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  <Map size={12} /> 경남 시·군
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="flex-1 flex overflow-hidden relative">

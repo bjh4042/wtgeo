@@ -1,4 +1,5 @@
 import { getAvailableConsonants } from '@/data/schools';
+import { Monitor } from 'lucide-react';
 
 interface ConsonantFilterProps {
   onSelect: (consonant: string) => void;
@@ -25,6 +26,10 @@ const ConsonantFilter = ({ onSelect }: ConsonantFilterProps) => {
             {c}
           </button>
         ))}
+      </div>
+      <div className="flex items-center gap-2 text-xs text-muted-foreground/70 mt-2">
+        <Monitor size={14} />
+        <span>가로모드(PC/태블릿)에서 최적화된 화면을 볼 수 있어요</span>
       </div>
     </div>
   );
