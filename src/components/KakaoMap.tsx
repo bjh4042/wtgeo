@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Place, categoryColors, categoryIcons, getPlacesByGrade } from '@/data/places';
 import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcons, getContentByCategory } from '@/data/content';
 import { School } from '@/data/schools';
-import { MapPin, Plus, Minus } from 'lucide-react';
+import { MapPin, Plus, Minus, School as SchoolIcon } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -24,7 +24,6 @@ interface KakaoMapProps {
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
-// 줌 단계 설정: 32km(12) → 2km(8) → 150m(4) → 30m(2)
 const ZOOM_STAGES = [
   { level: 12, delay: 1800 },
   { level: 8, delay: 1800 },
@@ -50,7 +49,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   const [error, setError] = useState<string | null>(null);
   const [zoomMessage, setZoomMessage] = useState<string | null>(null);
 
-  // Load Kakao Maps SDK
   useEffect(() => {
     if (window.kakao?.maps) { setIsLoaded(true); return; }
     if (!KAKAO_API_KEY) { setError('API_KEY_MISSING'); return; }
@@ -62,7 +60,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     document.head.appendChild(script);
   }, []);
 
-  // Update scale indicator
   const updateScale = useCallback(() => {
     if (!mapInstance.current || !scaleRef.current) return;
     const level = mapInstance.current.getLevel();
@@ -74,7 +71,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     scaleRef.current.textContent = `축척: ${scaleMap[level] || `레벨 ${level}`}`;
   }, []);
 
-  // Zoom controls
   const handleZoomIn = useCallback(() => {
     if (!mapInstance.current) return;
     const level = mapInstance.current.getLevel();
@@ -87,11 +83,18 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     if (level < 14) mapInstance.current.setLevel(level + 1, { animate: true });
   }, []);
 
-  // Initialize map
+  // Go to school (keep current zoom level)
+  const handleGoToSchool = useCallback(() => {
+    if (!mapInstance.current) return;
+    const center = new window.kakao.maps.LatLng(school.lat, school.lng);
+    mapInstance.current.panTo(center);
+  }, [school]);
+
+  // Initialize map - always center on school
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
     const center = new window.kakao.maps.LatLng(school.lat, school.lng);
-    const startLevel = zoomIn ? ZOOM_STAGES[0].level : 5;
+    const startLevel = zoomIn ? ZOOM_STAGES[0].level : 3;
 
     mapInstance.current = new window.kakao.maps.Map(mapRef.current, { center, level: startLevel });
 
@@ -102,31 +105,34 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     });
     schoolInfo.open(mapInstance.current, schoolMarker);
 
-    // Scale update on zoom
     window.kakao.maps.event.addListener(mapInstance.current, 'zoom_changed', updateScale);
     updateScale();
 
-    // 4-stage animated zoom-in (smooth)
     if (zoomIn) {
       setZoomMessage(getZoomMessage(0, school.district));
 
       const smoothZoom = (targetLevel: number, onDone: () => void) => {
         const current = mapInstance.current.getLevel();
         if (current <= targetLevel) { onDone(); return; }
-        // Zoom 2 levels at a time for smoother feel
-        const next = Math.max(current - 2, targetLevel);
+        const next = Math.max(current - 1, targetLevel);
         mapInstance.current.setLevel(next, { animate: true });
-        setTimeout(() => smoothZoom(targetLevel, onDone), 400);
+        setTimeout(() => smoothZoom(targetLevel, onDone), 350);
       };
 
       let stageIdx = 0;
       const runStage = () => {
         if (stageIdx >= ZOOM_STAGES.length) {
           setZoomMessage(null);
+          // Ensure school is centered after zoom completes
+          const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
+          mapInstance.current.setCenter(pos);
           onZoomComplete?.();
           return;
         }
         const stage = ZOOM_STAGES[stageIdx];
+        // Keep center on school during zoom
+        const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
+        mapInstance.current.setCenter(pos);
         smoothZoom(stage.level, () => {
           const msg = getZoomMessage(stageIdx, school.district);
           if (msg) setZoomMessage(msg);
@@ -137,6 +143,12 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       };
 
       setTimeout(runStage, 800);
+    } else {
+      // Non-zoom: ensure centered on school
+      setTimeout(() => {
+        const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
+        mapInstance.current.setCenter(pos);
+      }, 100);
     }
 
     return () => {
@@ -152,7 +164,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     overlaysRef.current.forEach(o => o.setMap(null));
     overlaysRef.current = [];
 
-    // Show place markers if 'place' category is active
     if (activeCategories.includes('place')) {
       const places = getPlacesByGrade(grade);
       places.forEach((place) => {
@@ -183,7 +194,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       });
     }
 
-    // Show content markers for other active categories
     const contentCategories = activeCategories.filter(c => c !== 'place');
     contentCategories.forEach((cat) => {
       const items = getContentByCategory(cat, grade);
@@ -217,20 +227,20 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     });
   }, [isLoaded, grade, activeCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect]);
 
-  // Pan to selected place (center on screen)
+  // Pan to selected place - center on screen
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedPlace) return;
     const position = new window.kakao.maps.LatLng(selectedPlace.lat, selectedPlace.lng);
     mapInstance.current.setCenter(position);
-    if (mapInstance.current.getLevel() > 5) mapInstance.current.setLevel(5);
+    if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
   }, [isLoaded, selectedPlace]);
 
-  // Pan to selected content (center on screen)
+  // Pan to selected content - center on screen
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedContent) return;
     const position = new window.kakao.maps.LatLng(selectedContent.lat, selectedContent.lng);
     mapInstance.current.setCenter(position);
-    if (mapInstance.current.getLevel() > 5) mapInstance.current.setLevel(5);
+    if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
   }, [isLoaded, selectedContent]);
 
   if (error === 'API_KEY_MISSING') {
@@ -252,9 +262,8 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
   return (
     <div className="w-full h-full relative">
-      <div ref={mapRef} className="w-full h-full rounded-xl" />
+      <div ref={mapRef} className="w-full h-full" />
 
-      {/* Zoom message overlay */}
       {zoomMessage && (
         <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
           <div className="bg-card/95 backdrop-blur-md text-foreground text-xl md:text-2xl font-black px-8 py-5 rounded-2xl shadow-2xl animate-scale-in border-2 border-primary/20">
@@ -263,7 +272,17 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         </div>
       )}
 
-      {/* Zoom controls (right center) */}
+      {/* Go to school button */}
+      <button
+        onClick={handleGoToSchool}
+        className="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md text-xs font-bold text-foreground hover:bg-card transition-colors cursor-pointer"
+        title="학교로 이동"
+      >
+        <SchoolIcon size={14} className="text-primary" />
+        학교로 이동
+      </button>
+
+      {/* Zoom controls */}
       <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-20">
         <button
           onClick={handleZoomIn}
@@ -281,7 +300,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         </button>
       </div>
 
-      {/* Scale indicator (left bottom, above kakao controls) */}
+      {/* Scale indicator */}
       <div
         ref={scaleRef}
         className="absolute bottom-20 md:bottom-10 left-2 bg-card/90 backdrop-blur-sm text-foreground text-xs font-medium px-3 py-1.5 rounded-lg border shadow-sm z-10"
