@@ -10,7 +10,8 @@ const ConsonantFilter = ({ onSelect }: ConsonantFilterProps) => {
   const consonants = getAvailableConsonants();
 
   return (
-    <div className="flex flex-col items-center gap-6 md:gap-8 animate-fade-in px-2">
+    <div className="flex flex-col items-center gap-4 md:gap-6 animate-fade-in px-2">
+      <img src={logoImg} alt="거제 탐험대 로고" className="w-32 h-32 md:w-44 md:h-44 object-contain" />
       <h1 className="text-2xl md:text-4xl font-extrabold text-foreground text-center">
         우리 고장에 대해 알아보아요
       </h1>
