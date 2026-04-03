@@ -137,7 +137,7 @@ export const stories: MapContent[] = [
   {
     id: 'story12', name: '아주천 전설', contentType: 'story',
     description: '아주동을 흐르는 아주천에 얽힌 전설입니다. 옛날 이 하천에서 용이 승천했다는 이야기가 전해지며, 마을 사람들이 풍년을 기원하던 곳입니다.',
-    lat: 34.8800, lng: 128.6300, icon: '🐲',
+    lat: 34.868604, lng: 128.683845, icon: '🐲',
     source: '거제시 어린이 홈페이지 / 경남 거제시 아주동 아주천 일대 (아주로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804012000000',
