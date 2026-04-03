@@ -97,7 +97,7 @@ export const stories: MapContent[] = [
   {
     id: 'story7', name: '형제도', contentType: 'story',
     description: '형과 아우처럼 나란히 서 있는 두 섬에 얽힌 이야기입니다. 서로를 그리워하던 형제가 섬이 되었다는 전설이 전해집니다.',
-    lat: 34.9150, lng: 128.5450, icon: '🏝️',
+    lat: 34.927969, lng: 128.451904, icon: '🏝️',
     source: '거제문화원 / 경남 거제시 사등면 청곡리 청포마을 앞 해상 (청포길 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804007000000',
