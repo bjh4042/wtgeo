@@ -105,7 +105,7 @@ export const stories: MapContent[] = [
   {
     id: 'story8', name: '울음이재', contentType: 'story',
     description: '이 고개를 넘을 때 너무 슬퍼서 울었다는 고개입니다. 유배 온 사람들이 이 고개를 넘으며 고향을 그리워하며 울었다고 합니다.',
-    lat: 34.8750, lng: 128.6400, icon: '😢',
+    lat: 34.862236, lng: 128.665365, icon: '😢',
     source: '거제시 어린이 홈페이지 / 경남 거제시 아주동 산123-1 ~ 문동동 산43-1 경계 고개',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804008000000',
