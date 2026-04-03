@@ -1,5 +1,5 @@
 import { MapContent, contentCategoryColors, contentCategoryIcons, contentCategoryLabels } from '@/data/content';
-import { X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, Youtube } from 'lucide-react';
 import { useState } from 'react';
 
 interface ContentCardProps {
