@@ -89,7 +89,7 @@ export const stories: MapContent[] = [
   {
     id: 'story6', name: '벼락바위', contentType: 'story',
     description: '벼락이 떨어져 갈라졌다는 거대한 바위에 얽힌 이야기입니다. 하늘이 노하여 악인을 벌하기 위해 벼락을 내렸다는 전설이 전해집니다.',
-    lat: 34.8650, lng: 128.5150, icon: '⚡',
+    lat: 34.872478, lng: 128.541625, icon: '⚡',
     source: '거제시 어린이 홈페이지 / 경남 거제시 둔덕면 상둔리 옥동마을 산지 (옥동길 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804006000000',
