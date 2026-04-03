@@ -57,7 +57,7 @@ export const stories: MapContent[] = [
   {
     id: 'story2', name: '늙은 여우를 물리친 노인', contentType: 'story',
     description: '거제도 어느 마을에서 사람으로 변하여 마을 사람들을 괴롭히던 늙은 여우를 지혜로운 노인이 물리쳤다는 이야기입니다.',
-    lat: 34.8530, lng: 128.7050, icon: '🦊',
+    lat: 34.779971, lng: 128.605103, icon: '🦊',
     source: '거제시 어린이 홈페이지 / 경남 거제시 동부면 율포리 일대 (율포로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804002000000',
