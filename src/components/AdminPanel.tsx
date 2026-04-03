@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
+import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube } from 'lucide-react';
 import { places as defaultPlaces, Place, PlaceCategory } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory } from '@/data/content';
 
@@ -10,6 +10,43 @@ const CUSTOM_PLACES_KEY = 'geoje-custom-places';
 const CUSTOM_CONTENT_KEY = 'geoje-custom-content';
 const PLACE_EDITS_KEY = 'geoje-place-edits';
 const CONTENT_EDITS_KEY = 'geoje-content-edits';
+const SITE_INFO_KEY = 'geoje-site-info';
+
+export interface SiteInfo {
+  serviceName: string;
+  version: string;
+  devTool: string;
+  mapApi: string;
+  dataSource: string;
+  siteNotice: string;
+  devName: string;
+  devTitle1: string;
+  devTitle2: string;
+  devTitle3: string;
+  devEmail: string;
+}
+
+const DEFAULT_SITE_INFO: SiteInfo = {
+  serviceName: '거제탐험대',
+  version: '1.0',
+  devTool: 'Lovable',
+  mapApi: 'Kakao MAP',
+  dataSource: '공식 웹페이지',
+  siteNotice: '알림: 본 웹서비스는 타이핑 및 조사 학습이 제한적인 학생들을 위하여 학생들의 개인정보를 수집하지 않고, 성취기준과 별도로 우리 지역 거제를 쉽고 재미있게 탐험하기 위해 제작되었습니다. 데이터 수집 및 제작 시점에 따라 실제 장소의 내용이 다소 상이할 수 있으므로 사실 정보는 검색 엔진을 적극 활용하시길 바랍니다.',
+  devName: '수박쌤',
+  devTitle1: '경남 초등학교 교사',
+  devTitle2: '참쌤스쿨 크루',
+  devTitle3: '교사 크리에이터 협회 회원',
+  devEmail: 'bjh4042@naver.com',
+};
+
+export function getSiteInfo(): SiteInfo {
+  try {
+    const saved = localStorage.getItem(SITE_INFO_KEY);
+    if (saved) return { ...DEFAULT_SITE_INFO, ...JSON.parse(saved) };
+  } catch {}
+  return DEFAULT_SITE_INFO;
+}
 
 export function getNotice(): string | null {
   return localStorage.getItem(NOTICE_KEY);
@@ -41,6 +78,7 @@ interface EditablePlace {
   imageUrl?: string;
   origin?: string;
   referenceUrl?: string;
+  youtubeUrl?: string;
 }
 
 interface EditableContent {
@@ -54,6 +92,7 @@ interface EditableContent {
   imageUrl?: string;
   source?: string;
   referenceUrl?: string;
+  youtubeUrl?: string;
 }
 
 const AdminPanel = () => {
@@ -72,10 +111,13 @@ const AdminPanel = () => {
   const [customContent, setCustomContent] = useState<EditableContent[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [siteInfo, setSiteInfo] = useState<SiteInfo>(DEFAULT_SITE_INFO);
+  const [editingSiteInfo, setEditingSiteInfo] = useState(false);
   const visitorCount = getVisitorCount();
 
   useEffect(() => {
     setCurrentNotice(getNotice());
+    setSiteInfo(getSiteInfo());
     try {
       const cp = localStorage.getItem(CUSTOM_PLACES_KEY);
       if (cp) setCustomPlaces(JSON.parse(cp));
@@ -105,10 +147,8 @@ const AdminPanel = () => {
     setCurrentNotice(null);
   };
 
-  // Save place (new or edit)
   const handleSavePlace = () => {
     if (!editingPlace) return;
-    // Check if it's a default place being edited
     const isDefault = defaultPlaces.some(p => p.id === editingPlace.id);
     if (isDefault) {
       const updated = { ...placeEdits, [editingPlace.id]: editingPlace };
@@ -125,7 +165,6 @@ const AdminPanel = () => {
     setEditingPlace(null);
   };
 
-  // Save content (new or edit)
   const handleSaveContent = () => {
     if (!editingContent) return;
     const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
@@ -171,7 +210,11 @@ const AdminPanel = () => {
     reader.readAsDataURL(file);
   };
 
-  // Filter all places for editing
+  const handleSaveSiteInfo = () => {
+    localStorage.setItem(SITE_INFO_KEY, JSON.stringify(siteInfo));
+    setEditingSiteInfo(false);
+  };
+
   const allPlaces = [...defaultPlaces, ...customPlaces];
   const filteredPlaces = searchTerm
     ? allPlaces.filter(p => p.name.includes(searchTerm) || p.address?.includes(searchTerm))
@@ -210,6 +253,8 @@ const AdminPanel = () => {
     );
   }
 
+  const inputClass = "w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary";
+
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={() => setIsAdmin(false)}>
       <div className="bg-card rounded-2xl p-5 max-w-lg mx-4 shadow-2xl w-full max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
@@ -221,7 +266,7 @@ const AdminPanel = () => {
         {/* Tabs */}
         <div className="flex gap-1 mb-4 overflow-x-auto no-scrollbar">
           {(['notice', 'places', 'content', 'info'] as AdminTab[]).map(tab => (
-            <button key={tab} onClick={() => { setActiveTab(tab); setSearchTerm(''); }}
+            <button key={tab} onClick={() => { setActiveTab(tab); setSearchTerm(''); setEditingSiteInfo(false); }}
               className={`px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer whitespace-nowrap ${activeTab === tab ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
               {tab === 'notice' ? '📢 공지/방문자' : tab === 'places' ? '📍 장소 관리' : tab === 'content' ? '📖 콘텐츠 관리' : 'ℹ️ 서비스 정보'}
             </button>
@@ -258,7 +303,7 @@ const AdminPanel = () => {
           </div>
         )}
 
-        {/* Places Tab */}
+        {/* Places Tab - List */}
         {activeTab === 'places' && !editingPlace && (
           <div className="space-y-3">
             <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="장소 검색..."
@@ -274,7 +319,7 @@ const AdminPanel = () => {
                     <p className="text-sm font-semibold text-foreground truncate">{p.name}</p>
                     <p className="text-xs text-muted-foreground truncate">{p.address}</p>
                   </div>
-                  <button onClick={() => setEditingPlace({ id: p.id, name: p.name, description: p.description, address: p.address, lat: p.lat, lng: p.lng, category: p.category, imageUrl: p.imageUrl, origin: p.origin, referenceUrl: p.referenceUrl })}
+                  <button onClick={() => setEditingPlace({ id: p.id, name: p.name, description: p.description, address: p.address, lat: p.lat, lng: p.lng, category: p.category, imageUrl: p.imageUrl, origin: p.origin, referenceUrl: p.referenceUrl, youtubeUrl: p.youtubeUrl })}
                     className="p-1.5 rounded bg-muted cursor-pointer flex-shrink-0"><Edit3 size={14} /></button>
                 </div>
               ))}
@@ -288,48 +333,46 @@ const AdminPanel = () => {
             <button onClick={() => setEditingPlace(null)} className="text-sm text-primary cursor-pointer">← 목록으로</button>
             <div>
               <label className="text-xs font-semibold text-foreground">이름</label>
-              <input value={editingPlace.name} onChange={e => setEditingPlace({ ...editingPlace, name: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input value={editingPlace.name} onChange={e => setEditingPlace({ ...editingPlace, name: e.target.value })} className={inputClass} />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">설명</label>
               <textarea value={editingPlace.description} onChange={e => setEditingPlace({ ...editingPlace, description: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary" rows={3} />
+                className={`${inputClass} resize-none`} rows={3} />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">카테고리</label>
-              <select value={editingPlace.category} onChange={e => setEditingPlace({ ...editingPlace, category: e.target.value as PlaceCategory })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm">
+              <select value={editingPlace.category} onChange={e => setEditingPlace({ ...editingPlace, category: e.target.value as PlaceCategory })} className={inputClass}>
                 <option value="tourism">관광 명소</option><option value="nature">자연/지리</option><option value="culture">문화/역사</option>
                 <option value="public">관공서</option><option value="experience">체험학습</option><option value="market">전통시장</option>
               </select>
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">주소</label>
-              <input value={editingPlace.address} onChange={e => setEditingPlace({ ...editingPlace, address: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input value={editingPlace.address} onChange={e => setEditingPlace({ ...editingPlace, address: e.target.value })} className={inputClass} />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs font-semibold text-foreground">위도</label>
-                <input type="number" step="0.0001" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: parseFloat(e.target.value) })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input type="number" step="0.0001" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: parseFloat(e.target.value) })} className={inputClass} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-foreground">경도</label>
-                <input type="number" step="0.0001" value={editingPlace.lng} onChange={e => setEditingPlace({ ...editingPlace, lng: parseFloat(e.target.value) })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input type="number" step="0.0001" value={editingPlace.lng} onChange={e => setEditingPlace({ ...editingPlace, lng: parseFloat(e.target.value) })} className={inputClass} />
               </div>
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">유래</label>
               <textarea value={editingPlace.origin || ''} onChange={e => setEditingPlace({ ...editingPlace, origin: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary" rows={2} />
+                className={`${inputClass} resize-none`} rows={2} />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">참고 링크</label>
-              <input value={editingPlace.referenceUrl || ''} onChange={e => setEditingPlace({ ...editingPlace, referenceUrl: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input value={editingPlace.referenceUrl || ''} onChange={e => setEditingPlace({ ...editingPlace, referenceUrl: e.target.value })} className={inputClass} placeholder="https://..." />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground flex items-center gap-1"><Youtube size={14} className="text-red-500" /> 유튜브 영상 링크</label>
+              <input value={editingPlace.youtubeUrl || ''} onChange={e => setEditingPlace({ ...editingPlace, youtubeUrl: e.target.value })} className={inputClass} placeholder="https://www.youtube.com/watch?v=..." />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">사진 업로드</label>
@@ -344,7 +387,7 @@ const AdminPanel = () => {
           </div>
         )}
 
-        {/* Content Tab */}
+        {/* Content Tab - List */}
         {activeTab === 'content' && !editingContent && (
           <div className="space-y-3">
             <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="콘텐츠 검색..."
@@ -360,7 +403,7 @@ const AdminPanel = () => {
                     <p className="text-sm font-semibold text-foreground truncate">{c.icon} {c.name}</p>
                     <p className="text-xs text-muted-foreground">{c.contentType}</p>
                   </div>
-                  <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, source: c.source, referenceUrl: c.referenceUrl })}
+                  <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, source: c.source, referenceUrl: c.referenceUrl, youtubeUrl: c.youtubeUrl })}
                     className="p-1.5 rounded bg-muted cursor-pointer flex-shrink-0"><Edit3 size={14} /></button>
                 </div>
               ))}
@@ -374,18 +417,16 @@ const AdminPanel = () => {
             <button onClick={() => setEditingContent(null)} className="text-sm text-primary cursor-pointer">← 목록으로</button>
             <div>
               <label className="text-xs font-semibold text-foreground">이름</label>
-              <input value={editingContent.name} onChange={e => setEditingContent({ ...editingContent, name: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input value={editingContent.name} onChange={e => setEditingContent({ ...editingContent, name: e.target.value })} className={inputClass} />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">설명</label>
               <textarea value={editingContent.description} onChange={e => setEditingContent({ ...editingContent, description: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary" rows={3} />
+                className={`${inputClass} resize-none`} rows={3} />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">콘텐츠 유형</label>
-              <select value={editingContent.contentType} onChange={e => setEditingContent({ ...editingContent, contentType: e.target.value as ContentCategory })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm">
+              <select value={editingContent.contentType} onChange={e => setEditingContent({ ...editingContent, contentType: e.target.value as ContentCategory })} className={inputClass}>
                 <option value="story">옛이야기</option><option value="placename">지명</option><option value="heritage">국가유산</option>
                 <option value="pastpresent">옛날과 오늘날</option><option value="nature">자연</option>
               </select>
@@ -393,29 +434,28 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs font-semibold text-foreground">위도</label>
-                <input type="number" step="0.0001" value={editingContent.lat} onChange={e => setEditingContent({ ...editingContent, lat: parseFloat(e.target.value) })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input type="number" step="0.0001" value={editingContent.lat} onChange={e => setEditingContent({ ...editingContent, lat: parseFloat(e.target.value) })} className={inputClass} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-foreground">경도</label>
-                <input type="number" step="0.0001" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: parseFloat(e.target.value) })}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input type="number" step="0.0001" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: parseFloat(e.target.value) })} className={inputClass} />
               </div>
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">아이콘 (이모지)</label>
-              <input value={editingContent.icon} onChange={e => setEditingContent({ ...editingContent, icon: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input value={editingContent.icon} onChange={e => setEditingContent({ ...editingContent, icon: e.target.value })} className={inputClass} />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">출처</label>
-              <input value={editingContent.source || ''} onChange={e => setEditingContent({ ...editingContent, source: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input value={editingContent.source || ''} onChange={e => setEditingContent({ ...editingContent, source: e.target.value })} className={inputClass} />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">참고 링크</label>
-              <input value={editingContent.referenceUrl || ''} onChange={e => setEditingContent({ ...editingContent, referenceUrl: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input value={editingContent.referenceUrl || ''} onChange={e => setEditingContent({ ...editingContent, referenceUrl: e.target.value })} className={inputClass} placeholder="https://..." />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground flex items-center gap-1"><Youtube size={14} className="text-red-500" /> 유튜브 영상 링크</label>
+              <input value={editingContent.youtubeUrl || ''} onChange={e => setEditingContent({ ...editingContent, youtubeUrl: e.target.value })} className={inputClass} placeholder="https://www.youtube.com/watch?v=..." />
             </div>
             <div>
               <label className="text-xs font-semibold text-foreground">사진 업로드</label>
@@ -431,19 +471,82 @@ const AdminPanel = () => {
         )}
 
         {/* Info Tab */}
-        {activeTab === 'info' && (
+        {activeTab === 'info' && !editingSiteInfo && (
           <div className="space-y-3 text-sm">
             <div className="p-3 rounded-lg bg-muted/50 space-y-2">
-              <div className="flex justify-between"><span className="font-semibold">서비스명:</span><span className="text-muted-foreground">거제탐험대</span></div>
-              <div className="flex justify-between"><span className="font-semibold">버전:</span><span className="text-muted-foreground">1.0</span></div>
-              <div className="flex justify-between"><span className="font-semibold">개발 도구:</span><span className="text-muted-foreground">Lovable</span></div>
-              <div className="flex justify-between"><span className="font-semibold">지도 API:</span><span className="text-muted-foreground">Kakao MAP</span></div>
-              <div className="flex justify-between"><span className="font-semibold">저작권:</span><span className="text-muted-foreground">© 수박쌤 (원작: 니카쌤)</span></div>
-              <div className="flex justify-between"><span className="font-semibold">연락처:</span><span className="text-muted-foreground">bjh4042@naver.com</span></div>
+              <div className="flex justify-between"><span className="font-semibold">서비스명:</span><span className="text-muted-foreground">{siteInfo.serviceName}</span></div>
+              <div className="flex justify-between"><span className="font-semibold">버전:</span><span className="text-muted-foreground">{siteInfo.version}</span></div>
+              <div className="flex justify-between"><span className="font-semibold">개발 도구:</span><span className="text-muted-foreground">{siteInfo.devTool}</span></div>
+              <div className="flex justify-between"><span className="font-semibold">지도 API:</span><span className="text-muted-foreground">{siteInfo.mapApi}</span></div>
+              <div className="flex justify-between"><span className="font-semibold">개발자:</span><span className="text-muted-foreground">{siteInfo.devName}</span></div>
+              <div className="flex justify-between"><span className="font-semibold">연락처:</span><span className="text-muted-foreground">{siteInfo.devEmail}</span></div>
             </div>
+            <button onClick={() => setEditingSiteInfo(true)}
+              className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
+              <Edit3 size={14} /> 서비스 정보 수정
+            </button>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              ※ 관리자 모드에서 장소, 콘텐츠, 공지사항을 편집할 수 있습니다. 변경사항은 현재 브라우저의 localStorage에 저장됩니다.
+              ※ 관리자 모드에서 장소, 콘텐츠, 공지사항, 서비스 정보를 편집할 수 있습니다. 변경사항은 현재 브라우저의 localStorage에 저장됩니다.
             </p>
+          </div>
+        )}
+
+        {/* Info Editor */}
+        {activeTab === 'info' && editingSiteInfo && (
+          <div className="space-y-3">
+            <button onClick={() => setEditingSiteInfo(false)} className="text-sm text-primary cursor-pointer">← 돌아가기</button>
+            <p className="text-xs font-bold text-foreground bg-muted/50 px-3 py-2 rounded-lg">🌐 웹사이트 정보</p>
+            <div>
+              <label className="text-xs font-semibold text-foreground">서비스명</label>
+              <input value={siteInfo.serviceName} onChange={e => setSiteInfo({ ...siteInfo, serviceName: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">버전</label>
+              <input value={siteInfo.version} onChange={e => setSiteInfo({ ...siteInfo, version: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">개발 도구</label>
+              <input value={siteInfo.devTool} onChange={e => setSiteInfo({ ...siteInfo, devTool: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">지도 API</label>
+              <input value={siteInfo.mapApi} onChange={e => setSiteInfo({ ...siteInfo, mapApi: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">자료 출처</label>
+              <input value={siteInfo.dataSource} onChange={e => setSiteInfo({ ...siteInfo, dataSource: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">웹사이트 안내문</label>
+              <textarea value={siteInfo.siteNotice} onChange={e => setSiteInfo({ ...siteInfo, siteNotice: e.target.value })}
+                className={`${inputClass} resize-none`} rows={4} />
+            </div>
+
+            <p className="text-xs font-bold text-foreground bg-muted/50 px-3 py-2 rounded-lg mt-2">👤 개발자 정보</p>
+            <div>
+              <label className="text-xs font-semibold text-foreground">이름</label>
+              <input value={siteInfo.devName} onChange={e => setSiteInfo({ ...siteInfo, devName: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">소속/직함 1</label>
+              <input value={siteInfo.devTitle1} onChange={e => setSiteInfo({ ...siteInfo, devTitle1: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">소속/직함 2</label>
+              <input value={siteInfo.devTitle2} onChange={e => setSiteInfo({ ...siteInfo, devTitle2: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">소속/직함 3</label>
+              <input value={siteInfo.devTitle3} onChange={e => setSiteInfo({ ...siteInfo, devTitle3: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground">이메일</label>
+              <input value={siteInfo.devEmail} onChange={e => setSiteInfo({ ...siteInfo, devEmail: e.target.value })} className={inputClass} />
+            </div>
+            <button onClick={handleSaveSiteInfo}
+              className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
+              <Save size={14} /> 저장
+            </button>
           </div>
         )}
       </div>
