@@ -92,6 +92,11 @@ const PlaceCard = ({ place, school, onClose }: PlaceCardProps) => {
             <ExternalLink size={14} />관련 사이트
           </a>
         )}
+        {place.youtubeUrl && (
+          <a href={place.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-colors">
+            <Youtube size={14} />영상 보기
+          </a>
+        )}
       </div>
     </div>
   );

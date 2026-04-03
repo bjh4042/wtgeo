@@ -69,18 +69,31 @@ const ContentCard = ({ content, onClose }: ContentCardProps) => {
       )}
 
       {/* 관련 링크 */}
-      {content.referenceUrl && (
-        <a
-          href={content.referenceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border bg-muted/30 hover:bg-muted/60 transition-colors"
-          style={{ color }}
-        >
-          <ExternalLink size={13} />
-          관련 사이트 바로가기
-        </a>
-      )}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {content.referenceUrl && (
+          <a
+            href={content.referenceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg border bg-muted/30 hover:bg-muted/60 transition-colors"
+            style={{ color }}
+          >
+            <ExternalLink size={13} />
+            관련 사이트 바로가기
+          </a>
+        )}
+        {content.youtubeUrl && (
+          <a
+            href={content.youtubeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-colors"
+          >
+            <Youtube size={13} />
+            영상 보기
+          </a>
+        )}
+      </div>
     </div>
   );
 };
