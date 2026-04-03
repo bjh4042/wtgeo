@@ -113,7 +113,7 @@ export const stories: MapContent[] = [
   {
     id: 'story9', name: '비파반석', contentType: 'story',
     description: '비파(琵琶) 모양의 큰 바위에 얽힌 이야기입니다. 옛날 선녀가 하늘에서 내려와 이 바위에서 비파를 타며 노래했다는 전설이 전해집니다.',
-    lat: 34.8780, lng: 128.6350, icon: '🎵',
+    lat: 34.851989, lng: 128.693258, icon: '🎵',
     source: '거제시 어린이 홈페이지 / 경남 거제시 아주동 산1 (옥녀봉 일대 바위)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804009000000',
