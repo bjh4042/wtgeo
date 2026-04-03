@@ -161,7 +161,7 @@ export const stories: MapContent[] = [
   {
     id: 'story15', name: '돼지가 된 학', contentType: 'story',
     description: '학동(鶴洞)마을에 내려온 학이 돼지로 변했다는 전설입니다. 아름다운 학이 마을의 탐욕 때문에 돼지로 변했다는 교훈적인 이야기가 전해집니다.',
-    lat: 34.9600, lng: 128.6750, icon: '🐷',
+    lat: 35.018609, lng: 128.739241, icon: '🐷',
     source: '거제시 어린이 홈페이지 / 경남 거제시 장목면 유호리 산1 (거가대로 저도 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804015000000',
