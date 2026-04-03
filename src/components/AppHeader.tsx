@@ -1,5 +1,6 @@
 import { Info, X, Link2, Target } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getSiteInfo, SiteInfo } from './AdminPanel';
 
 interface AppHeaderProps {
   schoolName?: string;
@@ -12,6 +13,11 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen }: AppHea
   const [showGuide, setShowGuide] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [aboutTab, setAboutTab] = useState<'site' | 'dev'>('site');
+  const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null);
+
+  useEffect(() => {
+    setSiteInfo(getSiteInfo());
+  }, [showAbout]);
 
   return (
     <>
@@ -82,7 +88,7 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen }: AppHea
       )}
 
       {/* 웹사이트/개발자 정보 */}
-      {showAbout && (
+      {showAbout && siteInfo && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={() => setShowAbout(false)}>
           <div className="bg-card rounded-2xl p-6 max-w-md mx-4 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
@@ -108,27 +114,25 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen }: AppHea
 
             {aboutTab === 'site' ? (
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><span className="font-semibold text-foreground">서비스 명:</span><span className="text-muted-foreground">거제탐험대</span></div>
-                <div className="flex justify-between"><span className="font-semibold text-foreground">버전:</span><span className="text-muted-foreground">1.0</span></div>
-                <div className="flex justify-between"><span className="font-semibold text-foreground">개발 도구:</span><span className="text-muted-foreground">Lovable</span></div>
-                <div className="flex justify-between"><span className="font-semibold text-foreground">사용 도구:</span><span className="text-muted-foreground">Kakao MAP</span></div>
-                <div className="flex justify-between"><span className="font-semibold text-foreground">자료 출처:</span><span className="text-muted-foreground">공식 웹페이지</span></div>
+                <div className="flex justify-between"><span className="font-semibold text-foreground">서비스 명:</span><span className="text-muted-foreground">{siteInfo.serviceName}</span></div>
+                <div className="flex justify-between"><span className="font-semibold text-foreground">버전:</span><span className="text-muted-foreground">{siteInfo.version}</span></div>
+                <div className="flex justify-between"><span className="font-semibold text-foreground">개발 도구:</span><span className="text-muted-foreground">{siteInfo.devTool}</span></div>
+                <div className="flex justify-between"><span className="font-semibold text-foreground">사용 도구:</span><span className="text-muted-foreground">{siteInfo.mapApi}</span></div>
+                <div className="flex justify-between"><span className="font-semibold text-foreground">자료 출처:</span><span className="text-muted-foreground">{siteInfo.dataSource}</span></div>
                 <hr className="border-border" />
-                <p className="leading-relaxed text-muted-foreground">
-                  알림: 본 웹서비스는 타이핑 및 조사 학습이 제한적인 학생들을 위하여 <strong className="text-destructive">학생들의 개인정보를 수집하지 않고, 성취기준과 별도</strong>로 우리 지역 거제를 쉽고 재미있게 탐험하기 위해 제작되었습니다. 데이터 수집 및 제작 시점에 따라 실제 장소의 내용이 다소 상이할 수 있으므로 <strong className="text-destructive">사실 정보는 검색 엔진을 적극 활용</strong>하시길 바랍니다.
-                </p>
+                <p className="leading-relaxed text-muted-foreground">{siteInfo.siteNotice}</p>
               </div>
             ) : (
               <div className="space-y-3 text-sm">
-                <p className="text-lg font-bold text-foreground">수박쌤</p>
+                <p className="text-lg font-bold text-foreground">{siteInfo.devName}</p>
                 <div className="space-y-2">
-                  <div className="p-2.5 rounded-lg bg-muted/50 text-muted-foreground">경남 초등학교 교사</div>
-                  <div className="p-2.5 rounded-lg bg-muted/50 text-muted-foreground">참쌤스쿨 크루</div>
-                  <div className="p-2.5 rounded-lg bg-muted/50 text-muted-foreground">교사 크리에이터 협회 회원</div>
+                  {siteInfo.devTitle1 && <div className="p-2.5 rounded-lg bg-muted/50 text-muted-foreground">{siteInfo.devTitle1}</div>}
+                  {siteInfo.devTitle2 && <div className="p-2.5 rounded-lg bg-muted/50 text-muted-foreground">{siteInfo.devTitle2}</div>}
+                  {siteInfo.devTitle3 && <div className="p-2.5 rounded-lg bg-muted/50 text-muted-foreground">{siteInfo.devTitle3}</div>}
                 </div>
                 <hr className="border-border" />
                 <p className="text-muted-foreground">
-                  contact: <a href="mailto:bjh4042@naver.com" className="text-primary font-medium underline">bjh4042@naver.com</a>
+                  contact: <a href={`mailto:${siteInfo.devEmail}`} className="text-primary font-medium underline">{siteInfo.devEmail}</a>
                 </p>
               </div>
             )}
