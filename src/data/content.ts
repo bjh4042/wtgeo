@@ -65,7 +65,7 @@ export const stories: MapContent[] = [
   {
     id: 'story3', name: '망부석의 슬픈 이야기', contentType: 'story',
     description: '남편을 기다리다 돌이 되었다는 슬픈 전설의 망부석입니다. 거제도 해안가에서 남편이 돌아오기만을 기다리던 아내의 애틋한 사랑 이야기가 전해집니다.',
-    lat: 34.7370, lng: 128.6900, icon: '🪨',
+    lat: 34.736697, lng: 128.682001, icon: '🪨',
     source: '거제문화원 / 경남 거제시 남부면 갈곶리 일대 (해금강로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804003000000',
