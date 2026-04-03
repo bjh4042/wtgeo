@@ -12,6 +12,7 @@ export interface Place {
   imageUrl?: string;
   origin?: string;
   referenceUrl?: string;
+  youtubeUrl?: string;
 }
 
 export const categoryLabels: Record<PlaceCategory, string> = {

@@ -15,6 +15,7 @@ export interface MapContent {
   source?: string;
   grade?: 3 | 4 | 'all';
   referenceUrl?: string;
+  youtubeUrl?: string;
 }
 
 export const contentCategoryLabels: Record<ContentCategory, string> = {
