@@ -57,7 +57,7 @@ export const stories: MapContent[] = [
   {
     id: 'story2', name: '늙은 여우를 물리친 노인', contentType: 'story',
     description: '거제도 어느 마을에서 사람으로 변하여 마을 사람들을 괴롭히던 늙은 여우를 지혜로운 노인이 물리쳤다는 이야기입니다.',
-    lat: 34.8530, lng: 128.7050, icon: '🦊',
+    lat: 34.779971, lng: 128.605103, icon: '🦊',
     source: '거제시 어린이 홈페이지 / 경남 거제시 동부면 율포리 일대 (율포로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804002000000',
@@ -65,7 +65,7 @@ export const stories: MapContent[] = [
   {
     id: 'story3', name: '망부석의 슬픈 이야기', contentType: 'story',
     description: '남편을 기다리다 돌이 되었다는 슬픈 전설의 망부석입니다. 거제도 해안가에서 남편이 돌아오기만을 기다리던 아내의 애틋한 사랑 이야기가 전해집니다.',
-    lat: 34.7370, lng: 128.6900, icon: '🪨',
+    lat: 34.736697, lng: 128.682001, icon: '🪨',
     source: '거제문화원 / 경남 거제시 남부면 갈곶리 일대 (해금강로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804003000000',
@@ -73,7 +73,7 @@ export const stories: MapContent[] = [
   {
     id: 'story4', name: '까마귀 섬, 소병대도', contentType: 'story',
     description: '까마귀들이 모여 살았다는 작은 섬 소병대도에 얽힌 전설입니다. 옛날 까마귀들이 이 섬을 지키며 마을의 길흉을 알려주었다고 합니다.',
-    lat: 34.7250, lng: 128.6350, icon: '🏝️',
+    lat: 34.696427, lng: 128.606355, icon: '🏝️',
     source: '거제시 어린이 홈페이지 / 경남 거제시 남부면 다포리 산42~51 (해상 무인도)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804004000000',
@@ -89,7 +89,7 @@ export const stories: MapContent[] = [
   {
     id: 'story6', name: '벼락바위', contentType: 'story',
     description: '벼락이 떨어져 갈라졌다는 거대한 바위에 얽힌 이야기입니다. 하늘이 노하여 악인을 벌하기 위해 벼락을 내렸다는 전설이 전해집니다.',
-    lat: 34.8650, lng: 128.5150, icon: '⚡',
+    lat: 34.872478, lng: 128.541625, icon: '⚡',
     source: '거제시 어린이 홈페이지 / 경남 거제시 둔덕면 상둔리 옥동마을 산지 (옥동길 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804006000000',
@@ -97,7 +97,7 @@ export const stories: MapContent[] = [
   {
     id: 'story7', name: '형제도', contentType: 'story',
     description: '형과 아우처럼 나란히 서 있는 두 섬에 얽힌 이야기입니다. 서로를 그리워하던 형제가 섬이 되었다는 전설이 전해집니다.',
-    lat: 34.9150, lng: 128.5450, icon: '🏝️',
+    lat: 34.927969, lng: 128.451904, icon: '🏝️',
     source: '거제문화원 / 경남 거제시 사등면 청곡리 청포마을 앞 해상 (청포길 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804007000000',
@@ -105,7 +105,7 @@ export const stories: MapContent[] = [
   {
     id: 'story8', name: '울음이재', contentType: 'story',
     description: '이 고개를 넘을 때 너무 슬퍼서 울었다는 고개입니다. 유배 온 사람들이 이 고개를 넘으며 고향을 그리워하며 울었다고 합니다.',
-    lat: 34.8750, lng: 128.6400, icon: '😢',
+    lat: 34.862236, lng: 128.665365, icon: '😢',
     source: '거제시 어린이 홈페이지 / 경남 거제시 아주동 산123-1 ~ 문동동 산43-1 경계 고개',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804008000000',
@@ -113,7 +113,7 @@ export const stories: MapContent[] = [
   {
     id: 'story9', name: '비파반석', contentType: 'story',
     description: '비파(琵琶) 모양의 큰 바위에 얽힌 이야기입니다. 옛날 선녀가 하늘에서 내려와 이 바위에서 비파를 타며 노래했다는 전설이 전해집니다.',
-    lat: 34.8780, lng: 128.6350, icon: '🎵',
+    lat: 34.851989, lng: 128.693258, icon: '🎵',
     source: '거제시 어린이 홈페이지 / 경남 거제시 아주동 산1 (옥녀봉 일대 바위)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804009000000',
@@ -129,7 +129,7 @@ export const stories: MapContent[] = [
   {
     id: 'story11', name: '뱀쥐섬', contentType: 'story',
     description: '뱀과 쥐가 서로 싸우다 섬이 되었다는 전설이 있는 곳입니다. 거제도 앞바다의 작은 섬으로, 그 모양이 뱀과 쥐를 닮았다고 합니다.',
-    lat: 34.9050, lng: 128.7200, icon: '🐍',
+    lat: 34.890840, lng: 128.705370, icon: '🐍',
     source: '거제시 어린이 홈페이지 / 경남 거제시 옥포동 옥포만 해상 (옥포대첩로 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804011000000',
@@ -137,7 +137,7 @@ export const stories: MapContent[] = [
   {
     id: 'story12', name: '아주천 전설', contentType: 'story',
     description: '아주동을 흐르는 아주천에 얽힌 전설입니다. 옛날 이 하천에서 용이 승천했다는 이야기가 전해지며, 마을 사람들이 풍년을 기원하던 곳입니다.',
-    lat: 34.8800, lng: 128.6300, icon: '🐲',
+    lat: 34.868604, lng: 128.683845, icon: '🐲',
     source: '거제시 어린이 홈페이지 / 경남 거제시 아주동 아주천 일대 (아주로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804012000000',
@@ -145,7 +145,7 @@ export const stories: MapContent[] = [
   {
     id: 'story13', name: '밀바다들과 돌틈', contentType: 'story',
     description: '거제도의 밀물과 썰물에 의해 만들어진 바다와 들판, 그리고 바위 사이 돌틈에 얽힌 이야기입니다. 자연의 신비로운 힘을 보여주는 전설입니다.',
-    lat: 34.9200, lng: 128.6100, icon: '🌊',
+    lat: 34.930806, lng: 128.651747, icon: '🌊',
     source: '거제시 어린이 홈페이지 / 경남 거제시 연초면 다공리 및 송정리 일대 (다공길/송정길)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804013000000',
@@ -153,7 +153,7 @@ export const stories: MapContent[] = [
   {
     id: 'story14', name: '전하도', contentType: 'story',
     description: '임금(殿下)이 머물렀다 하여 "전하도"라 불리는 섬에 얽힌 이야기입니다. 고려 의종이 거제도로 유배 올 때 잠시 머물렀다는 전설이 전해집니다.',
-    lat: 34.9350, lng: 128.5350, icon: '👑',
+    lat: 34.882901, lng: 128.476540, icon: '👑',
     source: '거제시 어린이 홈페이지 / 경남 거제시 사등면 덕호리 견내량 일대 (견내량로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804014000000',
@@ -161,7 +161,7 @@ export const stories: MapContent[] = [
   {
     id: 'story15', name: '돼지가 된 학', contentType: 'story',
     description: '학동(鶴洞)마을에 내려온 학이 돼지로 변했다는 전설입니다. 아름다운 학이 마을의 탐욕 때문에 돼지로 변했다는 교훈적인 이야기가 전해집니다.',
-    lat: 34.9600, lng: 128.6750, icon: '🐷',
+    lat: 35.018609, lng: 128.739241, icon: '🐷',
     source: '거제시 어린이 홈페이지 / 경남 거제시 장목면 유호리 산1 (거가대로 저도 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804015000000',
@@ -169,7 +169,7 @@ export const stories: MapContent[] = [
   {
     id: 'story16', name: '용의 치 전설', contentType: 'story',
     description: '용이 이빨(치, 齒)을 드러내며 하늘로 올라갔다는 전설이 있는 곳입니다. 거제 해안의 뾰족한 바위들이 용의 이빨을 닮았다고 합니다.',
-    lat: 34.9700, lng: 128.6200, icon: '🐉',
+    lat: 34.977363, lng: 128.645415, icon: '🐉',
     source: '거제시 어린이 홈페이지 / 경남 거제시 하청면 실전리 칠천연륙교 서측 해상 바위(매미섬)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804016000000',
