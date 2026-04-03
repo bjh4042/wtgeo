@@ -129,7 +129,7 @@ export const stories: MapContent[] = [
   {
     id: 'story11', name: '뱀쥐섬', contentType: 'story',
     description: '뱀과 쥐가 서로 싸우다 섬이 되었다는 전설이 있는 곳입니다. 거제도 앞바다의 작은 섬으로, 그 모양이 뱀과 쥐를 닮았다고 합니다.',
-    lat: 34.9050, lng: 128.7200, icon: '🐍',
+    lat: 34.890840, lng: 128.705370, icon: '🐍',
     source: '거제시 어린이 홈페이지 / 경남 거제시 옥포동 옥포만 해상 (옥포대첩로 일대)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804011000000',
