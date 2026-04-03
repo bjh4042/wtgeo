@@ -153,7 +153,7 @@ export const stories: MapContent[] = [
   {
     id: 'story14', name: '전하도', contentType: 'story',
     description: '임금(殿下)이 머물렀다 하여 "전하도"라 불리는 섬에 얽힌 이야기입니다. 고려 의종이 거제도로 유배 올 때 잠시 머물렀다는 전설이 전해집니다.',
-    lat: 34.9350, lng: 128.5350, icon: '👑',
+    lat: 34.882901, lng: 128.476540, icon: '👑',
     source: '거제시 어린이 홈페이지 / 경남 거제시 사등면 덕호리 견내량 일대 (견내량로)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804014000000',
