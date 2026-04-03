@@ -145,7 +145,7 @@ export const stories: MapContent[] = [
   {
     id: 'story13', name: '밀바다들과 돌틈', contentType: 'story',
     description: '거제도의 밀물과 썰물에 의해 만들어진 바다와 들판, 그리고 바위 사이 돌틈에 얽힌 이야기입니다. 자연의 신비로운 힘을 보여주는 전설입니다.',
-    lat: 34.9200, lng: 128.6100, icon: '🌊',
+    lat: 34.930806, lng: 128.651747, icon: '🌊',
     source: '거제시 어린이 홈페이지 / 경남 거제시 연초면 다공리 및 송정리 일대 (다공길/송정길)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804013000000',
