@@ -1,6 +1,6 @@
 import { Place, categoryColors, categoryIcons, getRoadViewUrl, getDirectionUrl, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
-import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen } from 'lucide-react';
+import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube } from 'lucide-react';
 import { useState } from 'react';
 
 interface PlaceCardProps {
