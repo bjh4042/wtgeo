@@ -73,7 +73,7 @@ export const stories: MapContent[] = [
   {
     id: 'story4', name: '까마귀 섬, 소병대도', contentType: 'story',
     description: '까마귀들이 모여 살았다는 작은 섬 소병대도에 얽힌 전설입니다. 옛날 까마귀들이 이 섬을 지키며 마을의 길흉을 알려주었다고 합니다.',
-    lat: 34.7250, lng: 128.6350, icon: '🏝️',
+    lat: 34.696427, lng: 128.606355, icon: '🏝️',
     source: '거제시 어린이 홈페이지 / 경남 거제시 남부면 다포리 산42~51 (해상 무인도)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804004000000',
