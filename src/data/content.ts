@@ -169,7 +169,7 @@ export const stories: MapContent[] = [
   {
     id: 'story16', name: '용의 치 전설', contentType: 'story',
     description: '용이 이빨(치, 齒)을 드러내며 하늘로 올라갔다는 전설이 있는 곳입니다. 거제 해안의 뾰족한 바위들이 용의 이빨을 닮았다고 합니다.',
-    lat: 34.9700, lng: 128.6200, icon: '🐉',
+    lat: 34.977363, lng: 128.645415, icon: '🐉',
     source: '거제시 어린이 홈페이지 / 경남 거제시 하청면 실전리 칠천연륙교 서측 해상 바위(매미섬)',
     grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/kids/index.geoje?menuCd=DOM_000010804016000000',
