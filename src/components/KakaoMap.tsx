@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Place, categoryColors, categoryIcons, getPlacesByGrade } from '@/data/places';
-import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcons, getContentByCategory } from '@/data/content';
+import { Place, categoryColors, categoryIcons } from '@/data/places';
+import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcons } from '@/data/content';
+import { getMergedPlacesByGrade, getMergedContentByCategory } from '@/data/dataManager';
 import { School } from '@/data/schools';
 import { MapPin, Plus, Minus, School as SchoolIcon } from 'lucide-react';
 
@@ -20,6 +21,7 @@ interface KakaoMapProps {
   activeCategories: ContentCategory[];
   zoomIn?: boolean;
   onZoomComplete?: () => void;
+  isZooming?: boolean;
 }
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
@@ -40,7 +42,7 @@ function getZoomMessage(stageIndex: number, district: string): string {
   }
 }
 
-const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, zoomIn, onZoomComplete }: KakaoMapProps) => {
+const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, zoomIn, onZoomComplete, isZooming }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
@@ -83,14 +85,12 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     if (level < 14) mapInstance.current.setLevel(level + 1, { animate: true });
   }, []);
 
-  // Go to school (keep current zoom level)
   const handleGoToSchool = useCallback(() => {
     if (!mapInstance.current) return;
     const center = new window.kakao.maps.LatLng(school.lat, school.lng);
     mapInstance.current.panTo(center);
   }, [school]);
 
-  // Initialize map - always center on school
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
     const center = new window.kakao.maps.LatLng(school.lat, school.lng);
@@ -98,7 +98,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
     mapInstance.current = new window.kakao.maps.Map(mapRef.current, { center, level: startLevel });
 
-    // School marker
     const schoolMarker = new window.kakao.maps.Marker({ position: center, map: mapInstance.current });
     const schoolInfo = new window.kakao.maps.InfoWindow({
       content: `<div style="padding:8px 12px;font-size:13px;font-weight:bold;white-space:nowrap;">🏫 ${school.name}</div>`,
@@ -123,14 +122,12 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       const runStage = () => {
         if (stageIdx >= ZOOM_STAGES.length) {
           setZoomMessage(null);
-          // Ensure school is centered after zoom completes
           const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
           mapInstance.current.setCenter(pos);
           onZoomComplete?.();
           return;
         }
         const stage = ZOOM_STAGES[stageIdx];
-        // Keep center on school during zoom
         const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
         mapInstance.current.setCenter(pos);
         smoothZoom(stage.level, () => {
@@ -144,7 +141,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
       setTimeout(runStage, 800);
     } else {
-      // Non-zoom: ensure centered on school
       setTimeout(() => {
         const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
         mapInstance.current.setCenter(pos);
@@ -157,7 +153,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     };
   }, [isLoaded, school, grade]);
 
-  // Add markers for active categories
+  // Add markers for active categories - using merged data
   useEffect(() => {
     if (!isLoaded || !mapInstance.current) return;
 
@@ -165,7 +161,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     overlaysRef.current = [];
 
     if (activeCategories.includes('place')) {
-      const places = getPlacesByGrade(grade);
+      const places = getMergedPlacesByGrade(grade);
       places.forEach((place) => {
         const position = new window.kakao.maps.LatLng(place.lat, place.lng);
         const color = categoryColors[place.category];
@@ -196,7 +192,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
     const contentCategories = activeCategories.filter(c => c !== 'place');
     contentCategories.forEach((cat) => {
-      const items = getContentByCategory(cat, grade);
+      const items = getMergedContentByCategory(cat, grade);
       const color = contentCategoryColors[cat];
       const catIcon = contentCategoryIcons[cat];
 
@@ -227,7 +223,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     });
   }, [isLoaded, grade, activeCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect]);
 
-  // Pan to selected place - center on screen
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedPlace) return;
     const position = new window.kakao.maps.LatLng(selectedPlace.lat, selectedPlace.lng);
@@ -235,7 +230,6 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
   }, [isLoaded, selectedPlace]);
 
-  // Pan to selected content - center on screen
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedContent) return;
     const position = new window.kakao.maps.LatLng(selectedContent.lat, selectedContent.lng);
@@ -272,41 +266,47 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         </div>
       )}
 
-      {/* Go to school button */}
-      <button
-        onClick={handleGoToSchool}
-        className="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md text-xs font-bold text-foreground hover:bg-card transition-colors cursor-pointer"
-        title="학교로 이동"
-      >
-        <SchoolIcon size={14} className="text-primary" />
-        학교로 이동
-      </button>
+      {/* Go to school button - hidden during zoom */}
+      {!isZooming && (
+        <button
+          onClick={handleGoToSchool}
+          className="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md text-xs font-bold text-foreground hover:bg-card transition-colors cursor-pointer"
+          title="학교로 이동"
+        >
+          <SchoolIcon size={14} className="text-primary" />
+          학교로 이동
+        </button>
+      )}
 
-      {/* Zoom controls */}
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-20">
-        <button
-          onClick={handleZoomIn}
-          className="w-9 h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
-          title="확대"
-        >
-          <Plus size={18} className="text-foreground" />
-        </button>
-        <button
-          onClick={handleZoomOut}
-          className="w-9 h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
-          title="축소"
-        >
-          <Minus size={18} className="text-foreground" />
-        </button>
-      </div>
+      {/* Zoom controls - hidden during zoom */}
+      {!isZooming && (
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-20">
+          <button
+            onClick={handleZoomIn}
+            className="w-9 h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
+            title="확대"
+          >
+            <Plus size={18} className="text-foreground" />
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="w-9 h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
+            title="축소"
+          >
+            <Minus size={18} className="text-foreground" />
+          </button>
+        </div>
+      )}
 
       {/* Scale indicator */}
-      <div
-        ref={scaleRef}
-        className="absolute bottom-20 md:bottom-10 left-2 bg-card/90 backdrop-blur-sm text-foreground text-xs font-medium px-3 py-1.5 rounded-lg border shadow-sm z-10"
-      >
-        축척: ...
-      </div>
+      {!isZooming && (
+        <div
+          ref={scaleRef}
+          className="absolute bottom-20 md:bottom-10 left-2 bg-card/90 backdrop-blur-sm text-foreground text-xs font-medium px-3 py-1.5 rounded-lg border shadow-sm z-10"
+        >
+          축척: ...
+        </div>
+      )}
     </div>
   );
 };
