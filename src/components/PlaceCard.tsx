@@ -21,7 +21,7 @@ const PlaceCard = ({ place, school, onClose }: PlaceCardProps) => {
   const estimatedTime = getEstimatedTime(distanceKm);
   const distanceText = distanceKm < 1 ? `${Math.round(distanceKm * 1000)}m` : `${distanceKm.toFixed(1)}km`;
 
-  const categoryLabel = place.category === 'tourism' ? '관광' : place.category === 'nature' ? '자연' : place.category === 'culture' ? '문화' : place.category === 'public' ? '관공서' : place.category === 'experience' ? '체험' : '시장';
+  const categoryLabel = place.category === 'tourism' ? '관광' : place.category === 'nature' ? '자연' : place.category === 'culture' ? '문화' : place.category === 'public' ? '공공기관' : place.category === 'experience' ? '체험' : '시장';
 
   return (
     <div className="place-card animate-slide-up max-w-sm">
