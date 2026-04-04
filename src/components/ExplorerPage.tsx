@@ -31,6 +31,7 @@ const ExplorerPage = () => {
   const [activeCategories, setActiveCategories] = useState<ContentCategory[]>(['place']);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [zoomIn, setZoomIn] = useState(false);
+  const [isZooming, setIsZooming] = useState(false);
   const [visitorCount, setVisitorCount] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSources, setShowSources] = useState(false);
@@ -43,7 +44,17 @@ const ExplorerPage = () => {
 
   const handleConsonantSelect = (c: string) => { setSelectedConsonant(c); setStep('school'); };
   const handleSchoolSelect = (school: School) => { setSelectedSchool(school); setStep('grade'); };
-  const handleGradeSelect = (grade: 3 | 4) => { setSelectedGrade(grade); setZoomIn(true); setStep('explore'); };
+  const handleGradeSelect = (grade: 3 | 4) => {
+    setSelectedGrade(grade);
+    setZoomIn(true);
+    setIsZooming(true);
+    setStep('explore');
+  };
+
+  const handleZoomComplete = useCallback(() => {
+    setZoomIn(false);
+    setIsZooming(false);
+  }, []);
 
   const handlePlaceSelect = useCallback((place: Place) => {
     setSelectedPlace(place);
@@ -77,15 +88,19 @@ const ExplorerPage = () => {
     setActiveCategories(['place']);
     setShowMobileSidebar(false);
     setZoomIn(false);
+    setIsZooming(false);
   };
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <AppHeader
-        schoolName={step === 'explore' ? selectedSchool?.name : undefined}
-        onQuizOpen={step === 'explore' ? () => setShowQuiz(true) : undefined}
-        onSourcesOpen={step === 'explore' ? () => setShowSources(true) : undefined}
-      />
+      {/* Header: hidden during zoom */}
+      {(!isZooming || step !== 'explore') && (
+        <AppHeader
+          schoolName={step === 'explore' ? selectedSchool?.name : undefined}
+          onQuizOpen={step === 'explore' ? () => setShowQuiz(true) : undefined}
+          onSourcesOpen={step === 'explore' ? () => setShowSources(true) : undefined}
+        />
+      )}
 
       <NoticePopup />
       {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} />}
@@ -106,65 +121,72 @@ const ExplorerPage = () => {
         </main>
       ) : (
         <main className="flex-1 flex flex-col overflow-hidden relative">
-          <div className="bg-card border-b z-20 shadow-sm">
-            <div className="flex items-center">
-              <div className="flex-1 overflow-x-auto">
-                <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
+          {/* Category tabs: hidden during zoom */}
+          {!isZooming && (
+            <div className="bg-card border-b z-20 shadow-sm">
+              <div className="flex items-center">
+                <div className="flex-1 overflow-x-auto">
+                  <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
+                </div>
+                {selectedGrade === 4 && (
+                  <button
+                    onClick={() => setShowGyeongnam(true)}
+                    className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 mr-2 rounded-full text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    <Map size={12} /> 경남 시·군
+                  </button>
+                )}
               </div>
-              {selectedGrade === 4 && (
-                <button
-                  onClick={() => setShowGyeongnam(true)}
-                  className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 mr-2 rounded-full text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                >
-                  <Map size={12} /> 경남 시·군
-                </button>
-              )}
             </div>
-          </div>
+          )}
 
           <div className="flex-1 flex overflow-hidden relative">
-            {/* Desktop Sidebar */}
-            <aside className="hidden md:flex w-72 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
-              <div className="p-4 border-b flex items-center justify-between">
-                <button className="back-btn" onClick={handleReset}>
-                  <Home size={16} /> 처음으로
-                </button>
-                <span className="text-xs font-semibold px-2 py-1 rounded-full"
-                  style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
-                >
-                  {selectedGrade}학년
-                </span>
-              </div>
-              <div className="flex-1 overflow-auto p-4">
-                {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
-              </div>
-            </aside>
-
-            {/* Mobile bottom bar */}
-            <div className="md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col">
-              {showMobileSidebar && (
-                <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[60vh] overflow-auto p-4 animate-slide-up">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-bold text-foreground">장소 목록</span>
-                    <button onClick={() => setShowMobileSidebar(false)} className="text-muted-foreground cursor-pointer"><X size={20} /></button>
-                  </div>
+            {/* Desktop Sidebar: hidden during zoom */}
+            {!isZooming && (
+              <aside className="hidden md:flex w-72 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
+                <div className="p-4 border-b flex items-center justify-between">
+                  <button className="back-btn" onClick={handleReset}>
+                    <Home size={16} /> 처음으로
+                  </button>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full"
+                    style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
+                  >
+                    {selectedGrade}학년
+                  </span>
+                </div>
+                <div className="flex-1 overflow-auto p-4">
                   {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
                 </div>
-              )}
-              <div className="bg-card border-t px-4 py-2 flex items-center justify-between gap-2 safe-bottom">
-                <button className="back-btn" onClick={handleReset}>
-                  <Home size={16} /> 처음으로
-                </button>
-                <span className="text-xs font-semibold px-2 py-1 rounded-full"
-                  style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
-                >
-                  {selectedGrade}학년
-                </span>
-                <button className="flex items-center gap-1 text-sm font-medium cursor-pointer text-primary" onClick={() => setShowMobileSidebar(!showMobileSidebar)}>
-                  <List size={18} /> 장소
-                </button>
+              </aside>
+            )}
+
+            {/* Mobile bottom bar: hidden during zoom */}
+            {!isZooming && (
+              <div className="md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col">
+                {showMobileSidebar && (
+                  <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[60vh] overflow-auto p-4 animate-slide-up">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-bold text-foreground">장소 목록</span>
+                      <button onClick={() => setShowMobileSidebar(false)} className="text-muted-foreground cursor-pointer"><X size={20} /></button>
+                    </div>
+                    {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
+                  </div>
+                )}
+                <div className="bg-card border-t px-4 py-2 flex items-center justify-between gap-2 safe-bottom">
+                  <button className="back-btn" onClick={handleReset}>
+                    <Home size={16} /> 처음으로
+                  </button>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full"
+                    style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
+                  >
+                    {selectedGrade}학년
+                  </span>
+                  <button className="flex items-center gap-1 text-sm font-medium cursor-pointer text-primary" onClick={() => setShowMobileSidebar(!showMobileSidebar)}>
+                    <List size={18} /> 장소
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Map */}
             <div className="flex-1 relative">
@@ -178,17 +200,18 @@ const ExplorerPage = () => {
                   onContentSelect={handleContentSelect}
                   activeCategories={activeCategories}
                   zoomIn={zoomIn}
-                  onZoomComplete={() => setZoomIn(false)}
+                  onZoomComplete={handleZoomComplete}
+                  isZooming={isZooming}
                 />
               )}
 
-              {selectedPlace && selectedSchool && (
+              {!isZooming && selectedPlace && selectedSchool && (
                 <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
                   <PlaceCard place={selectedPlace} school={selectedSchool} onClose={() => setSelectedPlace(null)} />
                 </div>
               )}
 
-              {selectedContent && (
+              {!isZooming && selectedContent && (
                 <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
                   <ContentCard content={selectedContent} onClose={() => setSelectedContent(null)} />
                 </div>

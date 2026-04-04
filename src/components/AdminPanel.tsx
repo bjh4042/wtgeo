@@ -344,7 +344,7 @@ const AdminPanel = () => {
               <label className="text-xs font-semibold text-foreground">카테고리</label>
               <select value={editingPlace.category} onChange={e => setEditingPlace({ ...editingPlace, category: e.target.value as PlaceCategory })} className={inputClass}>
                 <option value="tourism">관광 명소</option><option value="nature">자연/지리</option><option value="culture">문화/역사</option>
-                <option value="public">관공서</option><option value="experience">체험학습</option><option value="market">전통시장</option>
+                <option value="public">공공기관</option><option value="experience">체험학습</option><option value="market">전통시장</option>
               </select>
             </div>
             <div>

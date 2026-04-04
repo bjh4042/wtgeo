@@ -29,7 +29,7 @@ const GradeSelector = ({ school, onSelect, onBack }: GradeSelectorProps) => {
         <button className="grade-btn grade-btn-4 flex-1 sm:flex-none" onClick={() => onSelect(4)}>
           🦅 4학년
           <br />
-          <span className="text-sm font-normal opacity-90">(거제 전체)</span>
+          <span className="text-sm font-normal opacity-90">(경상남도)</span>
         </button>
       </div>
     </div>
