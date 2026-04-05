@@ -135,6 +135,12 @@ const ExplorerPage = () => {
                 <div className="flex-1 overflow-x-auto">
                   <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
                 </div>
+                <button
+                  onClick={() => setShowRouteExplorer(true)}
+                  className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 mr-1 rounded-full text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
+                >
+                  <Route size={12} /> 경로탐험
+                </button>
                 {selectedGrade === 4 && (
                   <button
                     onClick={() => setShowGyeongnam(true)}
