@@ -43,6 +43,7 @@ const ExplorerPage = () => {
   useEffect(() => {
     const count = incrementVisitorCount();
     setVisitorCount(count);
+    recordVisit();
   }, []);
 
   const handleConsonantSelect = (c: string) => { setSelectedConsonant(c); setStep('school'); };
