@@ -38,6 +38,7 @@ const ExplorerPage = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSources, setShowSources] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
+  const [showRouteExplorer, setShowRouteExplorer] = useState(false);
 
   useEffect(() => {
     const count = incrementVisitorCount();
