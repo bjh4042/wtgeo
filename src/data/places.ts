@@ -425,7 +425,7 @@ export const places: Place[] = [
   {
     id: 'p-okpo1', name: '옥포1동주민센터', category: 'public',
     description: '옥포1동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
-    address: '경상남도 거제시 옥포로 120 (옥포동)', lat: 34.8942, lng: 128.6899, grade: 3,
+    address: '경상남도 거제시 옥포로 120 (옥포동)', lat: 34.890041, lng: 128.694078, grade: 3,
   },
   {
     id: 'p-okpo2', name: '옥포2동주민센터', category: 'public',
