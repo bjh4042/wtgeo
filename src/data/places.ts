@@ -415,7 +415,7 @@ export const places: Place[] = [
   {
     id: 'p-gohyeon', name: '고현동주민센터', category: 'public',
     description: '고현동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
-    address: '경상남도 거제시 거제중앙로 1801 (고현동)', lat: 34.8854, lng: 128.6240, grade: 3,
+    address: '경상남도 거제시 거제중앙로13길 24 (고현동)', lat: 34.880554, lng: 128.620768, grade: 3,
   },
   {
     id: 'p-sangmun', name: '상문동주민센터', category: 'public',
