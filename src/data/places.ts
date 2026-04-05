@@ -420,7 +420,7 @@ export const places: Place[] = [
   {
     id: 'p-sangmun', name: '상문동주민센터', category: 'public',
     description: '상문동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
-    address: '경상남도 거제시 거제중앙로 1567 (상문동)', lat: 34.8640, lng: 128.6700, grade: 3,
+    address: '경상남도 거제시 거제중앙로 1567 (상문동)', lat: 34.867191, lng: 128.639208, grade: 3,
   },
   {
     id: 'p-okpo1', name: '옥포1동주민센터', category: 'public',
