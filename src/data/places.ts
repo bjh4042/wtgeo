@@ -393,7 +393,7 @@ export const places: Place[] = [
   {
     id: 'p-jangmokmyeon', name: '장목면사무소', category: 'public',
     description: '장목면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 장목면 장목로 1', lat: 35.0100, lng: 128.7200, grade: 3,
+    address: '경상남도 거제시 장목면 장동1길 46-1', lat: 34.986529, lng: 128.682296, grade: 3,
   },
   {
     id: 'p-ilunmyeon', name: '일운면사무소', category: 'public',
