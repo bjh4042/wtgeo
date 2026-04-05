@@ -368,7 +368,7 @@ export const places: Place[] = [
   {
     id: 'p-geojemyeon', name: '거제면사무소', category: 'public',
     description: '거제면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 거제면 서상길 1', lat: 34.8512, lng: 128.5905, grade: 3,
+    address: '경상남도 거제시 거제면 서상길 1', lat: 34.851002, lng: 128.590419, grade: 3,
   },
   {
     id: 'p-dundeokmyeon', name: '둔덕면사무소', category: 'public',
