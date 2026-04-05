@@ -403,7 +403,7 @@ export const places: Place[] = [
   {
     id: 'p-dongbumyeon', name: '동부면사무소', category: 'public',
     description: '동부면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 동부면 거제중앙로 285', lat: 34.7850, lng: 128.6300, grade: 3,
+    address: '경상남도 거제시 동부면 동부로 16', lat: 34.821607, lng: 128.608114, grade: 3,
   },
   {
     id: 'p-nambumyeon', name: '남부면사무소', category: 'public',
