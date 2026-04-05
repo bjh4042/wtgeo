@@ -373,7 +373,7 @@ export const places: Place[] = [
   {
     id: 'p-dundeokmyeon', name: '둔덕면사무소', category: 'public',
     description: '둔덕면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 둔덕면 둔덕로 1', lat: 34.8700, lng: 128.5000, grade: 3,
+    address: '경상남도 거제시 둔덕면 거제남서로 4620', lat: 34.836811, lng: 128.504904, grade: 3,
   },
   {
     id: 'p-sadeungmyeon', name: '사등면사무소', category: 'public',
