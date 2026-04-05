@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3 } from 'lucide-react';
 import { places as defaultPlaces, Place, PlaceCategory } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory } from '@/data/content';
+import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 
 const ADMIN_PASSWORD = '4042';
 const NOTICE_KEY = 'geoje-explorer-notice';
@@ -276,10 +277,62 @@ const AdminPanel = () => {
         {/* Notice Tab */}
         {activeTab === 'notice' && (
           <div className="space-y-4">
-            <div className="p-3 rounded-lg bg-muted/50">
-              <p className="text-sm font-semibold text-foreground mb-1">👥 방문자 수</p>
-              <p className="text-2xl font-bold text-primary">{visitorCount.toLocaleString()}명</p>
+            {/* Visitor overview */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="p-3 rounded-lg bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground">총 방문자</p>
+                <p className="text-lg font-bold text-primary">{visitorCount.toLocaleString()}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground">오늘</p>
+                <p className="text-lg font-bold text-foreground">{getTodayVisitors()}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground">통계 합산</p>
+                <p className="text-lg font-bold text-foreground">{getTotalVisitors()}</p>
+              </div>
             </div>
+
+            {/* Hourly chart */}
+            <div className="p-3 rounded-lg border">
+              <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1"><BarChart3 size={13} /> 오늘 시간대별 접속</p>
+              <div className="flex items-end gap-px h-20">
+                {getHourlyStats().map((s, i) => {
+                  const maxCount = Math.max(...getHourlyStats().map(h => h.count), 1);
+                  const height = s.count > 0 ? Math.max((s.count / maxCount) * 100, 8) : 2;
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-0.5" title={`${s.hour}: ${s.count}명`}>
+                      <div className="w-full rounded-t" style={{ height: `${height}%`, backgroundColor: s.count > 0 ? 'hsl(var(--primary))' : 'hsl(var(--muted))' }} />
+                      {i % 4 === 0 && <span className="text-[8px] text-muted-foreground">{i}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Daily chart */}
+            <div className="p-3 rounded-lg border">
+              <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1"><BarChart3 size={13} /> 최근 일별 접속</p>
+              {getDailyStats().length > 0 ? (
+                <div className="flex items-end gap-1 h-20">
+                  {getDailyStats().map((s, i) => {
+                    const maxCount = Math.max(...getDailyStats().map(d => d.count), 1);
+                    const height = s.count > 0 ? Math.max((s.count / maxCount) * 100, 8) : 2;
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-0.5" title={`${s.date}: ${s.count}명`}>
+                        <span className="text-[8px] text-foreground font-bold">{s.count}</span>
+                        <div className="w-full rounded-t" style={{ height: `${height}%`, backgroundColor: 'hsl(var(--primary))' }} />
+                        <span className="text-[7px] text-muted-foreground">{s.date.slice(3)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">아직 통계 데이터가 없습니다.</p>
+              )}
+            </div>
+
+            {/* Notice management */}
             {currentNotice && (
               <div className="p-3 rounded-lg bg-accent/20 border border-accent/30">
                 <div className="flex items-start justify-between gap-2">
@@ -354,11 +407,11 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs font-semibold text-foreground">위도</label>
-                <input type="number" step="0.0001" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="number" step="0.000001" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: parseFloat(e.target.value) })} className={inputClass} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-foreground">경도</label>
-                <input type="number" step="0.0001" value={editingPlace.lng} onChange={e => setEditingPlace({ ...editingPlace, lng: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="number" step="0.000001" value={editingPlace.lng} onChange={e => setEditingPlace({ ...editingPlace, lng: parseFloat(e.target.value) })} className={inputClass} />
               </div>
             </div>
             <div>
@@ -434,11 +487,11 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs font-semibold text-foreground">위도</label>
-                <input type="number" step="0.0001" value={editingContent.lat} onChange={e => setEditingContent({ ...editingContent, lat: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="number" step="0.000001" value={editingContent.lat} onChange={e => setEditingContent({ ...editingContent, lat: parseFloat(e.target.value) })} className={inputClass} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-foreground">경도</label>
-                <input type="number" step="0.0001" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="number" step="0.000001" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: parseFloat(e.target.value) })} className={inputClass} />
               </div>
             </div>
             <div>

@@ -16,8 +16,10 @@ import NoticePopup from '@/components/NoticePopup';
 import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
 import GyeongnamExplorer from '@/components/GyeongnamExplorer';
+import RouteExplorer from '@/components/RouteExplorer';
 import { incrementVisitorCount } from '@/components/AdminPanel';
-import { Home, List, X, Users, Map } from 'lucide-react';
+import { recordVisit } from '@/data/visitorStats';
+import { Home, List, X, Users, Map, Route } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -36,10 +38,12 @@ const ExplorerPage = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSources, setShowSources] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
+  const [showRouteExplorer, setShowRouteExplorer] = useState(false);
 
   useEffect(() => {
     const count = incrementVisitorCount();
     setVisitorCount(count);
+    recordVisit();
   }, []);
 
   const handleConsonantSelect = (c: string) => { setSelectedConsonant(c); setStep('school'); };
@@ -106,6 +110,9 @@ const ExplorerPage = () => {
       {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} />}
       {showSources && <SourcesPopup onClose={() => setShowSources(false)} />}
       {showGyeongnam && <GyeongnamExplorer onClose={() => setShowGyeongnam(false)} />}
+      {showRouteExplorer && selectedSchool && selectedGrade && (
+        <RouteExplorer grade={selectedGrade} school={selectedSchool} onClose={() => setShowRouteExplorer(false)} onPlaceSelect={(p) => { handlePlaceSelect(p); setShowRouteExplorer(false); }} />
+      )}
 
       {step !== 'explore' ? (
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
@@ -128,6 +135,12 @@ const ExplorerPage = () => {
                 <div className="flex-1 overflow-x-auto">
                   <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
                 </div>
+                <button
+                  onClick={() => setShowRouteExplorer(true)}
+                  className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 mr-1 rounded-full text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
+                >
+                  <Route size={12} /> 경로탐험
+                </button>
                 {selectedGrade === 4 && (
                   <button
                     onClick={() => setShowGyeongnam(true)}

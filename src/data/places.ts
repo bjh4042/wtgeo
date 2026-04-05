@@ -368,64 +368,64 @@ export const places: Place[] = [
   {
     id: 'p-geojemyeon', name: '거제면사무소', category: 'public',
     description: '거제면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 거제면 서상길 1', lat: 34.8512, lng: 128.5905, grade: 3,
+    address: '경상남도 거제시 거제면 서상길 1', lat: 34.851002, lng: 128.590419, grade: 3,
   },
   {
     id: 'p-dundeokmyeon', name: '둔덕면사무소', category: 'public',
     description: '둔덕면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 둔덕면 둔덕로 1', lat: 34.8700, lng: 128.5000, grade: 3,
+    address: '경상남도 거제시 둔덕면 거제남서로 4620', lat: 34.836811, lng: 128.504904, grade: 3,
   },
   {
     id: 'p-sadeungmyeon', name: '사등면사무소', category: 'public',
     description: '사등면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 사등면 사등로 51', lat: 34.9180, lng: 128.5600, grade: 3,
+    address: '경상남도 거제시 사등면 성포로 104', lat: 34.918916, lng: 128.522252, grade: 3,
   },
   {
     id: 'p-yeonchomyeon', name: '연초면사무소', category: 'public',
     description: '연초면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 연초면 연초로 30', lat: 34.9220, lng: 128.6500, grade: 3,
+    address: '경상남도 거제시 연초면 죽토로 11', lat: 34.914594, lng: 128.656526, grade: 3,
   },
   {
     id: 'p-hacheongmyeon', name: '하청면사무소', category: 'public',
     description: '하청면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 하청면 하청로 1', lat: 34.9570, lng: 128.6550, grade: 3,
+    address: '경상남도 거제시 하청면 하청로 1', lat: 34.955334, lng: 128.655160, grade: 3,
   },
   {
     id: 'p-jangmokmyeon', name: '장목면사무소', category: 'public',
     description: '장목면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 장목면 장목로 1', lat: 35.0100, lng: 128.7200, grade: 3,
+    address: '경상남도 거제시 장목면 장동1길 46-1', lat: 34.986529, lng: 128.682296, grade: 3,
   },
   {
     id: 'p-ilunmyeon', name: '일운면사무소', category: 'public',
     description: '일운면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 일운면 지세포해안로 80', lat: 34.8290, lng: 128.7060, grade: 3,
+    address: '경상남도 거제시 일운면 지세포4길 7', lat: 34.829566, lng: 128.703417, grade: 3,
   },
   {
     id: 'p-dongbumyeon', name: '동부면사무소', category: 'public',
     description: '동부면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 동부면 거제중앙로 285', lat: 34.7850, lng: 128.6300, grade: 3,
+    address: '경상남도 거제시 동부면 동부로 16', lat: 34.821607, lng: 128.608114, grade: 3,
   },
   {
     id: 'p-nambumyeon', name: '남부면사무소', category: 'public',
     description: '남부면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 남부면 남부로 1', lat: 34.7420, lng: 128.6500, grade: 3,
+    address: '경상남도 거제시 남부면 남부해안로 30', lat: 34.732306, lng: 128.610124, grade: 3,
   },
 
   // ===== 동주민센터 =====
   {
     id: 'p-gohyeon', name: '고현동주민센터', category: 'public',
     description: '고현동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
-    address: '경상남도 거제시 거제중앙로 1801 (고현동)', lat: 34.8854, lng: 128.6240, grade: 3,
+    address: '경상남도 거제시 거제중앙로13길 24 (고현동)', lat: 34.880554, lng: 128.620768, grade: 3,
   },
   {
     id: 'p-sangmun', name: '상문동주민센터', category: 'public',
     description: '상문동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
-    address: '경상남도 거제시 거제중앙로 1567 (상문동)', lat: 34.8640, lng: 128.6700, grade: 3,
+    address: '경상남도 거제시 거제중앙로 1567 (상문동)', lat: 34.867191, lng: 128.639208, grade: 3,
   },
   {
     id: 'p-okpo1', name: '옥포1동주민센터', category: 'public',
     description: '옥포1동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
-    address: '경상남도 거제시 옥포로 120 (옥포동)', lat: 34.8942, lng: 128.6899, grade: 3,
+    address: '경상남도 거제시 옥포로 120 (옥포동)', lat: 34.890041, lng: 128.694078, grade: 3,
   },
   {
     id: 'p-okpo2', name: '옥포2동주민센터', category: 'public',
@@ -462,7 +462,7 @@ export const places: Place[] = [
   {
     id: 'p-police-gohyeon', name: '고현파출소', category: 'public',
     description: '고현 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 거제중앙로 1801', lat: 34.8850, lng: 128.6245, grade: 3,
+    address: '경상남도 거제시 거제중앙로13길 24', lat: 34.880500, lng: 128.620800, grade: 3,
   },
   {
     id: 'p-police-okpo', name: '옥포파출소', category: 'public',
@@ -477,7 +477,7 @@ export const places: Place[] = [
   {
     id: 'p-police-sadeung', name: '사등파출소', category: 'public',
     description: '사등면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 사등면 사등로 55', lat: 34.9180, lng: 128.5600, grade: 3,
+    address: '경상남도 거제시 사등면 성포로 55', lat: 34.918800, lng: 128.522300, grade: 3,
   },
   {
     id: 'p-police-hacheong', name: '하청파출소', category: 'public',
