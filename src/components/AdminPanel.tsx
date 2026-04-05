@@ -438,7 +438,7 @@ const AdminPanel = () => {
               </div>
               <div>
                 <label className="text-xs font-semibold text-foreground">경도</label>
-                <input type="number" step="0.0001" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="number" step="0.000001" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: parseFloat(e.target.value) })} className={inputClass} />
               </div>
             </div>
             <div>
