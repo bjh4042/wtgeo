@@ -110,6 +110,9 @@ const ExplorerPage = () => {
       {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} />}
       {showSources && <SourcesPopup onClose={() => setShowSources(false)} />}
       {showGyeongnam && <GyeongnamExplorer onClose={() => setShowGyeongnam(false)} />}
+      {showRouteExplorer && selectedSchool && selectedGrade && (
+        <RouteExplorer grade={selectedGrade} school={selectedSchool} onClose={() => setShowRouteExplorer(false)} onPlaceSelect={(p) => { handlePlaceSelect(p); setShowRouteExplorer(false); }} />
+      )}
 
       {step !== 'explore' ? (
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
