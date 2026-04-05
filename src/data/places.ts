@@ -408,7 +408,7 @@ export const places: Place[] = [
   {
     id: 'p-nambumyeon', name: '남부면사무소', category: 'public',
     description: '남부면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 남부면 남부로 1', lat: 34.7420, lng: 128.6500, grade: 3,
+    address: '경상남도 거제시 남부면 남부해안로 30', lat: 34.732306, lng: 128.610124, grade: 3,
   },
 
   // ===== 동주민센터 =====
