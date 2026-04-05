@@ -16,8 +16,10 @@ import NoticePopup from '@/components/NoticePopup';
 import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
 import GyeongnamExplorer from '@/components/GyeongnamExplorer';
+import RouteExplorer from '@/components/RouteExplorer';
 import { incrementVisitorCount } from '@/components/AdminPanel';
-import { Home, List, X, Users, Map } from 'lucide-react';
+import { recordVisit } from '@/data/visitorStats';
+import { Home, List, X, Users, Map, Route } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
