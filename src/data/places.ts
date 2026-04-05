@@ -398,7 +398,7 @@ export const places: Place[] = [
   {
     id: 'p-ilunmyeon', name: '일운면사무소', category: 'public',
     description: '일운면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 일운면 지세포해안로 80', lat: 34.8290, lng: 128.7060, grade: 3,
+    address: '경상남도 거제시 일운면 지세포4길 7', lat: 34.829566, lng: 128.703417, grade: 3,
   },
   {
     id: 'p-dongbumyeon', name: '동부면사무소', category: 'public',
