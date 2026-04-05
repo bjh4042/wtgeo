@@ -378,7 +378,7 @@ export const places: Place[] = [
   {
     id: 'p-sadeungmyeon', name: '사등면사무소', category: 'public',
     description: '사등면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 사등면 사등로 51', lat: 34.9180, lng: 128.5600, grade: 3,
+    address: '경상남도 거제시 사등면 성포로 104', lat: 34.918916, lng: 128.522252, grade: 3,
   },
   {
     id: 'p-yeonchomyeon', name: '연초면사무소', category: 'public',
