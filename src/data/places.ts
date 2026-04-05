@@ -388,7 +388,7 @@ export const places: Place[] = [
   {
     id: 'p-hacheongmyeon', name: '하청면사무소', category: 'public',
     description: '하청면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 하청면 하청로 1', lat: 34.9570, lng: 128.6550, grade: 3,
+    address: '경상남도 거제시 하청면 하청로 1', lat: 34.955334, lng: 128.655160, grade: 3,
   },
   {
     id: 'p-jangmokmyeon', name: '장목면사무소', category: 'public',
