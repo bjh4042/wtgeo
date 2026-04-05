@@ -1,5 +1,6 @@
 import { MapContent, contentCategoryColors, contentCategoryIcons, contentCategoryLabels } from '@/data/content';
-import { X, ExternalLink, Youtube } from 'lucide-react';
+import { getRoadViewUrl } from '@/data/places';
+import { X, ExternalLink, Youtube, Eye, MapPin } from 'lucide-react';
 import { useState } from 'react';
 
 interface ContentCardProps {
