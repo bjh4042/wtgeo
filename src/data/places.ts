@@ -383,7 +383,7 @@ export const places: Place[] = [
   {
     id: 'p-yeonchomyeon', name: '연초면사무소', category: 'public',
     description: '연초면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
-    address: '경상남도 거제시 연초면 연초로 30', lat: 34.9220, lng: 128.6500, grade: 3,
+    address: '경상남도 거제시 연초면 죽토로 11', lat: 34.914594, lng: 128.656526, grade: 3,
   },
   {
     id: 'p-hacheongmyeon', name: '하청면사무소', category: 'public',
