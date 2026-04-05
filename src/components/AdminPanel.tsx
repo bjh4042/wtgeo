@@ -354,7 +354,7 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs font-semibold text-foreground">위도</label>
-                <input type="number" step="0.0001" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="number" step="0.000001" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: parseFloat(e.target.value) })} className={inputClass} />
               </div>
               <div>
                 <label className="text-xs font-semibold text-foreground">경도</label>
