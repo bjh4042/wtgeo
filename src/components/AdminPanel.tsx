@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3 } from 'lucide-react';
 import { places as defaultPlaces, Place, PlaceCategory } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory } from '@/data/content';
+import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 
 const ADMIN_PASSWORD = '4042';
 const NOTICE_KEY = 'geoje-explorer-notice';
