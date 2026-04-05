@@ -462,7 +462,7 @@ export const places: Place[] = [
   {
     id: 'p-police-gohyeon', name: '고현파출소', category: 'public',
     description: '고현 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 거제중앙로 1801', lat: 34.8850, lng: 128.6245, grade: 3,
+    address: '경상남도 거제시 거제중앙로13길 24', lat: 34.880500, lng: 128.620800, grade: 3,
   },
   {
     id: 'p-police-okpo', name: '옥포파출소', category: 'public',
