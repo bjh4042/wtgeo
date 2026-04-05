@@ -277,10 +277,62 @@ const AdminPanel = () => {
         {/* Notice Tab */}
         {activeTab === 'notice' && (
           <div className="space-y-4">
-            <div className="p-3 rounded-lg bg-muted/50">
-              <p className="text-sm font-semibold text-foreground mb-1">👥 방문자 수</p>
-              <p className="text-2xl font-bold text-primary">{visitorCount.toLocaleString()}명</p>
+            {/* Visitor overview */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="p-3 rounded-lg bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground">총 방문자</p>
+                <p className="text-lg font-bold text-primary">{visitorCount.toLocaleString()}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground">오늘</p>
+                <p className="text-lg font-bold text-foreground">{getTodayVisitors()}</p>
+              </div>
+              <div className="p-3 rounded-lg bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground">통계 합산</p>
+                <p className="text-lg font-bold text-foreground">{getTotalVisitors()}</p>
+              </div>
             </div>
+
+            {/* Hourly chart */}
+            <div className="p-3 rounded-lg border">
+              <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1"><BarChart3 size={13} /> 오늘 시간대별 접속</p>
+              <div className="flex items-end gap-px h-20">
+                {getHourlyStats().map((s, i) => {
+                  const maxCount = Math.max(...getHourlyStats().map(h => h.count), 1);
+                  const height = s.count > 0 ? Math.max((s.count / maxCount) * 100, 8) : 2;
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-0.5" title={`${s.hour}: ${s.count}명`}>
+                      <div className="w-full rounded-t" style={{ height: `${height}%`, backgroundColor: s.count > 0 ? 'hsl(var(--primary))' : 'hsl(var(--muted))' }} />
+                      {i % 4 === 0 && <span className="text-[8px] text-muted-foreground">{i}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Daily chart */}
+            <div className="p-3 rounded-lg border">
+              <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1"><BarChart3 size={13} /> 최근 일별 접속</p>
+              {getDailyStats().length > 0 ? (
+                <div className="flex items-end gap-1 h-20">
+                  {getDailyStats().map((s, i) => {
+                    const maxCount = Math.max(...getDailyStats().map(d => d.count), 1);
+                    const height = s.count > 0 ? Math.max((s.count / maxCount) * 100, 8) : 2;
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-0.5" title={`${s.date}: ${s.count}명`}>
+                        <span className="text-[8px] text-foreground font-bold">{s.count}</span>
+                        <div className="w-full rounded-t" style={{ height: `${height}%`, backgroundColor: 'hsl(var(--primary))' }} />
+                        <span className="text-[7px] text-muted-foreground">{s.date.slice(3)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">아직 통계 데이터가 없습니다.</p>
+              )}
+            </div>
+
+            {/* Notice management */}
             {currentNotice && (
               <div className="p-3 rounded-lg bg-accent/20 border border-accent/30">
                 <div className="flex items-start justify-between gap-2">
