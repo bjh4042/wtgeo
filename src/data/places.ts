@@ -477,7 +477,7 @@ export const places: Place[] = [
   {
     id: 'p-police-sadeung', name: '사등파출소', category: 'public',
     description: '사등면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 사등면 사등로 55', lat: 34.9180, lng: 128.5600, grade: 3,
+    address: '경상남도 거제시 사등면 성포로 55', lat: 34.918800, lng: 128.522300, grade: 3,
   },
   {
     id: 'p-police-hacheong', name: '하청파출소', category: 'public',
