@@ -260,7 +260,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
       {zoomMessage && (
         <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-          <div className="bg-card/95 backdrop-blur-md text-foreground text-xl md:text-2xl font-black px-8 py-5 rounded-2xl shadow-2xl animate-scale-in border-2 border-primary/20">
+          <div className="bg-card/95 backdrop-blur-md text-foreground text-lg md:text-2xl font-black px-6 md:px-8 py-4 md:py-5 rounded-2xl shadow-2xl animate-scale-in border-2 border-primary/20">
             {zoomMessage}
           </div>
         </div>
@@ -270,11 +270,12 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       {!isZooming && (
         <button
           onClick={handleGoToSchool}
-          className="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md text-xs font-bold text-foreground hover:bg-card transition-colors cursor-pointer"
+          className="absolute top-2 right-2 z-20 flex items-center gap-1 px-2 md:px-3 py-1.5 md:py-2 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md text-[10px] md:text-xs font-bold text-foreground hover:bg-card transition-colors cursor-pointer"
           title="학교로 이동"
         >
-          <SchoolIcon size={14} className="text-primary" />
-          학교로 이동
+          <SchoolIcon size={12} className="text-primary" />
+          <span className="hidden sm:inline">학교로 이동</span>
+          <span className="sm:hidden">학교</span>
         </button>
       )}
 
@@ -283,26 +284,26 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-20">
           <button
             onClick={handleZoomIn}
-            className="w-9 h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
+            className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
             title="확대"
           >
-            <Plus size={18} className="text-foreground" />
+            <Plus size={16} className="text-foreground" />
           </button>
           <button
             onClick={handleZoomOut}
-            className="w-9 h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
+            className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-card/90 backdrop-blur-sm border shadow-md flex items-center justify-center hover:bg-card transition-colors cursor-pointer"
             title="축소"
           >
-            <Minus size={18} className="text-foreground" />
+            <Minus size={16} className="text-foreground" />
           </button>
         </div>
       )}
 
-      {/* Scale indicator */}
+      {/* Scale indicator - left bottom, above mobile bottom bar */}
       {!isZooming && (
         <div
           ref={scaleRef}
-          className="absolute bottom-20 md:bottom-10 left-2 bg-card/90 backdrop-blur-sm text-foreground text-xs font-medium px-3 py-1.5 rounded-lg border shadow-sm z-10"
+          className="absolute bottom-16 md:bottom-4 left-2 bg-card/90 backdrop-blur-sm text-foreground text-[10px] md:text-xs font-medium px-2 md:px-3 py-1 md:py-1.5 rounded-lg border shadow-sm z-10"
         >
           축척: ...
         </div>
