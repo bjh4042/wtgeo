@@ -128,27 +128,34 @@ const ExplorerPage = () => {
         </main>
       ) : (
         <main className="flex-1 flex flex-col overflow-hidden relative">
-          {/* Category tabs: hidden during zoom */}
+          {/* Category tabs + action buttons: hidden during zoom */}
           {!isZooming && (
             <div className="bg-card border-b z-20 shadow-sm">
               <div className="flex items-center">
                 <div className="flex-1 overflow-x-auto">
                   <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
                 </div>
-                <button
-                  onClick={() => setShowRouteExplorer(true)}
-                  className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 mr-1 rounded-full text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
-                >
-                  <Route size={12} /> 경로탐험
-                </button>
-                {selectedGrade === 4 && (
+                {/* Action buttons - compact on mobile */}
+                <div className="flex-shrink-0 flex items-center gap-1 pr-1 md:pr-2">
                   <button
-                    onClick={() => setShowGyeongnam(true)}
-                    className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 mr-2 rounded-full text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    onClick={() => setShowRouteExplorer(true)}
+                    className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
                   >
-                    <Map size={12} /> 경남 시·군
+                    <Route size={10} className="md:w-3 md:h-3" />
+                    <span className="hidden sm:inline">경로탐험</span>
+                    <span className="sm:hidden">경로</span>
                   </button>
-                )}
+                  {selectedGrade === 4 && (
+                    <button
+                      onClick={() => setShowGyeongnam(true)}
+                      className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    >
+                      <Map size={10} className="md:w-3 md:h-3" />
+                      <span className="hidden sm:inline">경남 시·군</span>
+                      <span className="sm:hidden">경남</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -177,25 +184,25 @@ const ExplorerPage = () => {
             {!isZooming && (
               <div className="md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col">
                 {showMobileSidebar && (
-                  <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[60vh] overflow-auto p-4 animate-slide-up">
-                    <div className="flex items-center justify-between mb-3">
+                  <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[50vh] overflow-auto p-3 animate-slide-up">
+                    <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-bold text-foreground">장소 목록</span>
-                      <button onClick={() => setShowMobileSidebar(false)} className="text-muted-foreground cursor-pointer"><X size={20} /></button>
+                      <button onClick={() => setShowMobileSidebar(false)} className="text-muted-foreground cursor-pointer"><X size={18} /></button>
                     </div>
                     {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
                   </div>
                 )}
-                <div className="bg-card border-t px-4 py-2 flex items-center justify-between gap-2 safe-bottom">
-                  <button className="back-btn" onClick={handleReset}>
-                    <Home size={16} /> 처음으로
+                <div className="bg-card border-t px-3 py-1.5 flex items-center justify-between gap-2 safe-bottom">
+                  <button className="back-btn text-xs" onClick={handleReset}>
+                    <Home size={14} /> 처음으로
                   </button>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full"
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
                   >
                     {selectedGrade}학년
                   </span>
-                  <button className="flex items-center gap-1 text-sm font-medium cursor-pointer text-primary" onClick={() => setShowMobileSidebar(!showMobileSidebar)}>
-                    <List size={18} /> 장소
+                  <button className="flex items-center gap-1 text-xs font-medium cursor-pointer text-primary" onClick={() => setShowMobileSidebar(!showMobileSidebar)}>
+                    <List size={16} /> 장소
                   </button>
                 </div>
               </div>
@@ -219,13 +226,13 @@ const ExplorerPage = () => {
               )}
 
               {!isZooming && selectedPlace && selectedSchool && (
-                <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
+                <div className="absolute bottom-14 md:bottom-4 left-2 right-2 md:left-4 md:right-auto md:max-w-sm z-20">
                   <PlaceCard place={selectedPlace} school={selectedSchool} onClose={() => setSelectedPlace(null)} />
                 </div>
               )}
 
               {!isZooming && selectedContent && (
-                <div className="absolute bottom-16 md:bottom-4 left-2 right-2 md:left-4 md:right-auto z-20">
+                <div className="absolute bottom-14 md:bottom-4 left-2 right-2 md:left-4 md:right-auto md:max-w-sm z-20">
                   <ContentCard content={selectedContent} onClose={() => setSelectedContent(null)} />
                 </div>
               )}
@@ -236,12 +243,12 @@ const ExplorerPage = () => {
 
       {/* Footer */}
       {step !== 'explore' && (
-        <footer className="text-center py-3 text-xs text-muted-foreground space-y-1">
+        <footer className="text-center py-2 md:py-3 text-[10px] md:text-xs text-muted-foreground space-y-0.5">
           <div className="flex items-center justify-center gap-3">
-            <span className="flex items-center gap-1"><Users size={12} /> 방문자 {visitorCount.toLocaleString()}명</span>
+            <span className="flex items-center gap-1"><Users size={11} /> 방문자 {visitorCount.toLocaleString()}명</span>
           </div>
           <div className="flex items-center justify-center gap-2">
-            <span>© 2025 수박쌤. 원작: 인디스쿨 니카쌤. All rights reserved.</span>
+            <span>© 2025 수박쌤. 원작: 인디스쿨 니카쌤.</span>
             <span className="text-muted-foreground/30">|</span>
             <AdminPanel />
           </div>
