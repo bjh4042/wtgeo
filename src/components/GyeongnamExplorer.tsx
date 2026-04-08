@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { gyeongnamCities, GyeongnamCity } from '@/data/gyeongnam';
+import { getGyeongnamCities, GyeongnamCity } from '@/data/gyeongnam';
 import { X, MapPin, Users, Ruler, Star, ExternalLink, ArrowLeft } from 'lucide-react';
 
 interface GyeongnamExplorerProps {
