@@ -1,4 +1,5 @@
-import { getAvailableConsonants } from '@/data/schools';
+import { useEffect, useMemo, useState } from 'react';
+import { getMergedAvailableConsonants, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 import { Monitor } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 
@@ -7,7 +8,15 @@ interface ConsonantFilterProps {
 }
 
 const ConsonantFilter = ({ onSelect }: ConsonantFilterProps) => {
-  const consonants = getAvailableConsonants();
+  const [version, setVersion] = useState(0);
+
+  useEffect(() => {
+    const handleSchoolUpdate = () => setVersion((current) => current + 1);
+    window.addEventListener(SCHOOLS_UPDATED_EVENT, handleSchoolUpdate);
+    return () => window.removeEventListener(SCHOOLS_UPDATED_EVENT, handleSchoolUpdate);
+  }, []);
+
+  const consonants = useMemo(() => getMergedAvailableConsonants(), [version]);
 
   return (
     <div className="flex flex-col items-center gap-4 md:gap-6 animate-fade-in px-2">
