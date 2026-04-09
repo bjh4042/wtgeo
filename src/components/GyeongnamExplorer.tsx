@@ -94,6 +94,9 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
             <div className="p-3 md:p-4 space-y-3">
               {/* City Header */}
               <div className="flex items-center gap-3">
+                {selectedCity.logoUrl ? (
+                  <img src={selectedCity.logoUrl} alt={`${selectedCity.name} 로고`} className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-lg" />
+                ) : null}
                 {selectedCity.mascotImageUrl ? (
                   <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-12 h-12 md:w-16 md:h-16 object-contain" />
                 ) : (
