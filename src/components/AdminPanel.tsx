@@ -281,10 +281,11 @@ const AdminPanel = () => {
 
   // Filtered schools
   const mergedSchools = useMemo(() => getMergedSchools(), [schoolEdits]);
+  const schoolRows = useMemo(() => mergedSchools.map((school, index) => ({ school, index })), [mergedSchools]);
   const filteredSchools = useMemo(() => {
-    if (!searchTerm) return mergedSchools;
-    return mergedSchools.filter(s => s.name.includes(searchTerm) || s.district.includes(searchTerm) || s.address.includes(searchTerm));
-  }, [mergedSchools, searchTerm]);
+    if (!searchTerm) return schoolRows;
+    return schoolRows.filter(({ school }) => school.name.includes(searchTerm) || school.district.includes(searchTerm) || school.address.includes(searchTerm));
+  }, [schoolRows, searchTerm]);
 
   // Filtered cities
   const gyeongnamCitiesList = getGyeongnamCities();
@@ -623,10 +624,8 @@ const AdminPanel = () => {
             </div>
             <div className="max-h-[50vh] overflow-auto space-y-1">
               <p className="text-[10px] text-muted-foreground px-1">{filteredSchools.length}개 학교</p>
-              {filteredSchools.map((s, idx) => {
-                const origIdx = schools.findIndex((school) => school.name === s.name);
-                const edited = origIdx >= 0 ? schoolEdits[origIdx] : undefined;
-                const display = edited ? { ...s, ...edited } : s;
+              {filteredSchools.map(({ school: display, index: origIdx }) => {
+                const edited = schoolEdits[origIdx];
                 return (
                   <div key={origIdx} className="p-2 rounded-lg border bg-muted/10 flex items-center justify-between gap-2">
                     <div className="min-w-0">
