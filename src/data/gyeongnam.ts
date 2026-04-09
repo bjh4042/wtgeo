@@ -1,4 +1,6 @@
 // 경상남도 18개 시군 데이터
+import { detailedBoundaries } from './gyeongnamBoundaries';
+
 export interface GyeongnamCity {
   id: string;
   name: string;
@@ -288,12 +290,18 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   },
 ];
 
-// Merge with localStorage edits
+// Merge with localStorage edits and detailed boundaries
 export function getGyeongnamCities(): GyeongnamCity[] {
   const edits = getGyeongnamEdits();
   return defaultGyeongnamCities.map(city => {
     const edit = edits[city.id];
-    return edit ? { ...city, ...edit } as GyeongnamCity : city;
+    const boundary = detailedBoundaries[city.id] || city.boundary;
+    const merged = edit ? { ...city, ...edit } as GyeongnamCity : city;
+    // Use detailed boundary unless admin has overridden it
+    if (!edit?.boundary && boundary) {
+      merged.boundary = boundary;
+    }
+    return merged;
   });
 }
 
