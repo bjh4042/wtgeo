@@ -1,4 +1,6 @@
-import { filterSchoolsByConsonant, School } from '@/data/schools';
+import { useEffect, useMemo, useState } from 'react';
+import { School } from '@/data/schools';
+import { filterMergedSchoolsByConsonant, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 import { ArrowLeft } from 'lucide-react';
 
 interface SchoolSelectorProps {
@@ -8,7 +10,15 @@ interface SchoolSelectorProps {
 }
 
 const SchoolSelector = ({ consonant, onSelect, onBack }: SchoolSelectorProps) => {
-  const schools = filterSchoolsByConsonant(consonant);
+  const [version, setVersion] = useState(0);
+
+  useEffect(() => {
+    const handleSchoolUpdate = () => setVersion((current) => current + 1);
+    window.addEventListener(SCHOOLS_UPDATED_EVENT, handleSchoolUpdate);
+    return () => window.removeEventListener(SCHOOLS_UPDATED_EVENT, handleSchoolUpdate);
+  }, []);
+
+  const schools = useMemo(() => filterMergedSchoolsByConsonant(consonant), [consonant, version]);
 
   return (
     <div className="flex flex-col items-center gap-6 animate-fade-in">
