@@ -5,6 +5,7 @@ import { stories, placenames, heritages, pastPresent, natureContent, MapContent,
 import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 import { schools, School } from '@/data/schools';
 import { getGyeongnamCities, saveGyeongnamEdit, GyeongnamCity } from '@/data/gyeongnam';
+import { SCHOOLS_UPDATED_EVENT, getMergedSchools } from '@/data/dataManager';
 
 const ADMIN_PASSWORD = '4042';
 const NOTICE_KEY = 'geoje-explorer-notice';
@@ -210,6 +211,7 @@ const AdminPanel = () => {
     const updated = { ...schoolEdits, [editingSchoolIdx]: editingSchool };
     setSchoolEdits(updated);
     localStorage.setItem(SCHOOL_EDITS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
     setEditingSchool(null);
     setEditingSchoolIdx(null);
   };
@@ -278,10 +280,11 @@ const AdminPanel = () => {
   }, [allContentItems, contentTypeFilter, searchTerm]);
 
   // Filtered schools
+  const mergedSchools = useMemo(() => getMergedSchools(), [schoolEdits]);
   const filteredSchools = useMemo(() => {
-    if (!searchTerm) return schools;
-    return schools.filter(s => s.name.includes(searchTerm) || s.district.includes(searchTerm));
-  }, [searchTerm]);
+    if (!searchTerm) return mergedSchools;
+    return mergedSchools.filter(s => s.name.includes(searchTerm) || s.district.includes(searchTerm) || s.address.includes(searchTerm));
+  }, [mergedSchools, searchTerm]);
 
   // Filtered cities
   const gyeongnamCitiesList = getGyeongnamCities();
@@ -621,8 +624,8 @@ const AdminPanel = () => {
             <div className="max-h-[50vh] overflow-auto space-y-1">
               <p className="text-[10px] text-muted-foreground px-1">{filteredSchools.length}개 학교</p>
               {filteredSchools.map((s, idx) => {
-                const origIdx = schools.indexOf(s);
-                const edited = schoolEdits[origIdx];
+                const origIdx = schools.findIndex((school) => school.name === s.name);
+                const edited = origIdx >= 0 ? schoolEdits[origIdx] : undefined;
                 const display = edited ? { ...s, ...edited } : s;
                 return (
                   <div key={origIdx} className="p-2 rounded-lg border bg-muted/10 flex items-center justify-between gap-2">
