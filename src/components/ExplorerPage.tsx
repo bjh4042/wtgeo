@@ -19,6 +19,7 @@ import GyeongnamExplorer from '@/components/GyeongnamExplorer';
 import RouteExplorer from '@/components/RouteExplorer';
 import { incrementVisitorCount } from '@/components/AdminPanel';
 import { recordVisit } from '@/data/visitorStats';
+import { getMergedSchoolByName, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 import { Home, List, X, Users, Map, Route } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
@@ -45,6 +46,20 @@ const ExplorerPage = () => {
     setVisitorCount(count);
     recordVisit();
   }, []);
+
+  useEffect(() => {
+    if (!selectedSchool) return;
+
+    const syncSelectedSchool = () => {
+      const updatedSchool = getMergedSchoolByName(selectedSchool.name);
+      if (updatedSchool) {
+        setSelectedSchool(updatedSchool);
+      }
+    };
+
+    window.addEventListener(SCHOOLS_UPDATED_EVENT, syncSelectedSchool);
+    return () => window.removeEventListener(SCHOOLS_UPDATED_EVENT, syncSelectedSchool);
+  }, [selectedSchool]);
 
   const handleConsonantSelect = (c: string) => { setSelectedConsonant(c); setStep('school'); };
   const handleSchoolSelect = (school: School) => { setSelectedSchool(school); setStep('grade'); };
