@@ -330,7 +330,7 @@ export const places: Place[] = [
   {
     id: 'p4', name: '거제시보건소', category: 'public',
     description: '거제시민의 건강을 위한 예방접종, 건강검진 등 보건의료서비스를 제공하는 기관입니다.',
-    address: '경상남도 거제시 수양로 506 (양정동)', lat: 34.891920, lng: 128.636757, grade: 'all',
+    address: '경상남도 거제시 수양로 506', lat: 34.8919, lng: 128.6367, grade: 'all',
   },
   {
     id: 'p5', name: '거제교육지원청', category: 'public',
@@ -346,7 +346,7 @@ export const places: Place[] = [
   {
     id: 'p7', name: '거제우체국', category: 'public',
     description: '편지, 택배 등 우편 서비스와 금융 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 거제중앙로17길 19 (고현동)', lat: 34.8841, lng: 128.6231, grade: 'all',
+    address: '경상남도 거제시 거제중앙로 1924', lat: 34.8841, lng: 128.6231, grade: 'all',
   },
   {
     id: 'p8', name: '거제시의회', category: 'public',
@@ -477,12 +477,12 @@ export const places: Place[] = [
   {
     id: 'p-police-sadeung', name: '사등파출소', category: 'public',
     description: '사등면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 사등면 성포로 55', lat: 34.918800, lng: 128.522300, grade: 3,
+    address: '경상남도 거제시 사등면 거제대로 5286', lat: 34.9091, lng: 128.5375, grade: 3,
   },
   {
     id: 'p-police-hacheong', name: '하청파출소', category: 'public',
     description: '하청면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 하청면 하청로 5', lat: 34.9575, lng: 128.6555, grade: 3,
+    address: '경상남도 거제시 하청면 하청로 24', lat: 34.9662, lng: 128.6481, grade: 3,
   },
 
   // ===== 우체국 =====
@@ -511,7 +511,7 @@ export const places: Place[] = [
   {
     id: 'p-fire-jangseungpo', name: '장승포119안전센터', category: 'public',
     description: '장승포 지역의 화재 진압, 구조, 구급 업무를 담당하는 119안전센터입니다.',
-    address: '경상남도 거제시 장승포로 55', lat: 34.8680, lng: 128.7295, grade: 3,
+    address: '경상남도 거제시 마전9길 12', lat: 34.8715, lng: 128.7291, grade: 3,
   },
 
   // ===== 공공기관 (4학년: 경상남도) =====
