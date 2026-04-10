@@ -1,4 +1,4 @@
-import { Place, PlaceCategory, categoryLabels, categoryColors } from '@/data/places';
+import { Place, PlaceCategory, PublicSubCategory, categoryLabels, categoryColors, publicSubCategoryLabels, publicSubCategoryColors } from '@/data/places';
 import { getMergedPlacesByGrade } from '@/data/dataManager';
 import { Filter, Search } from 'lucide-react';
 import { useState } from 'react';
@@ -10,13 +10,19 @@ interface PlaceFilterProps {
 
 const PlaceFilter = ({ grade, onPlaceSelect }: PlaceFilterProps) => {
   const [activeCategory, setActiveCategory] = useState<PlaceCategory | null>(null);
+  const [activeSubCategory, setActiveSubCategory] = useState<PublicSubCategory | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const places = getMergedPlacesByGrade(grade);
   const categories = Object.keys(categoryLabels) as PlaceCategory[];
+  const subCategories = Object.keys(publicSubCategoryLabels) as PublicSubCategory[];
 
   let filteredPlaces = activeCategory
     ? places.filter(p => p.category === activeCategory)
     : places;
+
+  if (activeCategory === 'public' && activeSubCategory) {
+    filteredPlaces = filteredPlaces.filter(p => p.subCategory === activeSubCategory);
+  }
 
   if (searchTerm.trim()) {
     const term = searchTerm.trim().toLowerCase();
@@ -49,7 +55,7 @@ const PlaceFilter = ({ grade, onPlaceSelect }: PlaceFilterProps) => {
         <button
           className={`category-badge cursor-pointer transition-all ${!activeCategory ? 'ring-2 ring-primary' : ''}`}
           style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' }}
-          onClick={() => setActiveCategory(null)}
+          onClick={() => { setActiveCategory(null); setActiveSubCategory(null); }}
         >
           전체
         </button>
@@ -62,12 +68,46 @@ const PlaceFilter = ({ grade, onPlaceSelect }: PlaceFilterProps) => {
               color: categoryColors[cat],
               ...(activeCategory === cat ? { ringColor: categoryColors[cat] } : {}),
             }}
-            onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+            onClick={() => {
+              setActiveCategory(activeCategory === cat ? null : cat);
+              setActiveSubCategory(null);
+            }}
           >
             {categoryLabels[cat]}
           </button>
         ))}
       </div>
+
+      {/* 공공기관 세부 카테고리 */}
+      {activeCategory === 'public' && (
+        <div className="flex flex-wrap gap-1.5 pl-1">
+          <button
+            className={`text-[11px] px-2 py-1 rounded-full cursor-pointer transition-all font-medium ${!activeSubCategory ? 'ring-2 ring-primary' : ''}`}
+            style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' }}
+            onClick={() => setActiveSubCategory(null)}
+          >
+            전체
+          </button>
+          {subCategories.map((sub) => {
+            const isActive = activeSubCategory === sub;
+            const color = publicSubCategoryColors[sub];
+            return (
+              <button
+                key={sub}
+                className={`text-[11px] px-2 py-1 rounded-full cursor-pointer transition-all font-medium ${isActive ? 'ring-2 ring-offset-1' : ''}`}
+                style={{
+                  backgroundColor: isActive ? color : color + '18',
+                  color: isActive ? 'white' : color,
+                }}
+                onClick={() => setActiveSubCategory(isActive ? null : sub)}
+              >
+                {publicSubCategoryLabels[sub]}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <div className="max-h-[300px] overflow-y-auto flex flex-col gap-1 mt-1">
         {filteredPlaces.length === 0 && (
           <p className="text-xs text-muted-foreground text-center py-4">검색 결과가 없습니다.</p>
@@ -80,7 +120,7 @@ const PlaceFilter = ({ grade, onPlaceSelect }: PlaceFilterProps) => {
           >
             <span
               className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{ backgroundColor: categoryColors[place.category] }}
+              style={{ backgroundColor: place.subCategory ? publicSubCategoryColors[place.subCategory] : categoryColors[place.category] }}
             />
             <span className="font-medium text-foreground">{place.name}</span>
           </button>
