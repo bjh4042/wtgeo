@@ -5,7 +5,7 @@ import { stories, placenames, heritages, pastPresent, natureContent, MapContent,
 import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 import { schools, School } from '@/data/schools';
 import { getGyeongnamCities, saveGyeongnamEdit, GyeongnamCity } from '@/data/gyeongnam';
-import { SCHOOLS_UPDATED_EVENT, getMergedSchools } from '@/data/dataManager';
+import { SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent } from '@/data/dataManager';
 
 const ADMIN_PASSWORD = '4042';
 const NOTICE_KEY = 'geoje-explorer-notice';
@@ -171,16 +171,17 @@ const AdminPanel = () => {
 
   const handleSavePlace = () => {
     if (!editingPlace) return;
-    const isDefault = defaultPlaces.some(p => p.id === editingPlace.id);
+    const parsed = { ...editingPlace, lat: parseFloat(String(editingPlace.lat)) || 0, lng: parseFloat(String(editingPlace.lng)) || 0 };
+    const isDefault = defaultPlaces.some(p => p.id === parsed.id);
     if (isDefault) {
-      const updated = { ...placeEdits, [editingPlace.id]: editingPlace };
+      const updated = { ...placeEdits, [parsed.id]: parsed };
       setPlaceEdits(updated);
       localStorage.setItem(PLACE_EDITS_KEY, JSON.stringify(updated));
     } else {
       const updated = [...customPlaces];
-      const idx = updated.findIndex(p => p.id === editingPlace.id);
-      if (idx >= 0) updated[idx] = editingPlace;
-      else updated.push(editingPlace);
+      const idx = updated.findIndex(p => p.id === parsed.id);
+      if (idx >= 0) updated[idx] = parsed;
+      else updated.push(parsed);
       setCustomPlaces(updated);
       localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(updated));
     }
@@ -189,17 +190,18 @@ const AdminPanel = () => {
 
   const handleSaveContent = () => {
     if (!editingContent) return;
+    const parsed = { ...editingContent, lat: parseFloat(String(editingContent.lat)) || 0, lng: parseFloat(String(editingContent.lng)) || 0 };
     const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
-    const isDefault = allDefault.some(c => c.id === editingContent.id);
+    const isDefault = allDefault.some(c => c.id === parsed.id);
     if (isDefault) {
-      const updated = { ...contentEdits, [editingContent.id]: editingContent };
+      const updated = { ...contentEdits, [parsed.id]: parsed };
       setContentEdits(updated);
       localStorage.setItem(CONTENT_EDITS_KEY, JSON.stringify(updated));
     } else {
       const updated = [...customContent];
-      const idx = updated.findIndex(c => c.id === editingContent.id);
-      if (idx >= 0) updated[idx] = editingContent;
-      else updated.push(editingContent);
+      const idx = updated.findIndex(c => c.id === parsed.id);
+      if (idx >= 0) updated[idx] = parsed;
+      else updated.push(parsed);
       setCustomContent(updated);
       localStorage.setItem(CUSTOM_CONTENT_KEY, JSON.stringify(updated));
     }
@@ -208,7 +210,8 @@ const AdminPanel = () => {
 
   const handleSaveSchool = () => {
     if (!editingSchool || editingSchoolIdx === null) return;
-    const updated = { ...schoolEdits, [editingSchoolIdx]: editingSchool };
+    const parsed = { ...editingSchool, lat: parseFloat(String(editingSchool.lat)) || 0, lng: parseFloat(String(editingSchool.lng)) || 0 };
+    const updated = { ...schoolEdits, [editingSchoolIdx]: parsed };
     setSchoolEdits(updated);
     localStorage.setItem(SCHOOL_EDITS_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
@@ -218,7 +221,14 @@ const AdminPanel = () => {
 
   const handleSaveCity = () => {
     if (!editingCity) return;
-    saveGyeongnamEdit(editingCity.id, editingCity);
+    // Only save user-editable fields, exclude boundary to avoid localStorage bloat
+    const { boundary, ...editWithoutBoundary } = editingCity;
+    const toSave = {
+      ...editWithoutBoundary,
+      lat: parseFloat(String(editingCity.lat)) || 0,
+      lng: parseFloat(String(editingCity.lng)) || 0,
+    };
+    saveGyeongnamEdit(editingCity.id, toSave);
     setEditingCity(null);
   };
 
@@ -253,8 +263,8 @@ const AdminPanel = () => {
     setEditingSiteInfo(false);
   };
 
-  // Filtered places
-  const allPlaces = [...defaultPlaces, ...customPlaces];
+  // Filtered places - use merged data so edits are visible
+  const allPlaces = useMemo(() => getMergedPlaces(), [placeEdits, customPlaces]);
   const filteredPlaces = useMemo(() => {
     let result = allPlaces;
     if (placeCategoryFilter !== 'all') {
@@ -266,8 +276,8 @@ const AdminPanel = () => {
     return result;
   }, [allPlaces, placeCategoryFilter, searchTerm]);
 
-  // Filtered content
-  const allContentItems = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent, ...customContent];
+  // Filtered content - use merged data so edits are visible
+  const allContentItems = useMemo(() => getMergedContent(), [contentEdits, customContent]);
   const filteredContent = useMemo(() => {
     let result = allContentItems;
     if (contentTypeFilter !== 'all') {
@@ -478,11 +488,11 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-foreground">위도</label>
-                <input type="number" step="0.000001" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingPlace.lat} onChange={e => setEditingPlace({ ...editingPlace, lat: e.target.value as any })} className={inputClass} />
               </div>
               <div>
                 <label className="text-[10px] font-semibold text-foreground">경도</label>
-                <input type="number" step="0.000001" value={editingPlace.lng} onChange={e => setEditingPlace({ ...editingPlace, lng: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingPlace.lng} onChange={e => setEditingPlace({ ...editingPlace, lng: e.target.value as any })} className={inputClass} />
               </div>
             </div>
             <div>
@@ -578,11 +588,11 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-foreground">위도</label>
-                <input type="number" step="0.000001" value={editingContent.lat} onChange={e => setEditingContent({ ...editingContent, lat: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingContent.lat} onChange={e => setEditingContent({ ...editingContent, lat: e.target.value as any })} className={inputClass} />
               </div>
               <div>
                 <label className="text-[10px] font-semibold text-foreground">경도</label>
-                <input type="number" step="0.000001" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingContent.lng} onChange={e => setEditingContent({ ...editingContent, lng: e.target.value as any })} className={inputClass} />
               </div>
             </div>
             <div>
@@ -663,11 +673,11 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-foreground">위도</label>
-                <input type="number" step="0.000001" value={editingSchool.lat} onChange={e => setEditingSchool({ ...editingSchool, lat: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingSchool.lat} onChange={e => setEditingSchool({ ...editingSchool, lat: e.target.value as any })} className={inputClass} />
               </div>
               <div>
                 <label className="text-[10px] font-semibold text-foreground">경도</label>
-                <input type="number" step="0.000001" value={editingSchool.lng} onChange={e => setEditingSchool({ ...editingSchool, lng: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingSchool.lng} onChange={e => setEditingSchool({ ...editingSchool, lng: e.target.value as any })} className={inputClass} />
               </div>
             </div>
             <div>
@@ -756,11 +766,11 @@ const AdminPanel = () => {
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-foreground">위도</label>
-                <input type="number" step="0.000001" value={editingCity.lat} onChange={e => setEditingCity({ ...editingCity, lat: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingCity.lat} onChange={e => setEditingCity({ ...editingCity, lat: e.target.value as any })} className={inputClass} />
               </div>
               <div>
                 <label className="text-[10px] font-semibold text-foreground">경도</label>
-                <input type="number" step="0.000001" value={editingCity.lng} onChange={e => setEditingCity({ ...editingCity, lng: parseFloat(e.target.value) })} className={inputClass} />
+                <input type="text" inputMode="decimal" value={editingCity.lng} onChange={e => setEditingCity({ ...editingCity, lng: e.target.value as any })} className={inputClass} />
               </div>
             </div>
             <div>
