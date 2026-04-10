@@ -1,9 +1,12 @@
 export type PlaceCategory = 'tourism' | 'nature' | 'culture' | 'public' | 'experience' | 'market';
 
+export type PublicSubCategory = 'government' | 'hospital' | 'fire' | 'police' | 'post' | 'health' | 'education' | 'district';
+
 export interface Place {
   id: string;
   name: string;
   category: PlaceCategory;
+  subCategory?: PublicSubCategory;
   description: string;
   address: string;
   lat: number;
@@ -14,6 +17,28 @@ export interface Place {
   referenceUrl?: string;
   youtubeUrl?: string;
 }
+
+export const publicSubCategoryLabels: Record<PublicSubCategory, string> = {
+  government: '🏛️ 시청/행정',
+  hospital: '🏥 병원',
+  fire: '🚒 소방/119',
+  police: '👮 경찰',
+  post: '📮 우체국',
+  health: '🏥 보건소',
+  education: '📚 교육',
+  district: '🏘️ 읍면동',
+};
+
+export const publicSubCategoryColors: Record<PublicSubCategory, string> = {
+  government: '#1565C0',
+  hospital: '#C62828',
+  fire: '#E65100',
+  police: '#283593',
+  post: '#EF6C00',
+  health: '#2E7D32',
+  education: '#6A1B9A',
+  district: '#00838F',
+};
 
 export const categoryLabels: Record<PlaceCategory, string> = {
   tourism: '🏖️ 관광 명소',
