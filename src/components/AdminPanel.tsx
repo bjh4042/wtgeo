@@ -210,7 +210,8 @@ const AdminPanel = () => {
 
   const handleSaveSchool = () => {
     if (!editingSchool || editingSchoolIdx === null) return;
-    const updated = { ...schoolEdits, [editingSchoolIdx]: editingSchool };
+    const parsed = { ...editingSchool, lat: parseFloat(String(editingSchool.lat)) || 0, lng: parseFloat(String(editingSchool.lng)) || 0 };
+    const updated = { ...schoolEdits, [editingSchoolIdx]: parsed };
     setSchoolEdits(updated);
     localStorage.setItem(SCHOOL_EDITS_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
