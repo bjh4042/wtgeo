@@ -3,6 +3,7 @@ import { places as defaultPlaces, Place, PlaceCategory } from './places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory } from './content';
 import { schools as defaultSchools, School, getInitialConsonant } from './schools';
 import { supabase } from '@/integrations/supabase/client';
+import { getSheetPlaces, clearSheetCache, SHEETS_SYNC_EVENT } from './googleSheetsSync';
 
 export const SCHOOLS_UPDATED_EVENT = 'geoje-schools-updated';
 export const PLACES_UPDATED_EVENT = 'geoje-places-updated';
@@ -15,6 +16,7 @@ let contentEditsCache: Record<string, Partial<MapContent>> = {};
 let customContentCache: MapContent[] = [];
 let schoolEditsCache: Record<number, Partial<School>> = {};
 let siteSettingsCache: Record<string, any> = {};
+let sheetPlacesCacheLocal: Place[] = [];
 let dataLoaded = false;
 
 // ─── Load all data from cloud ───
@@ -134,10 +136,13 @@ export async function loadAllDataFromCloud(): Promise<void> {
     }
 
     dataLoaded = true;
+    // 시트 동기화도 실행
+    syncFromSheet();
   } catch (e) {
     console.error('Failed to load data from cloud, falling back to localStorage:', e);
     loadFromLocalStorage();
     dataLoaded = true;
+    syncFromSheet();
   }
 }
 
@@ -164,7 +169,10 @@ export function getMergedPlaces(): Place[] {
     const edit = placeEditsCache[p.id];
     return edit ? { ...p, ...edit } as Place : p;
   });
-  return [...merged, ...customPlacesCache];
+  // 시트 데이터: 기존 ID와 중복되지 않는 것만 추가
+  const existingIds = new Set([...merged.map(p => p.id), ...customPlacesCache.map(p => p.id)]);
+  const uniqueSheetPlaces = sheetPlacesCacheLocal.filter(p => !existingIds.has(p.id));
+  return [...merged, ...customPlacesCache, ...uniqueSheetPlaces];
 }
 
 export function getMergedPlacesByGrade(grade: 3 | 4): Place[] {
@@ -411,4 +419,46 @@ export function getMergedAvailableConsonants(): string[] {
 
 export function filterMergedSchoolsByConsonant(consonant: string): School[] {
   return getMergedSchools().filter(school => getInitialConsonant(school.name[0]) === consonant);
+}
+
+// ─── Google Sheets 동기화 ───
+export function getSheetUrl(): string | null {
+  const cloud = siteSettingsCache['sheet_url'];
+  if (cloud) return typeof cloud === 'string' ? (cloud.startsWith('"') ? JSON.parse(cloud) : cloud) : String(cloud);
+  return localStorage.getItem('geoje-sheet-url');
+}
+
+export async function saveSheetUrl(url: string | null): Promise<void> {
+  if (url) {
+    siteSettingsCache['sheet_url'] = url;
+    localStorage.setItem('geoje-sheet-url', url);
+  } else {
+    delete siteSettingsCache['sheet_url'];
+    localStorage.removeItem('geoje-sheet-url');
+  }
+  try {
+    if (url) {
+      await supabase.from('site_settings').upsert({ key: 'sheet_url', value: JSON.stringify(url), updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    } else {
+      await supabase.from('site_settings').delete().eq('key', 'sheet_url');
+    }
+  } catch (e) { console.error('Failed to save sheet URL:', e); }
+  clearSheetCache();
+  await syncFromSheet();
+}
+
+export async function syncFromSheet(): Promise<void> {
+  const url = getSheetUrl();
+  if (!url) { sheetPlacesCacheLocal = []; return; }
+  try {
+    sheetPlacesCacheLocal = await getSheetPlaces(url);
+    window.dispatchEvent(new Event(SHEETS_SYNC_EVENT));
+    window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
+  } catch (e) {
+    console.error('Sheet sync failed:', e);
+  }
+}
+
+export function getSheetPlacesCount(): number {
+  return sheetPlacesCacheLocal.length;
 }
