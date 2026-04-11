@@ -5,17 +5,15 @@ import { stories, placenames, heritages, pastPresent, natureContent, MapContent,
 import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 import { schools, School } from '@/data/schools';
 import { getGyeongnamCities, saveGyeongnamEdit, loadGyeongnamEditsFromCloud, GyeongnamCity } from '@/data/gyeongnam';
-import { SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent } from '@/data/dataManager';
+import {
+  SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent,
+  savePlaceEdit, saveCustomPlace, deleteCustomPlace,
+  saveContentEdit, saveCustomContent, deleteCustomContent,
+  saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
+  getVisitorCount, loadAllDataFromCloud,
+} from '@/data/dataManager';
 
 const ADMIN_PASSWORD = '4042';
-const NOTICE_KEY = 'geoje-explorer-notice';
-const VISITOR_KEY = 'geoje-explorer-visitors';
-const CUSTOM_PLACES_KEY = 'geoje-custom-places';
-const CUSTOM_CONTENT_KEY = 'geoje-custom-content';
-const PLACE_EDITS_KEY = 'geoje-place-edits';
-const CONTENT_EDITS_KEY = 'geoje-content-edits';
-const SITE_INFO_KEY = 'geoje-site-info';
-const SCHOOL_EDITS_KEY = 'geoje-school-edits';
 
 export interface SiteInfo {
   serviceName: string;
