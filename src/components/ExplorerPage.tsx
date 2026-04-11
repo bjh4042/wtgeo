@@ -41,8 +41,9 @@ const ExplorerPage = () => {
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
 
   useEffect(() => {
-    const count = incrementVisitorCount();
-    setVisitorCount(count);
+    loadAllDataFromCloud().then(() => {
+      incrementVisitorCount().then(count => setVisitorCount(count));
+    });
     recordVisit();
   }, []);
 
