@@ -816,6 +816,49 @@ const AdminPanel = () => {
                 </div>
               )}
 
+              {excelTab === 'gyeongnam' && (
+                <div className="space-y-2">
+                  <p className="text-[10px] text-muted-foreground">경남 18개 시군 데이터를 Excel로 관리합니다. 시군명 기준으로 매칭되어 수정됩니다.</p>
+                  <button onClick={() => exportGyeongnamToExcel(getGyeongnamCities())} className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📥 경남 시군 데이터 Excel 다운로드
+                  </button>
+                  <label className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📤 경남 시군 Excel 업로드 (수정)
+                    <input type="file" accept=".xlsx,.xls" className="hidden" disabled={excelUploading} onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      setExcelUploading(true); setExcelUploadResult(null);
+                      try {
+                        const parsed = parseExcelToGyeongnam(await file.arrayBuffer());
+                        if (parsed.length === 0) { setExcelUploadResult('⚠️ 유효한 시군 데이터가 없습니다.'); }
+                        else {
+                          const existingCities = getGyeongnamCities();
+                          let updated = 0;
+                          for (const partial of parsed) {
+                            const match = existingCities.find(c => c.name === partial.name);
+                            if (match) {
+                              const { name, ...editData } = partial;
+                              await saveGyeongnamEdit(match.id, editData);
+                              updated++;
+                            }
+                          }
+                          forceUpdate(n => n + 1);
+                          setExcelUploadResult(`✅ ${updated}개 시군 데이터가 수정되었습니다.`);
+                        }
+                      } catch { setExcelUploadResult('❌ 파일 처리 중 오류가 발생했습니다.'); }
+                      setExcelUploading(false); e.target.value = '';
+                    }} />
+                  </label>
+                  <details className="text-[10px]">
+                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 열 형식 안내</summary>
+                    <div className="mt-1 p-2 rounded bg-muted/50 space-y-0.5 text-muted-foreground">
+                      <p className="font-semibold text-foreground">필수: 시군명</p>
+                      <p>선택: 한자, 인구, 면적, 마스코트, 이모지, 공식사이트, 이름유래, 위도, 경도, 주요특징</p>
+                      <p className="text-foreground mt-1">💡 먼저 다운로드로 현재 데이터를 확인하세요.</p>
+                    </div>
+                  </details>
+                </div>
+              )}
+
               {excelUploading && <p className="text-[10px] text-muted-foreground">⏳ 업로드 중...</p>}
               {excelUploadResult && <p className="text-[10px] font-medium">{excelUploadResult}</p>}
             </div>
