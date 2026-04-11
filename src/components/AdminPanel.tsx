@@ -91,6 +91,7 @@ const AdminPanel = () => {
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
   const [excelUploading, setExcelUploading] = useState(false);
   const [excelUploadResult, setExcelUploadResult] = useState<string | null>(null);
+  const [excelTab, setExcelTab] = useState<'places' | 'content'>('places');
   // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
   // Force re-render trigger
