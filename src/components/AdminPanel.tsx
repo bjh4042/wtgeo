@@ -153,7 +153,7 @@ const AdminPanel = () => {
   }, []);
 
   const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) { setIsAdmin(true); setError(false); }
+    if (password === ADMIN_PASSWORD) { setIsAdmin(true); setError(false); loadGyeongnamEditsFromCloud(); }
     else { setError(true); }
   };
 
