@@ -21,38 +21,39 @@ Deno.serve(async (req) => {
     const response = await fetch(url);
     const html = await response.text();
 
-    // Extract main content area - look for the content between breadcrumb and footer
-    // The content is in the #contentsBox area
+    // Extract content from <div class="con-wrap" id="con-wrap">
     let content = '';
     
-    // Try to extract content from the HTML
-    const contentMatch = html.match(/<div[^>]*class="[^"]*sub_cont[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<div[^>]*class="[^"]*satisfaction/i);
-    if (contentMatch) {
-      content = contentMatch[1];
+    const conWrapMatch = html.match(/<div[^>]*id="con-wrap"[^>]*>([\s\S]*?)<!--\s*e:\s*page/i) 
+      || html.match(/<div[^>]*id="con-wrap"[^>]*>([\s\S]*?)<div[^>]*class="[^"]*satisfaction/i)
+      || html.match(/<div[^>]*id="con-wrap"[^>]*>([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/i);
+    
+    if (conWrapMatch) {
+      content = conWrapMatch[1];
     } else {
-      // Fallback: try to find article content
-      const articleMatch = html.match(/<div[^>]*id="contentsBox"[^>]*>([\s\S]*?)<div[^>]*class="[^"]*satisfaction/i);
-      if (articleMatch) {
-        content = articleMatch[1];
+      // Broader fallback: get everything inside contentsBox
+      const contentsMatch = html.match(/<div[^>]*id="contentsBox"[^>]*>([\s\S]*?)<div[^>]*class="[^"]*satisfaction/i);
+      if (contentsMatch) {
+        content = contentsMatch[1];
       }
     }
 
-    // Clean HTML: remove scripts, styles, navigation
-    content = content
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<nav[\s\S]*?<\/nav>/gi, '')
-      .replace(/<div[^>]*class="[^"]*location[^"]*"[\s\S]*?<\/div>/gi, '')
-      .replace(/<div[^>]*class="[^"]*lnb[^"]*"[\s\S]*?<\/div>/gi, '');
+    // Remove tab navigation (taps-dt5)
+    content = content.replace(/<ul[^>]*class="[^"]*taps-dt[^"]*"[^>]*>[\s\S]*?<\/ul>/gi, '');
+    // Remove spacer elements
+    content = content.replace(/<p[^>]*class="gap\d+"[^>]*><\/p>/gi, '');
+    // Remove scripts, styles
+    content = content.replace(/<script[\s\S]*?<\/script>/gi, '');
+    content = content.replace(/<style[\s\S]*?<\/style>/gi, '');
 
-    // Convert HTML to simplified text
-    // Replace headers
-    content = content.replace(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi, '\n## $1\n');
-    // Replace list items
-    content = content.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '• $1\n');
-    // Replace paragraphs
+    // Convert h4/h5 titles
+    content = content.replace(/<h4[^>]*class="cont-title"[^>]*>([\s\S]*?)<\/h4>/gi, '\n## $1\n');
+    content = content.replace(/<h5[^>]*class="cont-title[^"]*"[^>]*>([\s\S]*?)<\/h5>/gi, '\n### $1\n');
+    // Convert list items
+    content = content.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '$1\n');
+    // Convert paragraphs
     content = content.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '$1\n\n');
-    // Replace br
+    // Convert br
     content = content.replace(/<br\s*\/?>/gi, '\n');
     // Remove remaining HTML tags
     content = content.replace(/<[^>]+>/g, '');
@@ -66,8 +67,8 @@ Deno.serve(async (req) => {
     // Clean up whitespace
     content = content.replace(/\n{3,}/g, '\n\n').trim();
 
-    // Extract title from page
-    const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    // Extract title
+    const titleMatch = html.match(/<h3[^>]*class="title"[^>]*>([\s\S]*?)<\/h3>/i);
     const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : '';
 
     return new Response(JSON.stringify({ title, content }), {
