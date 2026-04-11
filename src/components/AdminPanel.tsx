@@ -88,7 +88,7 @@ const AdminPanel = () => {
   const [contentTypeFilter, setContentTypeFilter] = useState<ContentCategory | 'all'>('all');
   const [siteInfo, setSiteInfo] = useState<SiteInfo>(getSiteInfo() as SiteInfo);
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
-  const [schoolEdits, setSchoolEdits] = useState<Record<number, Partial<EditableSchool>>>({});
+  // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
   // Force re-render trigger
   const [renderKey, forceUpdate] = useState(0);
