@@ -91,7 +91,7 @@ const AdminPanel = () => {
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
   const [excelUploading, setExcelUploading] = useState(false);
   const [excelUploadResult, setExcelUploadResult] = useState<string | null>(null);
-  const [excelTab, setExcelTab] = useState<'places' | 'content'>('places');
+  const [excelTab, setExcelTab] = useState<'places' | 'content' | 'gyeongnam'>('places');
   // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
   // Force re-render trigger
@@ -739,8 +739,9 @@ const AdminPanel = () => {
             <div className="p-3 rounded-lg bg-accent/30 border border-accent space-y-2">
               <h4 className="text-xs font-bold flex items-center gap-1">📊 Excel 데이터 관리</h4>
               <div className="flex gap-1">
-                <button onClick={() => setExcelTab('places')} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'places' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📍 장소</button>
-                <button onClick={() => setExcelTab('content')} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'content' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📖 콘텐츠</button>
+                <button onClick={() => { setExcelTab('places'); setExcelUploadResult(null); }} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'places' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📍 장소</button>
+                <button onClick={() => { setExcelTab('content'); setExcelUploadResult(null); }} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'content' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📖 콘텐츠</button>
+                <button onClick={() => { setExcelTab('gyeongnam'); setExcelUploadResult(null); }} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'gyeongnam' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>🗺️ 경남</button>
               </div>
 
               {excelTab === 'places' && (
