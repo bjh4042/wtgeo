@@ -82,10 +82,7 @@ const AdminPanel = () => {
   const [editingSchool, setEditingSchool] = useState<EditableSchool | null>(null);
   const [editingSchoolIdx, setEditingSchoolIdx] = useState<number | null>(null);
   const [editingCity, setEditingCity] = useState<GyeongnamCity | null>(null);
-  const [placeEdits, setPlaceEdits] = useState<Record<string, Partial<EditablePlace>>>({});
-  const [contentEdits, setContentEdits] = useState<Record<string, Partial<EditableContent>>>({});
-  const [customPlaces, setCustomPlaces] = useState<EditablePlace[]>([]);
-  const [customContent, setCustomContent] = useState<EditableContent[]>([]);
+  // placeEdits/contentEdits/customPlaces/customContent are now managed in dataManager cache
   const [searchTerm, setSearchTerm] = useState('');
   const [placeCategoryFilter, setPlaceCategoryFilter] = useState<PlaceCategory | 'all'>('all');
   const [contentTypeFilter, setContentTypeFilter] = useState<ContentCategory | 'all'>('all');
