@@ -58,15 +58,22 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     return total;
   }, [routePlaces, school]);
 
-  // Kakao multi-waypoint URL: use map.kakao.com/link/from/to with waypoints
-  const kakaoRouteUrl = useMemo(() => {
+  // Kakao Maps URL: use multi-marker map view + direction to final destination
+  const kakaoMapUrl = useMemo(() => {
     if (routePlaces.length === 0) return '';
-    // Start from school, end at last place
-    const origin = `${encodeURIComponent(school.name)},${school.lat},${school.lng}`;
-    const dest = routePlaces[routePlaces.length - 1];
-    const destination = `${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
-    return `https://map.kakao.com/link/from/${origin}/to/${destination}`;
+    // Multi-marker view: school + all route places
+    const markers = [
+      `${encodeURIComponent(school.name)},${school.lat},${school.lng}`,
+      ...routePlaces.map(p => `${encodeURIComponent(p.name)},${p.lat},${p.lng}`)
+    ];
+    return `https://map.kakao.com/link/map/${markers.join('/')}`;
   }, [routePlaces, school]);
+
+  const kakaoDirectionUrl = useMemo(() => {
+    if (routePlaces.length === 0) return '';
+    const dest = routePlaces[routePlaces.length - 1];
+    return `https://map.kakao.com/link/to/${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
+  }, [routePlaces]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
@@ -189,10 +196,16 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
           {/* Actions */}
           {routePlaces.length >= 1 && (
             <div className="mt-4 flex gap-2">
-              <a href={kakaoRouteUrl} target="_blank" rel="noopener noreferrer"
+              <a href={kakaoDirectionUrl} target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
-                <Navigation size={14} /> 카카오맵 길찾기
+                <Navigation size={14} /> 길찾기
               </a>
+              {routePlaces.length >= 2 && (
+                <a href={kakaoMapUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-accent text-accent-foreground text-sm font-bold hover:opacity-90 transition-opacity">
+                  📍 전체보기
+                </a>
+              )}
               <button onClick={() => setRoutePlaces([])}
                 className="px-4 py-2.5 rounded-xl bg-muted text-muted-foreground text-sm font-medium cursor-pointer hover:bg-muted/80 transition-colors">
                 초기화
