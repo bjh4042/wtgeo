@@ -15,6 +15,7 @@ let customPlacesCache: Place[] = [];
 let contentEditsCache: Record<string, Partial<MapContent>> = {};
 let customContentCache: MapContent[] = [];
 let schoolEditsCache: Record<number, Partial<School>> = {};
+let deletedPlaceIdsCache: string[] = [];
 let siteSettingsCache: Record<string, any> = {};
 
 let dataLoaded = false;
