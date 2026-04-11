@@ -888,6 +888,104 @@ export const places: Place[] = [
     description: '장목면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
     address: '경상남도 거제시 장목면 거제북로 1195', lat: 34.989653, lng: 128.681711, grade: 3,
   },
+
+  // ── 4학년: 경상남도 광역 공공기관 ──
+  {
+    id: 'p4-gov-gyeongnam', name: '경상남도청', category: 'public', subCategory: 'government',
+    description: '경상남도의 행정을 총괄하는 광역자치단체 청사입니다. 도지사가 근무하며, 도민의 생활과 관련된 다양한 정책을 수립·집행합니다.',
+    address: '경상남도 창원시 성산구 사림로 151', lat: 35.237748, lng: 128.692257, grade: 4,
+    referenceUrl: 'https://www.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-police-gyeongnam', name: '경상남도경찰청', category: 'public', subCategory: 'police',
+    description: '경상남도 전체의 치안과 교통안전을 담당하는 광역 경찰 기관입니다. 도내 경찰서를 지휘·감독하며 도민의 안전을 지킵니다.',
+    address: '경상남도 창원시 의창구 상남로 7', lat: 35.235941, lng: 128.683412, grade: 4,
+    referenceUrl: 'https://gn.police.go.kr',
+  },
+  {
+    id: 'p4-fire-gyeongnam', name: '경상남도 소방본부', category: 'public', subCategory: 'fire',
+    description: '경상남도의 화재 예방·진압, 구조·구급 업무를 총괄하는 소방 기관입니다. 도내 소방서를 지휘하며 도민의 생명과 재산을 보호합니다.',
+    address: '경상남도 창원시 의창구 중앙대로 300', lat: 35.225912, lng: 128.679123, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+
+  // ── 4학년: 시청 ──
+  {
+    id: 'p4-gov-changwon', name: '창원시청', category: 'public', subCategory: 'government',
+    description: '경상남도의 도청 소재지이자 최대 도시인 창원시의 시청입니다. 옛 창원·마산·진해가 통합된 대한민국 최대 면적의 기초자치단체입니다. ☎ 055-225-2114',
+    address: '경상남도 창원시 성산구 중앙대로 151', lat: 35.227918, lng: 128.681126, grade: 4,
+    referenceUrl: 'https://www.changwon.go.kr',
+  },
+  {
+    id: 'p4-gov-jinju', name: '진주시청', category: 'public', subCategory: 'government',
+    description: '경남 서부의 중심 도시 진주시의 시청입니다. 진주남강유등축제로 유명하며, 교육·행정의 중심지입니다. ☎ 055-749-5000',
+    address: '경상남도 진주시 동진로 155', lat: 35.180214, lng: 128.107755, grade: 4,
+    referenceUrl: 'https://www.jinju.go.kr',
+  },
+  {
+    id: 'p4-gov-tongyeong', name: '통영시청', category: 'public', subCategory: 'government',
+    description: '한려해상국립공원의 중심 도시이자 이순신 장군의 한산대첩으로 유명한 통영시의 시청입니다. ☎ 055-650-5000',
+    address: '경상남도 통영시 해송구길 27', lat: 34.854425, lng: 128.433431, grade: 4,
+    referenceUrl: 'https://www.tongyeong.go.kr',
+  },
+  {
+    id: 'p4-gov-gimhae', name: '김해시청', category: 'public', subCategory: 'government',
+    description: '가야 문화의 중심지이자 김해국제공항이 위치한 김해시의 시청입니다. 수로왕과 허황후의 역사 도시입니다. ☎ 055-330-2114',
+    address: '경상남도 김해시 김해대로 2401', lat: 35.228532, lng: 128.889354, grade: 4,
+    referenceUrl: 'https://www.gimhae.go.kr',
+  },
+  {
+    id: 'p4-gov-yangsan', name: '양산시청', category: 'public', subCategory: 'government',
+    description: '통도사와 천성산이 있는 양산시의 시청입니다. 부산과 인접하여 빠르게 성장하는 도시입니다. ☎ 055-392-2114',
+    address: '경상남도 양산시 중앙로 39', lat: 35.334123, lng: 129.034567, grade: 4,
+    referenceUrl: 'https://www.yangsan.go.kr',
+  },
+
+  // ── 4학년: 경찰·소방 ──
+  {
+    id: 'p4-police-jinju', name: '진주경찰서', category: 'public', subCategory: 'police',
+    description: '진주시의 치안을 담당하는 경찰서입니다. 시민의 안전과 범죄 예방을 위해 활동합니다. ☎ 055-750-0112',
+    address: '경상남도 진주시 비봉로 2', lat: 35.195312, lng: 128.083145, grade: 4,
+    referenceUrl: 'https://jinju.police.go.kr',
+  },
+  {
+    id: 'p4-fire-changwon', name: '창원소방서', category: 'public', subCategory: 'fire',
+    description: '창원시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. 119에 전화하면 가장 가까운 소방서에서 출동합니다. ☎ 119',
+    address: '경상남도 창원시 성산구 창원대로 901', lat: 35.215234, lng: 128.673456, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+
+  // ── 4학년: 문화/역사 ──
+  {
+    id: 'p4-culture-haeinsa', name: '합천 해인사', category: 'culture',
+    description: '유네스코 세계문화유산 팔만대장경을 보관하고 있는 한국 3대 사찰 중 하나입니다. 가야산 자락에 위치한 천년 고찰입니다. ☎ 055-934-3000',
+    address: '경상남도 합천군 가야면 해인사길 122', lat: 35.800361, lng: 128.097471, grade: 4,
+    referenceUrl: 'https://www.haeinsa.or.kr',
+  },
+  {
+    id: 'p4-culture-jinjucastle', name: '진주성', category: 'culture',
+    description: '임진왜란 3대 대첩 중 하나인 진주대첩의 현장입니다. 논개의 의로운 이야기가 전해지며, 매년 진주남강유등축제가 열립니다.',
+    address: '경상남도 진주시 남강로 626', lat: 35.188542, lng: 128.077812, grade: 4,
+    referenceUrl: 'http://jinjucastle.or.kr',
+  },
+  {
+    id: 'p4-culture-surowangreung', name: '수로왕릉', category: 'culture',
+    description: '가야의 시조 김수로왕의 무덤으로 전해지는 사적입니다. 금관가야의 건국 신화와 허황후 도래 전설이 깃든 역사 유적지입니다.',
+    address: '경상남도 김해시 가락로93번길 26', lat: 35.236102, lng: 128.875323, grade: 4,
+    referenceUrl: 'https://www.gimhae.go.kr/04242/04310.web',
+  },
+  {
+    id: 'p4-culture-gimhaemuseum', name: '국립김해박물관', category: 'culture',
+    description: '가야의 역사와 문화를 전시하는 국립박물관입니다. 가야 시대의 토기, 철기, 금관 등 다양한 유물을 관람할 수 있습니다. ☎ 055-720-6800',
+    address: '경상남도 김해시 가야의길 190', lat: 35.241512, lng: 128.875142, grade: 4,
+    referenceUrl: 'https://gimhae.museum.go.kr',
+  },
+  {
+    id: 'p4-culture-jinjumuseum', name: '국립진주박물관', category: 'culture',
+    description: '임진왜란과 경남 지역의 역사·문화를 전시하는 국립박물관입니다. 진주성 내에 위치하여 역사 학습에 최적의 장소입니다. ☎ 055-740-0698',
+    address: '경상남도 진주시 남강로 626-35', lat: 35.188234, lng: 128.074567, grade: 4,
+    referenceUrl: 'https://jinju.museum.go.kr',
+  },
 ];
 
 export function getPlacesByGrade(grade: 3 | 4): Place[] {
