@@ -16,6 +16,7 @@ let contentEditsCache: Record<string, Partial<MapContent>> = {};
 let customContentCache: MapContent[] = [];
 let schoolEditsCache: Record<number, Partial<School>> = {};
 let siteSettingsCache: Record<string, any> = {};
+let sheetPlacesCacheLocal: Place[] = [];
 let dataLoaded = false;
 
 // ─── Load all data from cloud ───
@@ -165,7 +166,10 @@ export function getMergedPlaces(): Place[] {
     const edit = placeEditsCache[p.id];
     return edit ? { ...p, ...edit } as Place : p;
   });
-  return [...merged, ...customPlacesCache];
+  // 시트 데이터: 기존 ID와 중복되지 않는 것만 추가
+  const existingIds = new Set([...merged.map(p => p.id), ...customPlacesCache.map(p => p.id)]);
+  const uniqueSheetPlaces = sheetPlacesCacheLocal.filter(p => !existingIds.has(p.id));
+  return [...merged, ...customPlacesCache, ...uniqueSheetPlaces];
 }
 
 export function getMergedPlacesByGrade(grade: 3 | 4): Place[] {
