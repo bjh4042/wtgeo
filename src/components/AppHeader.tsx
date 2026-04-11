@@ -40,7 +40,7 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen }: AppHea
             </button>
           )}
           <button
-            onClick={() => schoolName ? setShowAbout(true) : setShowGuide(true)}
+            onClick={() => setShowAbout(true)}
             className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer"
             title="안내"
           >

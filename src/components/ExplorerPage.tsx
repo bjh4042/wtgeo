@@ -17,7 +17,7 @@ import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
 import GyeongnamExplorer from '@/components/GyeongnamExplorer';
 import RouteExplorer from '@/components/RouteExplorer';
-import { incrementVisitorCount, getSiteInfo } from '@/components/AdminPanel';
+import { incrementVisitorCount } from '@/components/AdminPanel';
 import { recordVisit } from '@/data/visitorStats';
 import { getMergedSchoolByName, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 import { Home, List, X, Users, Map, Route } from 'lucide-react';
@@ -40,7 +40,6 @@ const ExplorerPage = () => {
   const [showSources, setShowSources] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
-  const siteInfo = getSiteInfo();
 
   useEffect(() => {
     const count = incrementVisitorCount();
@@ -264,14 +263,9 @@ const ExplorerPage = () => {
             <span className="flex items-center gap-1"><Users size={11} /> 방문자 {visitorCount.toLocaleString()}명</span>
           </div>
           <div className="flex items-center justify-center gap-2">
-            <span>© 2025 {siteInfo.devName}. 원작: 인디스쿨 니카쌤.</span>
+            <span>© 2025 수박쌤. 원작: 인디스쿨 니카쌤.</span>
             <span className="text-muted-foreground/30">|</span>
             <AdminPanel />
-          </div>
-          <div className="flex items-center justify-center gap-2 text-muted-foreground/60">
-            <span>{siteInfo.devName}</span>
-            {siteInfo.devTitle1 && <><span>·</span><span>{siteInfo.devTitle1}</span></>}
-            {siteInfo.devEmail && <><span>·</span><a href={`mailto:${siteInfo.devEmail}`} className="hover:text-primary transition-colors">{siteInfo.devEmail}</a></>}
           </div>
         </footer>
       )}
