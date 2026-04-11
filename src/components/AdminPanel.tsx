@@ -7,7 +7,7 @@ import { schools, School } from '@/data/schools';
 import { getGyeongnamCities, saveGyeongnamEdit, loadGyeongnamEditsFromCloud, GyeongnamCity } from '@/data/gyeongnam';
 import {
   SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent,
-  savePlaceEdit, saveCustomPlace, deleteCustomPlace,
+  savePlaceEdit, saveCustomPlace, deletePlace, deleteCustomPlace,
   saveContentEdit, saveCustomContent, deleteCustomContent,
   saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
   getVisitorCount, loadAllDataFromCloud,
@@ -174,8 +174,8 @@ const AdminPanel = () => {
     setEditingCity(null);
   };
 
-  const handleDeleteCustomPlace = (id: string) => {
-    deleteCustomPlace(id);
+  const handleDeletePlace = (id: string) => {
+    deletePlace(id);
     forceUpdate(n => n + 1);
   };
 
@@ -396,7 +396,7 @@ const AdminPanel = () => {
                   <div className="flex gap-1 flex-shrink-0">
                     <button onClick={() => setEditingPlace({ id: p.id, name: p.name, description: p.description, address: p.address, lat: p.lat, lng: p.lng, category: p.category, imageUrl: p.imageUrl, origin: p.origin, referenceUrl: p.referenceUrl, youtubeUrl: p.youtubeUrl })}
                       className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
-                    <button onClick={() => { if (confirm(`"${p.name}" 장소를 삭제하시겠습니까?`)) { deleteCustomPlace(p.id); forceUpdate(n => n + 1); } }}
+                    <button onClick={() => { if (confirm(`\"${p.name}\" 장소를 삭제하시겠습니까?`)) { handleDeletePlace(p.id); } }}
                       className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                   </div>
                 </div>
