@@ -5,17 +5,15 @@ import { stories, placenames, heritages, pastPresent, natureContent, MapContent,
 import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 import { schools, School } from '@/data/schools';
 import { getGyeongnamCities, saveGyeongnamEdit, loadGyeongnamEditsFromCloud, GyeongnamCity } from '@/data/gyeongnam';
-import { SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent } from '@/data/dataManager';
+import {
+  SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent,
+  savePlaceEdit, saveCustomPlace, deleteCustomPlace,
+  saveContentEdit, saveCustomContent, deleteCustomContent,
+  saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
+  getVisitorCount, loadAllDataFromCloud,
+} from '@/data/dataManager';
 
 const ADMIN_PASSWORD = '4042';
-const NOTICE_KEY = 'geoje-explorer-notice';
-const VISITOR_KEY = 'geoje-explorer-visitors';
-const CUSTOM_PLACES_KEY = 'geoje-custom-places';
-const CUSTOM_CONTENT_KEY = 'geoje-custom-content';
-const PLACE_EDITS_KEY = 'geoje-place-edits';
-const CONTENT_EDITS_KEY = 'geoje-content-edits';
-const SITE_INFO_KEY = 'geoje-site-info';
-const SCHOOL_EDITS_KEY = 'geoje-school-edits';
 
 export interface SiteInfo {
   serviceName: string;
@@ -29,45 +27,6 @@ export interface SiteInfo {
   devTitle2: string;
   devTitle3: string;
   devEmail: string;
-}
-
-const DEFAULT_SITE_INFO: SiteInfo = {
-  serviceName: '거제탐험대',
-  version: '1.0',
-  devTool: 'Lovable',
-  mapApi: 'Kakao MAP',
-  dataSource: '공식 웹페이지',
-  siteNotice: '알림: 본 웹서비스는 타이핑 및 조사 학습이 제한적인 학생들을 위하여 학생들의 개인정보를 수집하지 않고, 성취기준과 별도로 우리 지역 거제를 쉽고 재미있게 탐험하기 위해 제작되었습니다. 데이터 수집 및 제작 시점에 따라 실제 장소의 내용이 다소 상이할 수 있으므로 사실 정보는 검색 엔진을 적극 활용하시길 바랍니다.',
-  devName: '수박쌤',
-  devTitle1: '경남 초등학교 교사',
-  devTitle2: '참쌤스쿨 크루',
-  devTitle3: '교사 크리에이터 협회 회원',
-  devEmail: 'bjh4042@naver.com',
-};
-
-export function getSiteInfo(): SiteInfo {
-  try {
-    const saved = localStorage.getItem(SITE_INFO_KEY);
-    if (saved) return { ...DEFAULT_SITE_INFO, ...JSON.parse(saved) };
-  } catch {}
-  return DEFAULT_SITE_INFO;
-}
-
-export function getNotice(): string | null {
-  return localStorage.getItem(NOTICE_KEY);
-}
-
-export function getVisitorCount(): number {
-  return parseInt(localStorage.getItem(VISITOR_KEY) || '0', 10);
-}
-
-export function incrementVisitorCount(): number {
-  const sessionKey = 'geoje-explorer-visited';
-  if (sessionStorage.getItem(sessionKey)) return getVisitorCount();
-  sessionStorage.setItem(sessionKey, 'true');
-  const count = getVisitorCount() + 1;
-  localStorage.setItem(VISITOR_KEY, String(count));
-  return count;
 }
 
 type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info';
@@ -123,49 +82,43 @@ const AdminPanel = () => {
   const [editingSchool, setEditingSchool] = useState<EditableSchool | null>(null);
   const [editingSchoolIdx, setEditingSchoolIdx] = useState<number | null>(null);
   const [editingCity, setEditingCity] = useState<GyeongnamCity | null>(null);
-  const [placeEdits, setPlaceEdits] = useState<Record<string, Partial<EditablePlace>>>({});
-  const [contentEdits, setContentEdits] = useState<Record<string, Partial<EditableContent>>>({});
-  const [customPlaces, setCustomPlaces] = useState<EditablePlace[]>([]);
-  const [customContent, setCustomContent] = useState<EditableContent[]>([]);
+  // placeEdits/contentEdits/customPlaces/customContent are now managed in dataManager cache
   const [searchTerm, setSearchTerm] = useState('');
   const [placeCategoryFilter, setPlaceCategoryFilter] = useState<PlaceCategory | 'all'>('all');
   const [contentTypeFilter, setContentTypeFilter] = useState<ContentCategory | 'all'>('all');
-  const [siteInfo, setSiteInfo] = useState<SiteInfo>(DEFAULT_SITE_INFO);
+  const [siteInfo, setSiteInfo] = useState<SiteInfo>(getSiteInfo() as SiteInfo);
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
-  const [schoolEdits, setSchoolEdits] = useState<Record<number, Partial<EditableSchool>>>({});
+  // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
+  // Force re-render trigger
+  const [renderKey, forceUpdate] = useState(0);
 
   useEffect(() => {
     setCurrentNotice(getNotice());
-    setSiteInfo(getSiteInfo());
-    try {
-      const cp = localStorage.getItem(CUSTOM_PLACES_KEY);
-      if (cp) setCustomPlaces(JSON.parse(cp));
-      const cc = localStorage.getItem(CUSTOM_CONTENT_KEY);
-      if (cc) setCustomContent(JSON.parse(cc));
-      const pe = localStorage.getItem(PLACE_EDITS_KEY);
-      if (pe) setPlaceEdits(JSON.parse(pe));
-      const ce = localStorage.getItem(CONTENT_EDITS_KEY);
-      if (ce) setContentEdits(JSON.parse(ce));
-      const se = localStorage.getItem(SCHOOL_EDITS_KEY);
-      if (se) setSchoolEdits(JSON.parse(se));
-    } catch {}
+    setSiteInfo(getSiteInfo() as SiteInfo);
   }, []);
 
   const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) { setIsAdmin(true); setError(false); loadGyeongnamEditsFromCloud(); }
-    else { setError(true); }
+    if (password === ADMIN_PASSWORD) {
+      setIsAdmin(true); setError(false);
+      loadAllDataFromCloud().then(() => {
+        loadGyeongnamEditsFromCloud();
+        forceUpdate(n => n + 1);
+        setCurrentNotice(getNotice());
+        setSiteInfo(getSiteInfo() as SiteInfo);
+      });
+    } else { setError(true); }
   };
 
   const handleSaveNotice = () => {
     if (!notice.trim()) return;
-    localStorage.setItem(NOTICE_KEY, notice.trim());
+    saveNotice(notice.trim());
     setCurrentNotice(notice.trim());
     setNotice('');
   };
 
   const handleDeleteNotice = () => {
-    localStorage.removeItem(NOTICE_KEY);
+    saveNotice(null);
     setCurrentNotice(null);
   };
 
@@ -174,18 +127,12 @@ const AdminPanel = () => {
     const parsed = { ...editingPlace, lat: parseFloat(String(editingPlace.lat)) || 0, lng: parseFloat(String(editingPlace.lng)) || 0 };
     const isDefault = defaultPlaces.some(p => p.id === parsed.id);
     if (isDefault) {
-      const updated = { ...placeEdits, [parsed.id]: parsed };
-      setPlaceEdits(updated);
-      localStorage.setItem(PLACE_EDITS_KEY, JSON.stringify(updated));
+      savePlaceEdit(parsed.id, parsed as any);
     } else {
-      const updated = [...customPlaces];
-      const idx = updated.findIndex(p => p.id === parsed.id);
-      if (idx >= 0) updated[idx] = parsed;
-      else updated.push(parsed);
-      setCustomPlaces(updated);
-      localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(updated));
+      saveCustomPlace(parsed as any);
     }
     setEditingPlace(null);
+    forceUpdate(n => n + 1);
   };
 
   const handleSaveContent = () => {
@@ -194,34 +141,25 @@ const AdminPanel = () => {
     const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
     const isDefault = allDefault.some(c => c.id === parsed.id);
     if (isDefault) {
-      const updated = { ...contentEdits, [parsed.id]: parsed };
-      setContentEdits(updated);
-      localStorage.setItem(CONTENT_EDITS_KEY, JSON.stringify(updated));
+      saveContentEdit(parsed.id, parsed as any);
     } else {
-      const updated = [...customContent];
-      const idx = updated.findIndex(c => c.id === parsed.id);
-      if (idx >= 0) updated[idx] = parsed;
-      else updated.push(parsed);
-      setCustomContent(updated);
-      localStorage.setItem(CUSTOM_CONTENT_KEY, JSON.stringify(updated));
+      saveCustomContent(parsed as any);
     }
     setEditingContent(null);
+    forceUpdate(n => n + 1);
   };
 
   const handleSaveSchool = () => {
     if (!editingSchool || editingSchoolIdx === null) return;
     const parsed = { ...editingSchool, lat: parseFloat(String(editingSchool.lat)) || 0, lng: parseFloat(String(editingSchool.lng)) || 0 };
-    const updated = { ...schoolEdits, [editingSchoolIdx]: parsed };
-    setSchoolEdits(updated);
-    localStorage.setItem(SCHOOL_EDITS_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
+    saveSchoolEdit(editingSchoolIdx, parsed);
     setEditingSchool(null);
     setEditingSchoolIdx(null);
+    forceUpdate(n => n + 1);
   };
 
   const handleSaveCity = () => {
     if (!editingCity) return;
-    // Only save user-editable fields, exclude boundary to avoid localStorage bloat
     const { boundary, ...editWithoutBoundary } = editingCity;
     const toSave = {
       ...editWithoutBoundary,
@@ -233,15 +171,13 @@ const AdminPanel = () => {
   };
 
   const handleDeleteCustomPlace = (id: string) => {
-    const updated = customPlaces.filter(p => p.id !== id);
-    setCustomPlaces(updated);
-    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(updated));
+    deleteCustomPlace(id);
+    forceUpdate(n => n + 1);
   };
 
   const handleDeleteCustomContent = (id: string) => {
-    const updated = customContent.filter(c => c.id !== id);
-    setCustomContent(updated);
-    localStorage.setItem(CUSTOM_CONTENT_KEY, JSON.stringify(updated));
+    deleteCustomContent(id);
+    forceUpdate(n => n + 1);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'place' | 'content') => {
@@ -259,12 +195,12 @@ const AdminPanel = () => {
   };
 
   const handleSaveSiteInfo = () => {
-    localStorage.setItem(SITE_INFO_KEY, JSON.stringify(siteInfo));
+    saveSiteInfo(siteInfo);
     setEditingSiteInfo(false);
   };
 
   // Filtered places - use merged data so edits are visible
-  const allPlaces = useMemo(() => getMergedPlaces(), [placeEdits, customPlaces]);
+  const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
   const filteredPlaces = useMemo(() => {
     let result = allPlaces;
     if (placeCategoryFilter !== 'all') {
@@ -277,7 +213,7 @@ const AdminPanel = () => {
   }, [allPlaces, placeCategoryFilter, searchTerm]);
 
   // Filtered content - use merged data so edits are visible
-  const allContentItems = useMemo(() => getMergedContent(), [contentEdits, customContent]);
+  const allContentItems = useMemo(() => getMergedContent(), [renderKey]);
   const filteredContent = useMemo(() => {
     let result = allContentItems;
     if (contentTypeFilter !== 'all') {
@@ -290,7 +226,7 @@ const AdminPanel = () => {
   }, [allContentItems, contentTypeFilter, searchTerm]);
 
   // Filtered schools
-  const mergedSchools = useMemo(() => getMergedSchools(), [schoolEdits]);
+  const mergedSchools = useMemo(() => getMergedSchools(), [renderKey]);
   const schoolRows = useMemo(() => mergedSchools.map((school, index) => ({ school, index })), [mergedSchools]);
   const filteredSchools = useMemo(() => {
     if (!searchTerm) return schoolRows;
@@ -635,7 +571,7 @@ const AdminPanel = () => {
             <div className="max-h-[50vh] overflow-auto space-y-1">
               <p className="text-[10px] text-muted-foreground px-1">{filteredSchools.length}개 학교</p>
               {filteredSchools.map(({ school: display, index: origIdx }) => {
-                const edited = schoolEdits[origIdx];
+                const edited = display.name !== schools[origIdx]?.name || display.address !== schools[origIdx]?.address;
                 return (
                   <div key={origIdx} className="p-2 rounded-lg border bg-muted/10 flex items-center justify-between gap-2">
                     <div className="min-w-0">

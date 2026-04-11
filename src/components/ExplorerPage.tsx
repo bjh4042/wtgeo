@@ -17,9 +17,8 @@ import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
 import GyeongnamExplorer from '@/components/GyeongnamExplorer';
 import RouteExplorer from '@/components/RouteExplorer';
-import { incrementVisitorCount } from '@/components/AdminPanel';
+import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { getMergedSchoolByName, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 import { Home, List, X, Users, Map, Route } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
@@ -42,8 +41,9 @@ const ExplorerPage = () => {
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
 
   useEffect(() => {
-    const count = incrementVisitorCount();
-    setVisitorCount(count);
+    loadAllDataFromCloud().then(() => {
+      incrementVisitorCount().then(count => setVisitorCount(count));
+    });
     recordVisit();
   }, []);
 

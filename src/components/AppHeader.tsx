@@ -1,6 +1,7 @@
 import { Info, X, Link2, Target } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { getSiteInfo, SiteInfo } from './AdminPanel';
+import { getSiteInfo } from '@/data/dataManager';
+import { SiteInfo } from './AdminPanel';
 
 interface AppHeaderProps {
   schoolName?: string;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Megaphone } from 'lucide-react';
-import { getNotice } from './AdminPanel';
+import { getNotice } from '@/data/dataManager';
 
 const DISMISSED_KEY = 'geoje-notice-dismissed';
 
