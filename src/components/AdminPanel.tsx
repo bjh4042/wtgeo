@@ -7,7 +7,7 @@ import { schools, School } from '@/data/schools';
 import { getGyeongnamCities, saveGyeongnamEdit, loadGyeongnamEditsFromCloud, GyeongnamCity } from '@/data/gyeongnam';
 import {
   SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent,
-  savePlaceEdit, saveCustomPlace, deletePlace, deleteCustomPlace,
+  savePlaceEdit, saveCustomPlace, deletePlace,
   saveContentEdit, saveCustomContent, deleteCustomContent,
   saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
   getVisitorCount, loadAllDataFromCloud,

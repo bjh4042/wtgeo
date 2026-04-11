@@ -235,7 +235,12 @@ export async function deletePlace(placeId: string): Promise<void> {
   const isDefaultPlace = defaultPlaces.some(p => p.id === placeId);
 
   if (!isDefaultPlace) {
-    await deleteCustomPlace(placeId);
+    customPlacesCache = customPlacesCache.filter(p => p.id !== placeId);
+    localStorage.setItem('geoje-custom-places', JSON.stringify(customPlacesCache));
+    try {
+      await supabase.from('custom_places').delete().eq('place_id', placeId);
+    } catch (e) { console.error('Failed to delete custom place:', e); }
+    window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
     return;
   }
 
