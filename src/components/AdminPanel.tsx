@@ -10,8 +10,9 @@ import {
   savePlaceEdit, saveCustomPlace, deleteCustomPlace,
   saveContentEdit, saveCustomContent, deleteCustomContent,
   saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
-  getVisitorCount, loadAllDataFromCloud,
+  getVisitorCount, loadAllDataFromCloud, getSheetUrl, saveSheetUrl, syncFromSheet, getSheetPlacesCount,
 } from '@/data/dataManager';
+import { exportPlacesToCsv } from '@/data/googleSheetsSync';
 
 const ADMIN_PASSWORD = '4042';
 
