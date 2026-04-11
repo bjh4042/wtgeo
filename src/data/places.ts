@@ -279,24 +279,6 @@ export const places: Place[] = [
     origin: '1592년 이순신 장군이 학익진 전법으로 왜선 73척을 격파한 한산대첩이 벌어진 곳입니다.',
   },
   {
-    id: 'c7', name: '합천 해인사', category: 'culture',
-    description: '유네스코 세계문화유산 팔만대장경을 보관하고 있는 한국 3대 사찰 중 하나입니다.',
-    address: '경상남도 합천군 가야면 치인리', lat: 35.8019, lng: 128.1015, grade: 4,
-    origin: '해인(海印)은 화엄경의 "해인삼매"에서 따온 이름으로, 802년 순응·이정 두 스님이 창건했습니다.',
-  },
-  {
-    id: 'c8', name: '진주성', category: 'culture',
-    description: '임진왜란 진주대첩의 격전지로, 논개의 의로운 이야기가 전해지는 역사적 장소입니다.',
-    address: '경상남도 진주시 본성동', lat: 35.1888, lng: 128.0776, grade: 4,
-    origin: '삼국시대부터 축성된 성으로, 1592년 김시민 장군이 3800명으로 2만 왜군을 물리친 진주대첩이 유명합니다.',
-  },
-  {
-    id: 'c11', name: '김해 수로왕릉', category: 'culture',
-    description: '가야의 시조 수로왕의 무덤으로 전해지는 사적으로, 가야의 역사를 배울 수 있습니다.',
-    address: '경상남도 김해시 서상동', lat: 35.2328, lng: 128.8721, grade: 4,
-    origin: '서기 42년 구지봉에서 알(卵)에서 태어났다는 수로왕이 가락국을 건국한 전설이 전해집니다.',
-  },
-  {
     id: 'c12', name: '밀양 영남루', category: 'culture',
     description: '조선시대 3대 누각 중 하나로, 밀양강가 절벽 위에 지어진 아름다운 건축물입니다.',
     address: '경상남도 밀양시 내일동', lat: 35.4916, lng: 128.7551, grade: 4,
@@ -540,12 +522,6 @@ export const places: Place[] = [
   },
 
   // ===== 공공기관 (4학년: 경상남도) =====
-  {
-    id: 'p10', name: '경상남도청', category: 'public', subCategory: 'government',
-    description: '경상남도의 행정을 총괄하는 도청으로, 도지사와 공무원들이 도민을 위한 정책을 수행합니다.',
-    address: '경상남도 창원시 의창구 사림동 1', lat: 35.2379, lng: 128.6919, grade: 4,
-    origin: '1896년 경상남도가 설치된 이후 진주, 부산을 거쳐 2010년 창원으로 도청이 이전되었습니다.',
-  },
   {
     id: 'p11', name: '경상남도교육청', category: 'public', subCategory: 'education',
     description: '경상남도 전체의 초·중·고 교육행정을 총괄하는 기관입니다.',
