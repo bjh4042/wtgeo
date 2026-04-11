@@ -98,6 +98,7 @@ const AdminPanel = () => {
   const visitorCount = getVisitorCount();
   // Force re-render trigger
   const [renderKey, forceUpdate] = useState(0);
+  const [showMapEditor, setShowMapEditor] = useState(false);
 
   useEffect(() => {
     setCurrentNotice(getNotice());
