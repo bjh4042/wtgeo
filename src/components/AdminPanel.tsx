@@ -91,7 +91,7 @@ const AdminPanel = () => {
   const [schoolEdits, setSchoolEdits] = useState<Record<number, Partial<EditableSchool>>>({});
   const visitorCount = getVisitorCount();
   // Force re-render trigger
-  const [, forceUpdate] = useState(0);
+  const [renderKey, forceUpdate] = useState(0);
 
   useEffect(() => {
     setCurrentNotice(getNotice());
@@ -200,7 +200,7 @@ const AdminPanel = () => {
   };
 
   // Filtered places - use merged data so edits are visible
-  const allPlaces = useMemo(() => getMergedPlaces(), [placeEdits, customPlaces]);
+  const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
   const filteredPlaces = useMemo(() => {
     let result = allPlaces;
     if (placeCategoryFilter !== 'all') {
@@ -213,7 +213,7 @@ const AdminPanel = () => {
   }, [allPlaces, placeCategoryFilter, searchTerm]);
 
   // Filtered content - use merged data so edits are visible
-  const allContentItems = useMemo(() => getMergedContent(), [contentEdits, customContent]);
+  const allContentItems = useMemo(() => getMergedContent(), [renderKey]);
   const filteredContent = useMemo(() => {
     let result = allContentItems;
     if (contentTypeFilter !== 'all') {
@@ -226,7 +226,7 @@ const AdminPanel = () => {
   }, [allContentItems, contentTypeFilter, searchTerm]);
 
   // Filtered schools
-  const mergedSchools = useMemo(() => getMergedSchools(), [schoolEdits]);
+  const mergedSchools = useMemo(() => getMergedSchools(), [renderKey]);
   const schoolRows = useMemo(() => mergedSchools.map((school, index) => ({ school, index })), [mergedSchools]);
   const filteredSchools = useMemo(() => {
     if (!searchTerm) return schoolRows;
