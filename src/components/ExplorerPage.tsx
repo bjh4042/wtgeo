@@ -17,9 +17,10 @@ import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
 import GyeongnamExplorer from '@/components/GyeongnamExplorer';
 import RouteExplorer from '@/components/RouteExplorer';
+import PlaceNameOrigins from '@/components/PlaceNameOrigins';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, List, X, Users, Map, Route } from 'lucide-react';
+import { Home, List, X, Users, Map, Route, MapPin } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
