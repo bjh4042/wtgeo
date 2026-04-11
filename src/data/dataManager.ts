@@ -157,6 +157,8 @@ function loadFromLocalStorage() {
     if (cc) customContentCache = JSON.parse(cc);
     const se = localStorage.getItem('geoje-school-edits');
     if (se) schoolEditsCache = JSON.parse(se);
+    const dp = localStorage.getItem('geoje-deleted-places');
+    if (dp) deletedPlaceIdsCache = JSON.parse(dp);
   } catch {}
 }
 
@@ -164,10 +166,12 @@ export function isDataLoaded(): boolean { return dataLoaded; }
 
 // ─── Place operations ───
 export function getMergedPlaces(): Place[] {
-  const merged = defaultPlaces.map(p => {
-    const edit = placeEditsCache[p.id];
-    return edit ? { ...p, ...edit } as Place : p;
-  });
+  const merged = defaultPlaces
+    .filter(p => !deletedPlaceIdsCache.includes(p.id))
+    .map(p => {
+      const edit = placeEditsCache[p.id];
+      return edit ? { ...p, ...edit } as Place : p;
+    });
   return [...merged, ...customPlacesCache];
 }
 
