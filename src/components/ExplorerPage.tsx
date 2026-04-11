@@ -264,14 +264,9 @@ const ExplorerPage = () => {
             <span className="flex items-center gap-1"><Users size={11} /> 방문자 {visitorCount.toLocaleString()}명</span>
           </div>
           <div className="flex items-center justify-center gap-2">
-            <span>© 2025 {siteInfo.devName}. 원작: 인디스쿨 니카쌤.</span>
+            <span>© 2025 수박쌤. 원작: 인디스쿨 니카쌤.</span>
             <span className="text-muted-foreground/30">|</span>
             <AdminPanel />
-          </div>
-          <div className="flex items-center justify-center gap-2 text-muted-foreground/60">
-            <span>{siteInfo.devName}</span>
-            {siteInfo.devTitle1 && <><span>·</span><span>{siteInfo.devTitle1}</span></>}
-            {siteInfo.devEmail && <><span>·</span><a href={`mailto:${siteInfo.devEmail}`} className="hover:text-primary transition-colors">{siteInfo.devEmail}</a></>}
           </div>
         </footer>
       )}
