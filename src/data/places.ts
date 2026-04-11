@@ -270,6 +270,19 @@ export const places: Place[] = [
     origin: '칠천량(漆川梁)은 칠천도와 거제도 사이의 좁은 바다를 가리키며, 1597년 원균이 이끈 조선 수군이 일본에 대패한 곳입니다.',
     referenceUrl: 'https://tour.geoje.go.kr',
   },
+  {
+    id: 'c-kim-ys', name: '김영삼대통령기록전시관', category: 'culture',
+    description: '대한민국 제14대 대통령 김영삼의 생애와 업적을 기록·전시하는 시설입니다. 1927년 거제시 장목면에서 태어난 김영삼 대통령의 민주화 투쟁과 문민정부 수립 등 주요 역사적 사건을 다양한 자료와 영상으로 소개합니다.',
+    address: '경상남도 거제시 장목면 외포안길 7', lat: 34.935612, lng: 128.711234, grade: 'all',
+    origin: '거제 출신 김영삼 대통령(1927~2015)은 군사정권에 맞서 민주화 운동을 이끌었으며, 1993년 문민정부를 출범시킨 대한민국 제14대 대통령입니다.',
+    referenceUrl: 'https://www.gmdc.co.kr',
+  },
+  {
+    id: 'c-moon-jae-in', name: '문재인대통령생가', category: 'culture',
+    description: '대한민국 제19대 대통령 문재인의 생가 터입니다. 1953년 거제시 명진리에서 태어난 문재인 대통령의 유년 시절을 기억하는 장소로, 거제 포로수용소 인근에 위치해 있습니다. 현재 생가 복원이 추진되고 있습니다.',
+    address: '경상남도 거제시 거제면 명진리 694-1', lat: 34.831234, lng: 128.591234, grade: 'all',
+    origin: '흥남 철수 당시 거제도로 피란 온 부모님 사이에서 태어난 문재인 대통령(1953~)은 인권변호사 출신으로 제19대 대통령을 역임하였습니다.',
+  },
 
   // ===== 4학년 경남 문화/역사 =====
   {
@@ -352,7 +365,7 @@ export const places: Place[] = [
   },
   {
     id: 'p7', name: '거제우체국', category: 'public', subCategory: 'post',
-    description: '편지, 택배 등 우편 서비스와 금융 서비스를 제공하는 우체국입니다.',
+    description: '거제시 우편업무를 총괄하는 총괄국으로, 편지, 택배 등 우편 서비스와 금융 서비스를 제공합니다.',
     address: '경상남도 거제시 거제중앙로 1924', lat: 34.884121, lng: 128.623145, grade: 'all',
   },
   {
@@ -465,49 +478,6 @@ export const places: Place[] = [
     address: '경상남도 거제시 수양로 506 (수양동)', lat: 34.8720, lng: 128.6180, grade: 3,
   },
 
-  // ===== 파출소 =====
-  {
-    id: 'p-police-gohyeon', name: '고현파출소', category: 'public', subCategory: 'police',
-    description: '고현 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 거제중앙로13길 24', lat: 34.880500, lng: 128.620800, grade: 3,
-  },
-  {
-    id: 'p-police-okpo', name: '옥포파출소', category: 'public', subCategory: 'police',
-    description: '옥포 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 옥포대첩로 71', lat: 34.8970, lng: 128.6870, grade: 3,
-  },
-  {
-    id: 'p-police-jangseungpo', name: '장승포파출소', category: 'public', subCategory: 'police',
-    description: '장승포 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 장승포로 50', lat: 34.8680, lng: 128.7290, grade: 3,
-  },
-  {
-    id: 'p-police-sadeung', name: '사등파출소', category: 'public', subCategory: 'police',
-    description: '사등면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 사등면 성포로 144', lat: 34.920512, lng: 128.524451, grade: 3,
-  },
-  {
-    id: 'p-police-hacheong', name: '하청파출소', category: 'public', subCategory: 'police',
-    description: '하청면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 하청면 하청로 24', lat: 34.955412, lng: 128.655312, grade: 3,
-  },
-
-  // ===== 우체국 =====
-  {
-    id: 'p-post-okpo', name: '옥포우체국', category: 'public', subCategory: 'post',
-    description: '옥포 지역의 우편, 택배 등 우정서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 옥포로 125', lat: 34.8940, lng: 128.6900, grade: 3,
-  },
-  {
-    id: 'p-post-jangseungpo', name: '장승포우체국', category: 'public', subCategory: 'post',
-    description: '장승포 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 장승포로 40', lat: 34.8680, lng: 128.7290, grade: 3,
-  },
-  {
-    id: 'p-post-geojemyeon', name: '거제우체국(거제면)', category: 'public', subCategory: 'post',
-    description: '거제면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 거제중앙로 1924', lat: 34.884121, lng: 128.623145, grade: 3,
-  },
 
   // ===== 소방서/119안전센터 =====
   {
@@ -686,15 +656,15 @@ export const places: Place[] = [
   {
     id: 'p-police-jangseungpo-jigu', name: '장승포지구대', category: 'public', subCategory: 'police',
     description: '장승포 지역의 치안을 담당하는 경찰 지구대입니다.',
-    address: '경상남도 거제시 옥포로22길 21', lat: 34.895415, lng: 128.693021, grade: 3,
-  },
-  {
-    id: 'p-police-jangpyeong-jigu', name: '장평지구대', category: 'public', subCategory: 'police',
-    description: '장평 지역의 치안을 담당하는 경찰 지구대입니다.',
-    address: '경상남도 거제시 장평1로 154', lat: 34.894523, lng: 128.611142, grade: 3,
+    address: '경상남도 거제시 신부로1길 12', lat: 34.871000, lng: 128.729500, grade: 3,
   },
 
-  // ===== 추가 파출소 =====
+  // ===== 파출소 =====
+  {
+    id: 'p-police-jangpyeong', name: '장평파출소', category: 'public', subCategory: 'police',
+    description: '장평 지역의 치안을 담당하는 파출소입니다.',
+    address: '경상남도 거제시 장평1로 154', lat: 34.894523, lng: 128.611142, grade: 3,
+  },
   {
     id: 'p-police-aju', name: '아주파출소', category: 'public', subCategory: 'police',
     description: '아주 지역의 치안을 담당하는 파출소입니다.',
@@ -721,26 +691,128 @@ export const places: Place[] = [
     address: '경상남도 거제시 장목면 거제북로 1165', lat: 34.987353, lng: 128.680888, grade: 3,
   },
   {
-    id: 'p-police-nambu', name: '남부파출소', category: 'public', subCategory: 'police',
-    description: '남부면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 남부면 저구해안길 37', lat: 34.734600, lng: 128.604800, grade: 3,
+    id: 'p-police-ilun', name: '일운파출소', category: 'public', subCategory: 'police',
+    description: '일운면 지역의 치안을 담당하는 파출소입니다.',
+    address: '경상남도 거제시 일운면 지세포로 115', lat: 34.831512, lng: 128.706512, grade: 3,
   },
+
+  // ===== 치안센터 =====
   {
-    id: 'p-police-dundeok', name: '둔덕파출소(둔덕치안센터)', category: 'public', subCategory: 'police',
+    id: 'p-police-dundeok', name: '둔덕치안센터', category: 'public', subCategory: 'police',
     description: '둔덕면 지역의 치안을 담당하는 치안센터입니다.',
     address: '경상남도 거제시 둔덕면 하둔길 61', lat: 34.839973, lng: 128.507981, grade: 3,
   },
   {
-    id: 'p-police-ilun', name: '일운파출소', category: 'public', subCategory: 'police',
-    description: '일운면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 둔덕면 하둔길 61', lat: 34.839973, lng: 128.507981, grade: 3,
+    id: 'p-police-sadeung-chian', name: '사등치안센터', category: 'public', subCategory: 'police',
+    description: '사등면 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 사등면 성포로 141', lat: 34.921234, lng: 128.525612, grade: 3,
+  },
+  {
+    id: 'p-police-cheonggok', name: '청곡치안센터', category: 'public', subCategory: 'police',
+    description: '청곡 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 사등면 거제대로 5441', lat: 34.908912, lng: 128.531234, grade: 3,
+  },
+  {
+    id: 'p-police-hacheong-chian', name: '하청치안센터', category: 'public', subCategory: 'police',
+    description: '하청면 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 하청면 하청로 24', lat: 34.955412, lng: 128.655312, grade: 3,
+  },
+  {
+    id: 'p-police-oepo', name: '외포치안센터', category: 'public', subCategory: 'police',
+    description: '외포 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 장목면 거제북로 725', lat: 34.935612, lng: 128.711234, grade: 3,
+  },
+  {
+    id: 'p-police-nambu-chian', name: '남부치안센터', category: 'public', subCategory: 'police',
+    description: '남부면 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 남부면 저구해안길 37', lat: 34.734600, lng: 128.604800, grade: 3,
+  },
+  {
+    id: 'p-police-neungpo-chian', name: '능포치안센터', category: 'public', subCategory: 'police',
+    description: '능포 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 능포로 142', lat: 34.878415, lng: 128.735212, grade: 3,
+  },
+  {
+    id: 'p-police-sangmun', name: '상문치안센터', category: 'public', subCategory: 'police',
+    description: '상문 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 거제중앙로 1647', lat: 34.865212, lng: 128.625412, grade: 3,
+  },
+  {
+    id: 'p-police-namhang', name: '남항치안센터', category: 'public', subCategory: 'police',
+    description: '남항 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 장승포로 2', lat: 34.864512, lng: 128.735612, grade: 3,
+  },
+  {
+    id: 'p-police-chilcheon', name: '칠천치안센터', category: 'public', subCategory: 'police',
+    description: '칠천도 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 하청면 칠천로 265', lat: 34.978912, lng: 128.651234, grade: 3,
   },
 
-  // ===== 추가 우체국 =====
+  // ===== 우체국 =====
   {
     id: 'p-post-jangpyeong', name: '장평우체국', category: 'public', subCategory: 'post',
-    description: '장평 지역의 우편 서비스를 제공하는 우체국입니다.',
+    description: '장평 지역의 우편 서비스를 제공하는 관내국입니다.',
     address: '경상남도 거제시 장평1로 41', lat: 34.891412, lng: 128.611612, grade: 3,
+  },
+  {
+    id: 'p-post-okpo-dong', name: '거제옥포동우체국', category: 'public', subCategory: 'post',
+    description: '옥포동 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 옥포로10길 12', lat: 34.893812, lng: 128.694612, grade: 3,
+  },
+  {
+    id: 'p-post-aju-dong', name: '거제아주동우체국', category: 'public', subCategory: 'post',
+    description: '아주동 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 아주1로 62', lat: 34.862412, lng: 128.711212, grade: 3,
+  },
+  {
+    id: 'p-post-neungpo', name: '거제능포동우체국', category: 'public', subCategory: 'post',
+    description: '능포동 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 능포로 141', lat: 34.878412, lng: 128.735212, grade: 3,
+  },
+  {
+    id: 'p-post-jangseungpo', name: '장승포우체국', category: 'public', subCategory: 'post',
+    description: '장승포 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 장승포로 59', lat: 34.870123, lng: 128.729145, grade: 3,
+  },
+  {
+    id: 'p-post-geojemyeon2', name: '거제거제면우체국', category: 'public', subCategory: 'post',
+    description: '거제면 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 거제면 읍내로 68', lat: 34.848812, lng: 128.591212, grade: 3,
+  },
+  {
+    id: 'p-post-yeoncho', name: '거제연초우체국', category: 'public', subCategory: 'post',
+    description: '연초면 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 연초면 거제대로 4253', lat: 34.912812, lng: 128.651712, grade: 3,
+  },
+  {
+    id: 'p-post-hacheong', name: '거제하청우체국', category: 'public', subCategory: 'post',
+    description: '하청면 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 하청면 하청로 16', lat: 34.956962, lng: 128.655465, grade: 3,
+  },
+  {
+    id: 'p-post-jangmok', name: '거제장목우체국', category: 'public', subCategory: 'post',
+    description: '장목면 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 장목면 장목7길 2', lat: 34.985891, lng: 128.681750, grade: 3,
+  },
+  {
+    id: 'p-post-ilun', name: '거제일운우체국', category: 'public', subCategory: 'post',
+    description: '일운면 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 일운면 지세포로 101', lat: 34.830212, lng: 128.705812, grade: 3,
+  },
+  {
+    id: 'p-post-sadeung', name: '성포우체국', category: 'public', subCategory: 'post',
+    description: '사등면 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 사등면 성포로 144', lat: 34.920501, lng: 128.524451, grade: 3,
+  },
+  {
+    id: 'p-post-dundeok', name: '거제둔덕우체국', category: 'public', subCategory: 'post',
+    description: '둔덕면 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 둔덕면 하둔길 56', lat: 34.840362, lng: 128.508537, grade: 3,
+  },
+  {
+    id: 'p-post-dongsang', name: '거제동상우체국', category: 'public', subCategory: 'post',
+    description: '동상 지역의 우편 서비스를 제공하는 관내국입니다.',
+    address: '경상남도 거제시 거제면 거제남서로 3505', lat: 34.850123, lng: 128.593412, grade: 3,
   },
   {
     id: 'p-post-gohyeon-chwigeup', name: '거제고현우편취급국', category: 'public', subCategory: 'post',
@@ -748,69 +820,9 @@ export const places: Place[] = [
     address: '경상남도 거제시 거제중앙로 1902', lat: 34.888812, lng: 128.621212, grade: 3,
   },
   {
-    id: 'p-post-neungpo', name: '거제능포동우체국', category: 'public', subCategory: 'post',
-    description: '능포동 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 능포로 141', lat: 34.878412, lng: 128.735212, grade: 3,
-  },
-  {
     id: 'p-post-aju-chwigeup', name: '거제아주우편취급국', category: 'public', subCategory: 'post',
     description: '아주 지역의 우편 서비스를 제공하는 우편취급국입니다.',
-    address: '경상남도 거제시 능포로 141', lat: 34.878412, lng: 128.735212, grade: 3,
-  },
-  {
-    id: 'p-post-okpo-dong', name: '거제옥포동우체국', category: 'public', subCategory: 'post',
-    description: '옥포동 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 옥포성안로 30', lat: 34.893812, lng: 128.694612, grade: 3,
-  },
-  {
-    id: 'p-post-aju-dong', name: '거제아주동우체국', category: 'public', subCategory: 'post',
-    description: '아주동 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 아주1로 62', lat: 34.862412, lng: 128.711212, grade: 3,
-  },
-  {
-    id: 'p-post-geojemyeon2', name: '거제거제면우체국', category: 'public', subCategory: 'post',
-    description: '거제면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 거제면 읍내로 68', lat: 34.848812, lng: 128.591212, grade: 3,
-  },
-  {
-    id: 'p-post-yeoncho', name: '거제연초우체국', category: 'public', subCategory: 'post',
-    description: '연초면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 연초면 거제대로 4253', lat: 34.912812, lng: 128.651712, grade: 3,
-  },
-  {
-    id: 'p-post-hacheong', name: '거제하청우체국', category: 'public', subCategory: 'post',
-    description: '하청면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 하청면 하청로 16', lat: 34.956962, lng: 128.655465, grade: 3,
-  },
-  {
-    id: 'p-post-jangmok', name: '거제장목우체국', category: 'public', subCategory: 'post',
-    description: '장목면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 장목면 장목7길 2', lat: 34.985891, lng: 128.681750, grade: 3,
-  },
-  {
-    id: 'p-post-ilun', name: '거제일운우체국', category: 'public', subCategory: 'post',
-    description: '일운면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 일운면 지세포로 101', lat: 34.830212, lng: 128.705812, grade: 3,
-  },
-  {
-    id: 'p-post-sadeung', name: '거제사등우체국(성포우체국)', category: 'public', subCategory: 'post',
-    description: '사등면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 사등면 성포로 136', lat: 34.909812, lng: 128.539812, grade: 3,
-  },
-  {
-    id: 'p-post-dongbu', name: '거제동부우체국', category: 'public', subCategory: 'post',
-    description: '동부면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 동부면 동부로 3122', lat: 34.825312, lng: 128.602812, grade: 3,
-  },
-  {
-    id: 'p-post-nambu', name: '거제남부우체국', category: 'public', subCategory: 'post',
-    description: '남부면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 남부면 저구해안길 11', lat: 34.734912, lng: 128.606212, grade: 3,
-  },
-  {
-    id: 'p-post-dundeok', name: '거제둔덕우체국', category: 'public', subCategory: 'post',
-    description: '둔덕면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 둔덕면 하둔길 56', lat: 34.840362, lng: 128.508537, grade: 3,
+    address: '경상남도 거제시 거제대로 3449', lat: 34.868112, lng: 128.707812, grade: 3,
   },
 
   // ===== 보건지소 =====
@@ -837,7 +849,7 @@ export const places: Place[] = [
   {
     id: 'p-health-dundeok', name: '둔덕면보건지소', category: 'public', subCategory: 'health',
     description: '둔덕면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
-    address: '경상남도 거제시 거제면 읍내로7길 23', lat: 34.847712, lng: 128.591045, grade: 3,
+    address: '경상남도 거제시 둔덕면 하둔리 365-38', lat: 34.837640, lng: 128.506148, grade: 3,
   },
   {
     id: 'p-health-sadeung', name: '사등면보건지소', category: 'public', subCategory: 'health',
@@ -858,6 +870,73 @@ export const places: Place[] = [
     id: 'p-health-jangmok', name: '장목면보건지소', category: 'public', subCategory: 'health',
     description: '장목면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
     address: '경상남도 거제시 장목면 거제북로 1195', lat: 34.989653, lng: 128.681711, grade: 3,
+  },
+  {
+    id: 'p-health-jangseungpo', name: '장승포보건지소', category: 'public', subCategory: 'health',
+    description: '장승포 지역 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
+    address: '경상남도 거제시 능포로 142', lat: 34.877812, lng: 128.734512, grade: 3,
+  },
+
+  // ===== 보건진료소 =====
+  {
+    id: 'p-health-sanjeon', name: '산전보건진료소', category: 'public', subCategory: 'health',
+    description: '산전 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 거제면 산전길 24-4', lat: 34.839812, lng: 128.554312, grade: 3,
+  },
+  {
+    id: 'p-health-mangchi', name: '망치보건진료소', category: 'public', subCategory: 'health',
+    description: '망치 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 일운면 망치5길 5', lat: 34.821234, lng: 128.675612, grade: 3,
+  },
+  {
+    id: 'p-health-hakdong', name: '학동보건진료소', category: 'public', subCategory: 'health',
+    description: '학동 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 동부면 학동6길 11', lat: 34.789123, lng: 128.634512, grade: 3,
+  },
+  {
+    id: 'p-health-tappo', name: '탑포보건진료소', category: 'public', subCategory: 'health',
+    description: '탑포 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 남부면 탑포길 33', lat: 34.765612, lng: 128.581234, grade: 3,
+  },
+  {
+    id: 'p-health-yeocha', name: '여차보건진료소', category: 'public', subCategory: 'health',
+    description: '여차 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 남부면 여차길 56', lat: 34.721234, lng: 128.585612, grade: 3,
+  },
+  {
+    id: 'p-health-yugye', name: '유계보건진료소', category: 'public', subCategory: 'health',
+    description: '유계 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 하청면 유계3길 21-1', lat: 34.965612, lng: 128.631234, grade: 3,
+  },
+  {
+    id: 'p-health-sibang', name: '시방보건진료소', category: 'public', subCategory: 'health',
+    description: '시방 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 장목면 시방길 56', lat: 34.978912, lng: 128.711234, grade: 3,
+  },
+  {
+    id: 'p-health-eoon', name: '어온보건진료소', category: 'public', subCategory: 'health',
+    description: '어온 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 하청면 어온4길 5', lat: 34.981234, lng: 128.641234, grade: 3,
+  },
+  {
+    id: 'p-health-gabae', name: '가배보건진료소', category: 'public', subCategory: 'health',
+    description: '가배 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 동부면 거제남서로 2271-1', lat: 34.798412, lng: 128.574231, grade: 3,
+  },
+  {
+    id: 'p-health-beopdong', name: '법동보건진료소', category: 'public', subCategory: 'health',
+    description: '법동 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 거제면 산달전원길 22', lat: 34.825612, lng: 128.548912, grade: 3,
+  },
+  {
+    id: 'p-health-sandal', name: '산달보건진료소', category: 'public', subCategory: 'health',
+    description: '산달 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 거제면 산달1길 45-1', lat: 34.823412, lng: 128.541245, grade: 3,
+  },
+  {
+    id: 'p-health-haksan', name: '학산보건진료소', category: 'public', subCategory: 'health',
+    description: '학산 지역의 주민 건강관리를 담당하는 보건진료소입니다.',
+    address: '경상남도 거제시 둔덕면 학산길 44', lat: 34.858912, lng: 128.481234, grade: 3,
   },
 
   // ── 4학년: 경상남도 광역 공공기관 ──
