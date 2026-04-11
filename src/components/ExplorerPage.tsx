@@ -40,6 +40,7 @@ const ExplorerPage = () => {
   const [showSources, setShowSources] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
+  const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
 
   useEffect(() => {
     loadAllDataFromCloud().then(() => {
@@ -129,6 +130,7 @@ const ExplorerPage = () => {
       {showRouteExplorer && selectedSchool && selectedGrade && (
         <RouteExplorer grade={selectedGrade} school={selectedSchool} onClose={() => setShowRouteExplorer(false)} onPlaceSelect={(p) => { handlePlaceSelect(p); setShowRouteExplorer(false); }} />
       )}
+      {showPlaceNameOrigins && <PlaceNameOrigins onClose={() => setShowPlaceNameOrigins(false)} />}
 
       {step !== 'explore' ? (
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
