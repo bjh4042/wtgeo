@@ -734,6 +734,70 @@ const AdminPanel = () => {
         {/* Info Tab */}
         {activeTab === 'info' && !editingSiteInfo && (
           <div className="space-y-3 text-sm">
+            {/* Google Sheets 동기화 */}
+            <div className="p-3 rounded-lg bg-accent/30 border border-accent space-y-2">
+              <h4 className="text-xs font-bold flex items-center gap-1">📊 Google Sheets 동기화</h4>
+              <p className="text-[10px] text-muted-foreground">공개된 Google 스프레드시트 URL을 입력하면 장소 데이터가 자동으로 동기화됩니다.</p>
+              <input
+                value={sheetUrl}
+                onChange={e => setSheetUrl(e.target.value)}
+                placeholder="https://docs.google.com/spreadsheets/d/..."
+                className="w-full px-2.5 py-1.5 rounded-md border border-input bg-background text-xs"
+              />
+              <div className="flex gap-1.5">
+                <button
+                  onClick={async () => {
+                    setSheetSyncing(true);
+                    await saveSheetUrl(sheetUrl.trim() || null);
+                    forceUpdate(n => n + 1);
+                    setSheetSyncing(false);
+                  }}
+                  disabled={sheetSyncing}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer disabled:opacity-50"
+                >
+                  <Save size={12} /> {sheetSyncing ? '동기화 중...' : '저장 및 동기화'}
+                </button>
+                <button
+                  onClick={async () => {
+                    setSheetSyncing(true);
+                    await syncFromSheet();
+                    forceUpdate(n => n + 1);
+                    setSheetSyncing(false);
+                  }}
+                  disabled={sheetSyncing}
+                  className="px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer disabled:opacity-50"
+                >
+                  🔄 새로고침
+                </button>
+              </div>
+              {getSheetPlacesCount() > 0 && (
+                <p className="text-[10px] text-green-600 font-medium">✅ 시트에서 {getSheetPlacesCount()}개 장소 로드됨</p>
+              )}
+              <details className="text-[10px]">
+                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 스프레드시트 열 형식 안내</summary>
+                <div className="mt-1 p-2 rounded bg-muted/50 space-y-0.5 text-muted-foreground">
+                  <p className="font-semibold text-foreground">필수 열: 시군, 카테고리, 장소명, 위도, 경도</p>
+                  <p>선택 열: 세부분류, 설명, 도로명주소, 학년, 홈페이지, 이미지URL, 유튜브</p>
+                  <p>카테고리: 관광, 자연, 문화, 공공, 체험, 시장</p>
+                  <p>세부분류(공공): 시청, 소방서, 경찰서, 병원, 우체국, 보건소, 교육</p>
+                  <p>학년: 3, 4, 전체</p>
+                </div>
+              </details>
+              <button
+                onClick={() => {
+                  const csv = exportPlacesToCsv(getMergedPlaces());
+                  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+                  const a = document.createElement('a');
+                  a.href = URL.createObjectURL(blob);
+                  a.download = '거제탐험대_장소데이터.csv';
+                  a.click();
+                }}
+                className="w-full text-center px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer"
+              >
+                📥 현재 장소 데이터 CSV 내보내기
+              </button>
+            </div>
+
             <div className="p-3 rounded-lg bg-muted/50 space-y-1.5">
               {[
                 ['서비스명', siteInfo.serviceName], ['버전', siteInfo.version],
