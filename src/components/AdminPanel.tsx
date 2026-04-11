@@ -12,7 +12,7 @@ import {
   saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
   getVisitorCount, loadAllDataFromCloud,
 } from '@/data/dataManager';
-import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent } from '@/data/excelSync';
+import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent, parseExcelToGyeongnam, exportGyeongnamToExcel } from '@/data/excelSync';
 
 const ADMIN_PASSWORD = '4042';
 
@@ -91,7 +91,7 @@ const AdminPanel = () => {
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
   const [excelUploading, setExcelUploading] = useState(false);
   const [excelUploadResult, setExcelUploadResult] = useState<string | null>(null);
-  const [excelTab, setExcelTab] = useState<'places' | 'content'>('places');
+  const [excelTab, setExcelTab] = useState<'places' | 'content' | 'gyeongnam'>('places');
   // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
   // Force re-render trigger
@@ -739,8 +739,9 @@ const AdminPanel = () => {
             <div className="p-3 rounded-lg bg-accent/30 border border-accent space-y-2">
               <h4 className="text-xs font-bold flex items-center gap-1">📊 Excel 데이터 관리</h4>
               <div className="flex gap-1">
-                <button onClick={() => setExcelTab('places')} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'places' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📍 장소</button>
-                <button onClick={() => setExcelTab('content')} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'content' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📖 콘텐츠</button>
+                <button onClick={() => { setExcelTab('places'); setExcelUploadResult(null); }} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'places' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📍 장소</button>
+                <button onClick={() => { setExcelTab('content'); setExcelUploadResult(null); }} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'content' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📖 콘텐츠</button>
+                <button onClick={() => { setExcelTab('gyeongnam'); setExcelUploadResult(null); }} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'gyeongnam' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>🗺️ 경남</button>
               </div>
 
               {excelTab === 'places' && (
@@ -810,6 +811,49 @@ const AdminPanel = () => {
                       <p>선택: 카테고리, 설명, 학년, 아이콘, 출처, 홈페이지, 이미지URL, 유튜브</p>
                       <p>카테고리: 옛이야기, 지명유래, 국가유산, 옛날과 오늘날, 자연, 장소</p>
                       <p className="text-foreground mt-1">💡 먼저 다운로드로 형식을 참고하세요.</p>
+                    </div>
+                  </details>
+                </div>
+              )}
+
+              {excelTab === 'gyeongnam' && (
+                <div className="space-y-2">
+                  <p className="text-[10px] text-muted-foreground">경남 18개 시군 데이터를 Excel로 관리합니다. 시군명 기준으로 매칭되어 수정됩니다.</p>
+                  <button onClick={() => exportGyeongnamToExcel(getGyeongnamCities())} className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📥 경남 시군 데이터 Excel 다운로드
+                  </button>
+                  <label className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📤 경남 시군 Excel 업로드 (수정)
+                    <input type="file" accept=".xlsx,.xls" className="hidden" disabled={excelUploading} onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      setExcelUploading(true); setExcelUploadResult(null);
+                      try {
+                        const parsed = parseExcelToGyeongnam(await file.arrayBuffer());
+                        if (parsed.length === 0) { setExcelUploadResult('⚠️ 유효한 시군 데이터가 없습니다.'); }
+                        else {
+                          const existingCities = getGyeongnamCities();
+                          let updated = 0;
+                          for (const partial of parsed) {
+                            const match = existingCities.find(c => c.name === partial.name);
+                            if (match) {
+                              const { name, ...editData } = partial;
+                              await saveGyeongnamEdit(match.id, editData);
+                              updated++;
+                            }
+                          }
+                          forceUpdate(n => n + 1);
+                          setExcelUploadResult(`✅ ${updated}개 시군 데이터가 수정되었습니다.`);
+                        }
+                      } catch { setExcelUploadResult('❌ 파일 처리 중 오류가 발생했습니다.'); }
+                      setExcelUploading(false); e.target.value = '';
+                    }} />
+                  </label>
+                  <details className="text-[10px]">
+                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 열 형식 안내</summary>
+                    <div className="mt-1 p-2 rounded bg-muted/50 space-y-0.5 text-muted-foreground">
+                      <p className="font-semibold text-foreground">필수: 시군명</p>
+                      <p>선택: 한자, 인구, 면적, 마스코트, 이모지, 공식사이트, 이름유래, 위도, 경도, 주요특징</p>
+                      <p className="text-foreground mt-1">💡 먼저 다운로드로 현재 데이터를 확인하세요.</p>
                     </div>
                   </details>
                 </div>
