@@ -58,15 +58,22 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     return total;
   }, [routePlaces, school]);
 
-  // Kakao multi-waypoint URL: use map.kakao.com/link/from/to with waypoints
-  const kakaoRouteUrl = useMemo(() => {
+  // Kakao Maps URL: use multi-marker map view + direction to final destination
+  const kakaoMapUrl = useMemo(() => {
     if (routePlaces.length === 0) return '';
-    // Start from school, end at last place
-    const origin = `${encodeURIComponent(school.name)},${school.lat},${school.lng}`;
-    const dest = routePlaces[routePlaces.length - 1];
-    const destination = `${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
-    return `https://map.kakao.com/link/from/${origin}/to/${destination}`;
+    // Multi-marker view: school + all route places
+    const markers = [
+      `${encodeURIComponent(school.name)},${school.lat},${school.lng}`,
+      ...routePlaces.map(p => `${encodeURIComponent(p.name)},${p.lat},${p.lng}`)
+    ];
+    return `https://map.kakao.com/link/map/${markers.join('/')}`;
   }, [routePlaces, school]);
+
+  const kakaoDirectionUrl = useMemo(() => {
+    if (routePlaces.length === 0) return '';
+    const dest = routePlaces[routePlaces.length - 1];
+    return `https://map.kakao.com/link/to/${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
+  }, [routePlaces]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
