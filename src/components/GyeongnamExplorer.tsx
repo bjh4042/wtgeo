@@ -110,9 +110,6 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
               <div className="flex items-center gap-3">
                 {selectedCity.logoUrl ? (
                   <img src={selectedCity.logoUrl} alt={`${selectedCity.name} 로고`} className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-lg" />
-                ) : null}
-                {selectedCity.mascotImageUrl ? (
-                  <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-12 h-12 md:w-16 md:h-16 object-contain" />
                 ) : (
                   <span className="text-3xl md:text-4xl">{selectedCity.mascotEmoji}</span>
                 )}
@@ -139,7 +136,11 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                   <p className="text-xs font-bold text-foreground">{selectedCity.area} km²</p>
                 </div>
                 <div className="bg-muted/50 rounded-xl p-2.5 text-center">
-                  <span className="text-sm">{selectedCity.mascotEmoji}</span>
+                  {selectedCity.mascotImageUrl ? (
+                    <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-6 h-6 mx-auto mb-0.5 object-contain" />
+                  ) : (
+                    <span className="text-sm">{selectedCity.mascotEmoji}</span>
+                  )}
                   <p className="text-[10px] text-muted-foreground">마스코트</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.mascot}</p>
                 </div>
