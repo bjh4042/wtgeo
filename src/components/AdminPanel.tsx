@@ -927,6 +927,7 @@ const AdminPanel = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
