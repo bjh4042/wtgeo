@@ -355,7 +355,7 @@ export const places: Place[] = [
   {
     id: 'p4', name: '거제시보건소', category: 'public', subCategory: 'health',
     description: '거제시민의 건강을 위한 예방접종, 건강검진 등 보건의료서비스를 제공하는 기관입니다.',
-    address: '경상남도 거제시 수양로 506', lat: 34.8919, lng: 128.6367, grade: 'all',
+    address: '경상남도 거제시 수양로 506', lat: 34.891942, lng: 128.636712, grade: 'all',
   },
   {
     id: 'p5', name: '거제교육지원청', category: 'public', subCategory: 'education',
@@ -371,7 +371,7 @@ export const places: Place[] = [
   {
     id: 'p7', name: '거제우체국', category: 'public', subCategory: 'post',
     description: '편지, 택배 등 우편 서비스와 금융 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 거제중앙로 1924', lat: 34.8841, lng: 128.6231, grade: 'all',
+    address: '경상남도 거제시 거제중앙로 1924', lat: 34.884121, lng: 128.623145, grade: 'all',
   },
   {
     id: 'p8', name: '거제시의회', category: 'public', subCategory: 'government',
@@ -507,7 +507,7 @@ export const places: Place[] = [
   {
     id: 'p-police-hacheong', name: '하청파출소', category: 'public', subCategory: 'police',
     description: '하청면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 하청면 하청로 24', lat: 34.9662, lng: 128.6481, grade: 3,
+    address: '경상남도 거제시 하청면 하청로 24', lat: 34.955412, lng: 128.655312, grade: 3,
   },
 
   // ===== 우체국 =====
@@ -536,7 +536,7 @@ export const places: Place[] = [
   {
     id: 'p-fire-jangseungpo', name: '장승포119안전센터', category: 'public', subCategory: 'fire',
     description: '장승포 지역의 화재 진압, 구조, 구급 업무를 담당하는 119안전센터입니다.',
-    address: '경상남도 거제시 마전9길 12', lat: 34.8715, lng: 128.7291, grade: 3,
+    address: '경상남도 거제시 마전9길 12', lat: 34.871473, lng: 128.729071, grade: 3,
   },
 
   // ===== 공공기관 (4학년: 경상남도) =====
@@ -641,44 +641,44 @@ export const places: Place[] = [
   {
     id: 'p-hospital-geobung', name: '거붕백병원', category: 'public', subCategory: 'hospital',
     description: '거제시 고현 지역의 종합병원으로, 다양한 진료과를 운영하고 있습니다.',
-    address: '경상남도 거제시 계룡로5길 14', lat: 34.8732, lng: 128.6264, grade: 'all',
+    address: '경상남도 거제시 계룡로5길 14', lat: 34.873276, lng: 128.626439, grade: 'all',
   },
   {
     id: 'p-hospital-daewoo', name: '대우병원', category: 'public', subCategory: 'hospital',
     description: '거제시 장승포 지역의 종합병원으로, 다양한 진료과를 운영하고 있습니다.',
-    address: '경상남도 거제시 두모길 16', lat: 34.8718, lng: 128.7221, grade: 'all',
+    address: '경상남도 거제시 두모길 16', lat: 34.871864, lng: 128.722184, grade: 'all',
   },
   {
     id: 'p-hospital-malgunsaem', name: '맑은샘병원', category: 'public', subCategory: 'hospital',
     description: '거제시 연초면에 위치한 종합병원입니다.',
-    address: '경상남도 거제시 연초면 거제대로 4477', lat: 34.8977, lng: 128.6437, grade: 'all',
+    address: '경상남도 거제시 연초면 거제대로 4477', lat: 34.897792, lng: 128.643782, grade: 'all',
   },
   {
     id: 'p-hospital-jungang', name: '거제중앙병원', category: 'public', subCategory: 'hospital',
     description: '거제시 고현 지역의 종합병원입니다.',
-    address: '경상남도 거제시 고현로 89', lat: 34.8865, lng: 128.6223, grade: 'all',
+    address: '경상남도 거제시 고현로 89', lat: 34.886523, lng: 128.622395, grade: 'all',
   },
   {
     id: 'p-hospital-malgunsaem-centum', name: '맑은샘센텀병원', category: 'public', subCategory: 'hospital',
     description: '거제시 옥포 지역의 종합병원입니다.',
-    address: '경상남도 거제시 거제대로 3762', lat: 34.8920, lng: 128.6889, grade: 'all',
+    address: '경상남도 거제시 거제대로 3762', lat: 34.89209, lng: 128.688932, grade: 'all',
   },
 
   // ===== 119안전센터 =====
   {
     id: 'p-fire-sinhyeon', name: '신현119안전센터', category: 'public', subCategory: 'fire',
     description: '신현 지역의 화재 진압, 구조, 구급 업무를 담당하는 119안전센터입니다.',
-    address: '경상남도 거제시 계룡로 52', lat: 34.8758, lng: 128.6269, grade: 3,
+    address: '경상남도 거제시 계룡로 52', lat: 34.875832, lng: 128.626858, grade: 3,
   },
   {
     id: 'p-fire-okpo', name: '옥포119안전센터', category: 'public', subCategory: 'fire',
     description: '옥포 지역의 화재 진압, 구조, 구급 업무를 담당하는 119안전센터입니다.',
-    address: '경상남도 거제시 진목로 1', lat: 34.8961, lng: 128.6917, grade: 3,
+    address: '경상남도 거제시 진목로 1', lat: 34.896109, lng: 128.686186, grade: 3,
   },
   {
     id: 'p-fire-geojemyeon', name: '거제119안전센터', category: 'public', subCategory: 'fire',
     description: '거제면 지역의 화재 진압, 구조, 구급 업무를 담당하는 119안전센터입니다.',
-    address: '경상남도 거제시 거제면 거제남서로 3433', lat: 34.8473, lng: 128.5891, grade: 3,
+    address: '경상남도 거제시 거제면 거제남서로 3433', lat: 34.847252, lng: 128.589057, grade: 3,
   },
   {
     id: 'p-fire-yeoncho', name: '연초119안전센터', category: 'public', subCategory: 'fire',
@@ -705,17 +705,17 @@ export const places: Place[] = [
   {
     id: 'p-police-sinhyeon-jigu', name: '신현지구대', category: 'public', subCategory: 'police',
     description: '신현 지역의 치안을 담당하는 경찰 지구대입니다.',
-    address: '경상남도 거제시 고현로 105', lat: 34.8810, lng: 128.6304, grade: 3,
+    address: '경상남도 거제시 고현로 105', lat: 34.881024, lng: 128.630412, grade: 3,
   },
   {
     id: 'p-police-okpo-jigu', name: '옥포지구대', category: 'public', subCategory: 'police',
     description: '옥포 지역의 치안을 담당하는 경찰 지구대입니다.',
-    address: '경상남도 거제시 옥포로22길 21', lat: 34.8954, lng: 128.6930, grade: 3,
+    address: '경상남도 거제시 옥포로22길 21', lat: 34.895415, lng: 128.693021, grade: 3,
   },
   {
     id: 'p-police-jangseungpo-jigu', name: '장승포지구대', category: 'public', subCategory: 'police',
     description: '장승포 지역의 치안을 담당하는 경찰 지구대입니다.',
-    address: '경상남도 거제시 신부로1길 12', lat: 34.8710, lng: 128.7295, grade: 3,
+    address: '경상남도 거제시 신부로1길 12', lat: 34.871, lng: 128.7295, grade: 3,
   },
   {
     id: 'p-police-jangpyeong-jigu', name: '장평지구대', category: 'public', subCategory: 'police',
@@ -732,7 +732,7 @@ export const places: Place[] = [
   {
     id: 'p-police-geojemyeon', name: '거제파출소', category: 'public', subCategory: 'police',
     description: '거제면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 거제면 거제남서로 3431', lat: 34.8475, lng: 128.5890, grade: 3,
+    address: '경상남도 거제시 거제면 거제남서로 3431', lat: 34.8475, lng: 128.589, grade: 3,
   },
   {
     id: 'p-police-yeoncho', name: '연초파출소', category: 'public', subCategory: 'police',
@@ -747,7 +747,7 @@ export const places: Place[] = [
   {
     id: 'p-police-jangmok', name: '장목파출소', category: 'public', subCategory: 'police',
     description: '장목면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 장목면 거제북로 1165', lat: 34.9961, lng: 128.6732, grade: 3,
+    address: '경상남도 거제시 장목면 거제북로 1165', lat: 34.987353, lng: 128.680888, grade: 3,
   },
   {
     id: 'p-police-nambu', name: '남부파출소', category: 'public', subCategory: 'police',
@@ -809,12 +809,12 @@ export const places: Place[] = [
   {
     id: 'p-post-hacheong', name: '거제하청우체국', category: 'public', subCategory: 'post',
     description: '하청면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 하청면 하청로 16', lat: 34.9658, lng: 128.6479, grade: 3,
+    address: '경상남도 거제시 하청면 하청로 16', lat: 34.956962, lng: 128.655465, grade: 3,
   },
   {
     id: 'p-post-jangmok', name: '거제장목우체국', category: 'public', subCategory: 'post',
     description: '장목면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 장목면 장목7길 2', lat: 34.9968, lng: 128.6735, grade: 3,
+    address: '경상남도 거제시 장목면 장목7길 2', lat: 34.985891, lng: 128.68175, grade: 3,
   },
   {
     id: 'p-post-ilun', name: '거제일운우체국', category: 'public', subCategory: 'post',
@@ -861,7 +861,7 @@ export const places: Place[] = [
   {
     id: 'p-health-geojemyeon', name: '거제면보건지소', category: 'public', subCategory: 'health',
     description: '거제면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
-    address: '경상남도 거제시 거제면 읍내로7길 23', lat: 34.8477, lng: 128.5910, grade: 3,
+    address: '경상남도 거제시 거제면 읍내로7길 23', lat: 34.8477, lng: 128.591, grade: 3,
   },
   {
     id: 'p-health-dundeok', name: '둔덕면보건지소', category: 'public', subCategory: 'health',
@@ -881,12 +881,12 @@ export const places: Place[] = [
   {
     id: 'p-health-hacheong', name: '하청면보건지소', category: 'public', subCategory: 'health',
     description: '하청면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
-    address: '경상남도 거제시 하청면 하청로 12-9', lat: 34.9654, lng: 128.6475, grade: 3,
+    address: '경상남도 거제시 하청면 하청로 12-9', lat: 34.955142, lng: 128.655621, grade: 3,
   },
   {
     id: 'p-health-jangmok', name: '장목면보건지소', category: 'public', subCategory: 'health',
     description: '장목면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
-    address: '경상남도 거제시 장목면 거제북로 1195', lat: 34.9984, lng: 128.6741, grade: 3,
+    address: '경상남도 거제시 장목면 거제북로 1195', lat: 34.989653, lng: 128.681711, grade: 3,
   },
 ];
 
