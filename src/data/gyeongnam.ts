@@ -1,5 +1,6 @@
 // 경상남도 18개 시군 데이터
 import { detailedBoundaries } from './gyeongnamBoundaries';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface GyeongnamCity {
   id: string;
@@ -19,20 +20,87 @@ export interface GyeongnamCity {
   boundary?: [number, number][];
 }
 
-const GYEONGNAM_EDITS_KEY = 'geoje-gyeongnam-edits';
+// In-memory cache for cloud edits
+let cloudEditsCache: Record<string, Partial<GyeongnamCity>> = {};
+let cloudEditsLoaded = false;
 
-function getGyeongnamEdits(): Record<string, Partial<GyeongnamCity>> {
+export const GYEONGNAM_UPDATED_EVENT = 'geoje-gyeongnam-updated';
+
+// Load edits from Supabase
+export async function loadGyeongnamEditsFromCloud(): Promise<void> {
   try {
-    const saved = localStorage.getItem(GYEONGNAM_EDITS_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return {};
+    const { data, error } = await supabase
+      .from('gyeongnam_edits')
+      .select('*');
+    if (error) throw error;
+    if (data) {
+      const edits: Record<string, Partial<GyeongnamCity>> = {};
+      data.forEach((row: any) => {
+        const edit: Partial<GyeongnamCity> = {};
+        if (row.logo_url) edit.logoUrl = row.logo_url;
+        if (row.mascot_image_url) edit.mascotImageUrl = row.mascot_image_url;
+        if (row.name) edit.name = row.name;
+        if (row.name_hanja) edit.nameHanja = row.name_hanja;
+        if (row.population != null) edit.population = row.population;
+        if (row.area != null) edit.area = Number(row.area);
+        if (row.mascot) edit.mascot = row.mascot;
+        if (row.mascot_emoji) edit.mascotEmoji = row.mascot_emoji;
+        if (row.official_site) edit.officialSite = row.official_site;
+        if (row.name_origin) edit.nameOrigin = row.name_origin;
+        if (row.lat != null) edit.lat = Number(row.lat);
+        if (row.lng != null) edit.lng = Number(row.lng);
+        if (row.highlights) edit.highlights = row.highlights;
+        edits[row.city_id] = edit;
+      });
+      cloudEditsCache = edits;
+      cloudEditsLoaded = true;
+    }
+  } catch (e) {
+    console.error('Failed to load gyeongnam edits from cloud:', e);
+    // Fallback to localStorage
+    try {
+      const saved = localStorage.getItem('geoje-gyeongnam-edits');
+      if (saved) cloudEditsCache = JSON.parse(saved);
+    } catch {}
+    cloudEditsLoaded = true;
+  }
 }
 
-export function saveGyeongnamEdit(id: string, edit: Partial<GyeongnamCity>) {
-  const edits = getGyeongnamEdits();
-  edits[id] = { ...edits[id], ...edit };
-  localStorage.setItem(GYEONGNAM_EDITS_KEY, JSON.stringify(edits));
+// Save edit to Supabase (upsert)
+export async function saveGyeongnamEdit(id: string, edit: Partial<GyeongnamCity>): Promise<void> {
+  // Update local cache immediately
+  cloudEditsCache[id] = { ...cloudEditsCache[id], ...edit };
+
+  // Also save to localStorage as fallback
+  localStorage.setItem('geoje-gyeongnam-edits', JSON.stringify(cloudEditsCache));
+
+  try {
+    const row: any = {
+      city_id: id,
+      logo_url: edit.logoUrl ?? cloudEditsCache[id]?.logoUrl ?? null,
+      mascot_image_url: edit.mascotImageUrl ?? cloudEditsCache[id]?.mascotImageUrl ?? null,
+      name: edit.name ?? cloudEditsCache[id]?.name ?? null,
+      name_hanja: edit.nameHanja ?? cloudEditsCache[id]?.nameHanja ?? null,
+      population: edit.population ?? cloudEditsCache[id]?.population ?? null,
+      area: edit.area ?? cloudEditsCache[id]?.area ?? null,
+      mascot: edit.mascot ?? cloudEditsCache[id]?.mascot ?? null,
+      mascot_emoji: edit.mascotEmoji ?? cloudEditsCache[id]?.mascotEmoji ?? null,
+      official_site: edit.officialSite ?? cloudEditsCache[id]?.officialSite ?? null,
+      name_origin: edit.nameOrigin ?? cloudEditsCache[id]?.nameOrigin ?? null,
+      lat: edit.lat ?? cloudEditsCache[id]?.lat ?? null,
+      lng: edit.lng ?? cloudEditsCache[id]?.lng ?? null,
+      highlights: edit.highlights ?? cloudEditsCache[id]?.highlights ?? null,
+      updated_at: new Date().toISOString(),
+    };
+
+    await supabase
+      .from('gyeongnam_edits')
+      .upsert(row, { onConflict: 'city_id' });
+  } catch (e) {
+    console.error('Failed to save gyeongnam edit to cloud:', e);
+  }
+
+  window.dispatchEvent(new Event(GYEONGNAM_UPDATED_EVENT));
 }
 
 const defaultGyeongnamCities: GyeongnamCity[] = [
@@ -290,19 +358,21 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   },
 ];
 
-// Merge with localStorage edits and detailed boundaries
+// Merge with cloud edits and detailed boundaries
 export function getGyeongnamCities(): GyeongnamCity[] {
-  const edits = getGyeongnamEdits();
   return defaultGyeongnamCities.map(city => {
-    const edit = edits[city.id];
+    const edit = cloudEditsCache[city.id];
     const boundary = detailedBoundaries[city.id] || city.boundary;
     const merged = edit ? { ...city, ...edit } as GyeongnamCity : city;
-    // Use detailed boundary unless admin has overridden it
     if (!edit?.boundary && boundary) {
       merged.boundary = boundary;
     }
     return merged;
   });
+}
+
+export function isGyeongnamEditsLoaded(): boolean {
+  return cloudEditsLoaded;
 }
 
 // Keep backward compatible export
