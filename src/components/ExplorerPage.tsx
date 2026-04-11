@@ -163,6 +163,16 @@ const ExplorerPage = () => {
                     <span className="hidden sm:inline">경로탐험</span>
                     <span className="sm:hidden">경로</span>
                   </button>
+                  {selectedGrade === 3 && (
+                    <button
+                      onClick={() => setShowPlaceNameOrigins(true)}
+                      className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                    >
+                      <MapPin size={10} className="md:w-3 md:h-3" />
+                      <span className="hidden sm:inline">지명유래</span>
+                      <span className="sm:hidden">지명</span>
+                    </button>
+                  )}
                   {selectedGrade === 4 && (
                     <button
                       onClick={() => setShowGyeongnam(true)}
