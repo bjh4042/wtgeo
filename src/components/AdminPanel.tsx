@@ -4,7 +4,7 @@ import { places as defaultPlaces, Place, PlaceCategory, categoryLabels } from '@
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory, contentCategoryLabels } from '@/data/content';
 import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 import { schools, School } from '@/data/schools';
-import { getGyeongnamCities, saveGyeongnamEdit, GyeongnamCity } from '@/data/gyeongnam';
+import { getGyeongnamCities, saveGyeongnamEdit, loadGyeongnamEditsFromCloud, GyeongnamCity } from '@/data/gyeongnam';
 import { SCHOOLS_UPDATED_EVENT, getMergedSchools, getMergedPlaces, getMergedContent } from '@/data/dataManager';
 
 const ADMIN_PASSWORD = '4042';
