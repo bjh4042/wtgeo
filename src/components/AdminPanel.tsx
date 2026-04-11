@@ -89,8 +89,8 @@ const AdminPanel = () => {
   const [contentTypeFilter, setContentTypeFilter] = useState<ContentCategory | 'all'>('all');
   const [siteInfo, setSiteInfo] = useState<SiteInfo>(getSiteInfo() as SiteInfo);
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
-  const [sheetUrl, setSheetUrl] = useState(getSheetUrl() || '');
-  const [sheetSyncing, setSheetSyncing] = useState(false);
+  const [excelUploading, setExcelUploading] = useState(false);
+  const [excelUploadResult, setExcelUploadResult] = useState<string | null>(null);
   // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
   // Force re-render trigger
@@ -734,68 +734,67 @@ const AdminPanel = () => {
         {/* Info Tab */}
         {activeTab === 'info' && !editingSiteInfo && (
           <div className="space-y-3 text-sm">
-            {/* Google Sheets 동기화 */}
+            {/* Excel 업로드/다운로드 */}
             <div className="p-3 rounded-lg bg-accent/30 border border-accent space-y-2">
-              <h4 className="text-xs font-bold flex items-center gap-1">📊 Google Sheets 동기화</h4>
-              <p className="text-[10px] text-muted-foreground">공개된 Google 스프레드시트 URL을 입력하면 장소 데이터가 자동으로 동기화됩니다.</p>
-              <input
-                value={sheetUrl}
-                onChange={e => setSheetUrl(e.target.value)}
-                placeholder="https://docs.google.com/spreadsheets/d/..."
-                className="w-full px-2.5 py-1.5 rounded-md border border-input bg-background text-xs"
-              />
-              <div className="flex gap-1.5">
-                <button
-                  onClick={async () => {
-                    setSheetSyncing(true);
-                    await saveSheetUrl(sheetUrl.trim() || null);
-                    forceUpdate(n => n + 1);
-                    setSheetSyncing(false);
+              <h4 className="text-xs font-bold flex items-center gap-1">📊 Excel 데이터 관리</h4>
+              <p className="text-[10px] text-muted-foreground">Excel 파일로 장소 데이터를 일괄 업로드하거나 현재 데이터를 다운로드할 수 있습니다.</p>
+              
+              {/* 다운로드 */}
+              <button
+                onClick={() => exportPlacesToExcel(getMergedPlaces())}
+                className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer"
+              >
+                📥 현재 장소 데이터 Excel 다운로드
+              </button>
+
+              {/* 업로드 */}
+              <label className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                📤 Excel 파일 업로드 (추가/수정)
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  className="hidden"
+                  disabled={excelUploading}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setExcelUploading(true);
+                    setExcelUploadResult(null);
+                    try {
+                      const buffer = await file.arrayBuffer();
+                      const parsed = parseExcelToPlaces(buffer);
+                      if (parsed.length === 0) {
+                        setExcelUploadResult('⚠️ 유효한 장소 데이터가 없습니다. 열 형식을 확인해주세요.');
+                      } else {
+                        for (const place of parsed) {
+                          await saveCustomPlace(place);
+                        }
+                        forceUpdate(n => n + 1);
+                        setExcelUploadResult(`✅ ${parsed.length}개 장소가 성공적으로 업로드되었습니다.`);
+                      }
+                    } catch (err) {
+                      setExcelUploadResult('❌ 파일 처리 중 오류가 발생했습니다.');
+                      console.error('Excel upload error:', err);
+                    }
+                    setExcelUploading(false);
+                    e.target.value = '';
                   }}
-                  disabled={sheetSyncing}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer disabled:opacity-50"
-                >
-                  <Save size={12} /> {sheetSyncing ? '동기화 중...' : '저장 및 동기화'}
-                </button>
-                <button
-                  onClick={async () => {
-                    setSheetSyncing(true);
-                    await syncFromSheet();
-                    forceUpdate(n => n + 1);
-                    setSheetSyncing(false);
-                  }}
-                  disabled={sheetSyncing}
-                  className="px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer disabled:opacity-50"
-                >
-                  🔄 새로고침
-                </button>
-              </div>
-              {getSheetPlacesCount() > 0 && (
-                <p className="text-[10px] text-green-600 font-medium">✅ 시트에서 {getSheetPlacesCount()}개 장소 로드됨</p>
-              )}
+                />
+              </label>
+              {excelUploading && <p className="text-[10px] text-muted-foreground">⏳ 업로드 중...</p>}
+              {excelUploadResult && <p className="text-[10px] font-medium">{excelUploadResult}</p>}
+
               <details className="text-[10px]">
-                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 스프레드시트 열 형식 안내</summary>
+                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 Excel 열 형식 안내</summary>
                 <div className="mt-1 p-2 rounded bg-muted/50 space-y-0.5 text-muted-foreground">
-                  <p className="font-semibold text-foreground">필수 열: 시군, 카테고리, 장소명, 위도, 경도</p>
-                  <p>선택 열: 세부분류, 설명, 도로명주소, 학년, 홈페이지, 이미지URL, 유튜브</p>
+                  <p className="font-semibold text-foreground">필수 열: 장소명, 위도, 경도</p>
+                  <p>선택 열: 시군, 카테고리, 세부분류, 설명, 도로명주소, 학년, 홈페이지, 이미지URL, 유튜브</p>
                   <p>카테고리: 관광, 자연, 문화, 공공, 체험, 시장</p>
                   <p>세부분류(공공): 시청, 소방서, 경찰서, 병원, 우체국, 보건소, 교육</p>
                   <p>학년: 3, 4, 전체</p>
+                  <p className="text-foreground mt-1">💡 먼저 "Excel 다운로드"로 현재 데이터를 받아 형식을 참고하세요.</p>
                 </div>
               </details>
-              <button
-                onClick={() => {
-                  const csv = exportPlacesToCsv(getMergedPlaces());
-                  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-                  const a = document.createElement('a');
-                  a.href = URL.createObjectURL(blob);
-                  a.download = '거제탐험대_장소데이터.csv';
-                  a.click();
-                }}
-                className="w-full text-center px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer"
-              >
-                📥 현재 장소 데이터 CSV 내보내기
-              </button>
             </div>
 
             <div className="p-3 rounded-lg bg-muted/50 space-y-1.5">
