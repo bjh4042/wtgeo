@@ -89,6 +89,8 @@ const AdminPanel = () => {
   const [contentTypeFilter, setContentTypeFilter] = useState<ContentCategory | 'all'>('all');
   const [siteInfo, setSiteInfo] = useState<SiteInfo>(getSiteInfo() as SiteInfo);
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
+  const [sheetUrl, setSheetUrl] = useState(getSheetUrl() || '');
+  const [sheetSyncing, setSheetSyncing] = useState(false);
   // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
   // Force re-render trigger
