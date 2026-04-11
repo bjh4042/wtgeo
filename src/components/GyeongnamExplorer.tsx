@@ -37,20 +37,29 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     const map = new window.kakao.maps.Map(mapRef.current, { center, level: 9 });
     mapInstanceRef.current = map;
 
-    // Draw boundary polygon
+    // Draw boundary polygons (supports multi-polygon for islands)
     if (selectedCity.boundary && selectedCity.boundary.length > 0) {
-      const path = selectedCity.boundary.map(
-        ([lat, lng]) => new window.kakao.maps.LatLng(lat, lng)
-      );
-      const polygon = new window.kakao.maps.Polygon({
-        path,
-        strokeWeight: 3,
-        strokeColor: '#FF6B35',
-        strokeOpacity: 0.8,
-        fillColor: '#FF6B35',
-        fillOpacity: 0.15,
+      // Check if it's multi-polygon (array of arrays of arrays) or single polygon
+      const isMulti = Array.isArray(selectedCity.boundary[0]?.[0]);
+      const rings: [number, number][][] = isMulti
+        ? (selectedCity.boundary as [number, number][][])
+        : [selectedCity.boundary as [number, number][]];
+
+      rings.forEach(ring => {
+        if (ring.length < 3) return;
+        const path = ring.map(
+          ([lat, lng]) => new window.kakao.maps.LatLng(lat, lng)
+        );
+        const polygon = new window.kakao.maps.Polygon({
+          path,
+          strokeWeight: 3,
+          strokeColor: '#FF6B35',
+          strokeOpacity: 0.8,
+          fillColor: '#FF6B35',
+          fillOpacity: 0.15,
+        });
+        polygon.setMap(map);
       });
-      polygon.setMap(map);
     }
 
     // City center marker

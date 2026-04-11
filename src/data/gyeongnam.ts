@@ -17,7 +17,7 @@ export interface GyeongnamCity {
   lat: number;
   lng: number;
   highlights: string[];
-  boundary?: [number, number][];
+  boundary?: [number, number][] | [number, number][][];
 }
 
 // In-memory cache for cloud edits
