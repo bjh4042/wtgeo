@@ -89,42 +89,39 @@ const AdminPanel = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [placeCategoryFilter, setPlaceCategoryFilter] = useState<PlaceCategory | 'all'>('all');
   const [contentTypeFilter, setContentTypeFilter] = useState<ContentCategory | 'all'>('all');
-  const [siteInfo, setSiteInfo] = useState<SiteInfo>(DEFAULT_SITE_INFO);
+  const [siteInfo, setSiteInfo] = useState<SiteInfo>(getSiteInfo() as SiteInfo);
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
   const [schoolEdits, setSchoolEdits] = useState<Record<number, Partial<EditableSchool>>>({});
   const visitorCount = getVisitorCount();
+  // Force re-render trigger
+  const [, forceUpdate] = useState(0);
 
   useEffect(() => {
     setCurrentNotice(getNotice());
-    setSiteInfo(getSiteInfo());
-    try {
-      const cp = localStorage.getItem(CUSTOM_PLACES_KEY);
-      if (cp) setCustomPlaces(JSON.parse(cp));
-      const cc = localStorage.getItem(CUSTOM_CONTENT_KEY);
-      if (cc) setCustomContent(JSON.parse(cc));
-      const pe = localStorage.getItem(PLACE_EDITS_KEY);
-      if (pe) setPlaceEdits(JSON.parse(pe));
-      const ce = localStorage.getItem(CONTENT_EDITS_KEY);
-      if (ce) setContentEdits(JSON.parse(ce));
-      const se = localStorage.getItem(SCHOOL_EDITS_KEY);
-      if (se) setSchoolEdits(JSON.parse(se));
-    } catch {}
+    setSiteInfo(getSiteInfo() as SiteInfo);
   }, []);
 
   const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) { setIsAdmin(true); setError(false); loadGyeongnamEditsFromCloud(); }
-    else { setError(true); }
+    if (password === ADMIN_PASSWORD) {
+      setIsAdmin(true); setError(false);
+      loadAllDataFromCloud().then(() => {
+        loadGyeongnamEditsFromCloud();
+        forceUpdate(n => n + 1);
+        setCurrentNotice(getNotice());
+        setSiteInfo(getSiteInfo() as SiteInfo);
+      });
+    } else { setError(true); }
   };
 
   const handleSaveNotice = () => {
     if (!notice.trim()) return;
-    localStorage.setItem(NOTICE_KEY, notice.trim());
+    saveNotice(notice.trim());
     setCurrentNotice(notice.trim());
     setNotice('');
   };
 
   const handleDeleteNotice = () => {
-    localStorage.removeItem(NOTICE_KEY);
+    saveNotice(null);
     setCurrentNotice(null);
   };
 
@@ -133,18 +130,12 @@ const AdminPanel = () => {
     const parsed = { ...editingPlace, lat: parseFloat(String(editingPlace.lat)) || 0, lng: parseFloat(String(editingPlace.lng)) || 0 };
     const isDefault = defaultPlaces.some(p => p.id === parsed.id);
     if (isDefault) {
-      const updated = { ...placeEdits, [parsed.id]: parsed };
-      setPlaceEdits(updated);
-      localStorage.setItem(PLACE_EDITS_KEY, JSON.stringify(updated));
+      savePlaceEdit(parsed.id, parsed as any);
     } else {
-      const updated = [...customPlaces];
-      const idx = updated.findIndex(p => p.id === parsed.id);
-      if (idx >= 0) updated[idx] = parsed;
-      else updated.push(parsed);
-      setCustomPlaces(updated);
-      localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(updated));
+      saveCustomPlace(parsed as any);
     }
     setEditingPlace(null);
+    forceUpdate(n => n + 1);
   };
 
   const handleSaveContent = () => {
@@ -153,34 +144,25 @@ const AdminPanel = () => {
     const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
     const isDefault = allDefault.some(c => c.id === parsed.id);
     if (isDefault) {
-      const updated = { ...contentEdits, [parsed.id]: parsed };
-      setContentEdits(updated);
-      localStorage.setItem(CONTENT_EDITS_KEY, JSON.stringify(updated));
+      saveContentEdit(parsed.id, parsed as any);
     } else {
-      const updated = [...customContent];
-      const idx = updated.findIndex(c => c.id === parsed.id);
-      if (idx >= 0) updated[idx] = parsed;
-      else updated.push(parsed);
-      setCustomContent(updated);
-      localStorage.setItem(CUSTOM_CONTENT_KEY, JSON.stringify(updated));
+      saveCustomContent(parsed as any);
     }
     setEditingContent(null);
+    forceUpdate(n => n + 1);
   };
 
   const handleSaveSchool = () => {
     if (!editingSchool || editingSchoolIdx === null) return;
     const parsed = { ...editingSchool, lat: parseFloat(String(editingSchool.lat)) || 0, lng: parseFloat(String(editingSchool.lng)) || 0 };
-    const updated = { ...schoolEdits, [editingSchoolIdx]: parsed };
-    setSchoolEdits(updated);
-    localStorage.setItem(SCHOOL_EDITS_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
+    saveSchoolEdit(editingSchoolIdx, parsed);
     setEditingSchool(null);
     setEditingSchoolIdx(null);
+    forceUpdate(n => n + 1);
   };
 
   const handleSaveCity = () => {
     if (!editingCity) return;
-    // Only save user-editable fields, exclude boundary to avoid localStorage bloat
     const { boundary, ...editWithoutBoundary } = editingCity;
     const toSave = {
       ...editWithoutBoundary,
@@ -192,15 +174,13 @@ const AdminPanel = () => {
   };
 
   const handleDeleteCustomPlace = (id: string) => {
-    const updated = customPlaces.filter(p => p.id !== id);
-    setCustomPlaces(updated);
-    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(updated));
+    deleteCustomPlace(id);
+    forceUpdate(n => n + 1);
   };
 
   const handleDeleteCustomContent = (id: string) => {
-    const updated = customContent.filter(c => c.id !== id);
-    setCustomContent(updated);
-    localStorage.setItem(CUSTOM_CONTENT_KEY, JSON.stringify(updated));
+    deleteCustomContent(id);
+    forceUpdate(n => n + 1);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'place' | 'content') => {
@@ -218,7 +198,7 @@ const AdminPanel = () => {
   };
 
   const handleSaveSiteInfo = () => {
-    localStorage.setItem(SITE_INFO_KEY, JSON.stringify(siteInfo));
+    saveSiteInfo(siteInfo);
     setEditingSiteInfo(false);
   };
 
