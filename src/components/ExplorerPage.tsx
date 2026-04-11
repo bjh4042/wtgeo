@@ -17,9 +17,10 @@ import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
 import GyeongnamExplorer from '@/components/GyeongnamExplorer';
 import RouteExplorer from '@/components/RouteExplorer';
+import PlaceNameOrigins from '@/components/PlaceNameOrigins';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, List, X, Users, Map, Route } from 'lucide-react';
+import { Home, List, X, Users, Map, Route, MapPin } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -39,6 +40,7 @@ const ExplorerPage = () => {
   const [showSources, setShowSources] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
+  const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
 
   useEffect(() => {
     loadAllDataFromCloud().then(() => {
@@ -128,6 +130,7 @@ const ExplorerPage = () => {
       {showRouteExplorer && selectedSchool && selectedGrade && (
         <RouteExplorer grade={selectedGrade} school={selectedSchool} onClose={() => setShowRouteExplorer(false)} onPlaceSelect={(p) => { handlePlaceSelect(p); setShowRouteExplorer(false); }} />
       )}
+      {showPlaceNameOrigins && <PlaceNameOrigins onClose={() => setShowPlaceNameOrigins(false)} />}
 
       {step !== 'explore' ? (
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
@@ -160,6 +163,16 @@ const ExplorerPage = () => {
                     <span className="hidden sm:inline">경로탐험</span>
                     <span className="sm:hidden">경로</span>
                   </button>
+                  {selectedGrade === 3 && (
+                    <button
+                      onClick={() => setShowPlaceNameOrigins(true)}
+                      className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                    >
+                      <MapPin size={10} className="md:w-3 md:h-3" />
+                      <span className="hidden sm:inline">지명유래</span>
+                      <span className="sm:hidden">지명</span>
+                    </button>
+                  )}
                   {selectedGrade === 4 && (
                     <button
                       onClick={() => setShowGyeongnam(true)}
