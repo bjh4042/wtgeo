@@ -12,7 +12,7 @@ import {
   saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
   getVisitorCount, loadAllDataFromCloud,
 } from '@/data/dataManager';
-import { parseExcelToPlaces, exportPlacesToExcel } from '@/data/excelSync';
+import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent } from '@/data/excelSync';
 
 const ADMIN_PASSWORD = '4042';
 
@@ -91,6 +91,7 @@ const AdminPanel = () => {
   const [editingSiteInfo, setEditingSiteInfo] = useState(false);
   const [excelUploading, setExcelUploading] = useState(false);
   const [excelUploadResult, setExcelUploadResult] = useState<string | null>(null);
+  const [excelTab, setExcelTab] = useState<'places' | 'content'>('places');
   // schoolEdits now managed in dataManager cache
   const visitorCount = getVisitorCount();
   // Force re-render trigger
@@ -737,64 +738,85 @@ const AdminPanel = () => {
             {/* Excel 업로드/다운로드 */}
             <div className="p-3 rounded-lg bg-accent/30 border border-accent space-y-2">
               <h4 className="text-xs font-bold flex items-center gap-1">📊 Excel 데이터 관리</h4>
-              <p className="text-[10px] text-muted-foreground">Excel 파일로 장소 데이터를 일괄 업로드하거나 현재 데이터를 다운로드할 수 있습니다.</p>
-              
-              {/* 다운로드 */}
-              <button
-                onClick={() => exportPlacesToExcel(getMergedPlaces())}
-                className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer"
-              >
-                📥 현재 장소 데이터 Excel 다운로드
-              </button>
+              <div className="flex gap-1">
+                <button onClick={() => setExcelTab('places')} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'places' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📍 장소</button>
+                <button onClick={() => setExcelTab('content')} className={`flex-1 px-2 py-1 rounded text-[10px] font-medium cursor-pointer ${excelTab === 'content' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>📖 콘텐츠</button>
+              </div>
 
-              {/* 업로드 */}
-              <label className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
-                📤 Excel 파일 업로드 (추가/수정)
-                <input
-                  type="file"
-                  accept=".xlsx,.xls"
-                  className="hidden"
-                  disabled={excelUploading}
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    setExcelUploading(true);
-                    setExcelUploadResult(null);
-                    try {
-                      const buffer = await file.arrayBuffer();
-                      const parsed = parseExcelToPlaces(buffer);
-                      if (parsed.length === 0) {
-                        setExcelUploadResult('⚠️ 유효한 장소 데이터가 없습니다. 열 형식을 확인해주세요.');
-                      } else {
-                        for (const place of parsed) {
-                          await saveCustomPlace(place);
+              {excelTab === 'places' && (
+                <div className="space-y-2">
+                  <p className="text-[10px] text-muted-foreground">장소 데이터를 Excel로 관리합니다. 이름이 같은 장소는 자동으로 덮어쓰기됩니다.</p>
+                  <button onClick={() => exportPlacesToExcel(getMergedPlaces())} className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📥 장소 데이터 Excel 다운로드
+                  </button>
+                  <label className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📤 장소 Excel 업로드 (추가/덮어쓰기)
+                    <input type="file" accept=".xlsx,.xls" className="hidden" disabled={excelUploading} onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      setExcelUploading(true); setExcelUploadResult(null);
+                      try {
+                        const parsed = parseExcelToPlaces(await file.arrayBuffer());
+                        if (parsed.length === 0) { setExcelUploadResult('⚠️ 유효한 장소 데이터가 없습니다.'); }
+                        else {
+                          const { toSave, added, updated } = deduplicatePlaces(parsed, getMergedPlaces());
+                          for (const place of toSave) await saveCustomPlace(place);
+                          forceUpdate(n => n + 1);
+                          setExcelUploadResult(`✅ 총 ${toSave.length}개 처리 (신규 ${added}개, 수정 ${updated}개)`);
                         }
-                        forceUpdate(n => n + 1);
-                        setExcelUploadResult(`✅ ${parsed.length}개 장소가 성공적으로 업로드되었습니다.`);
-                      }
-                    } catch (err) {
-                      setExcelUploadResult('❌ 파일 처리 중 오류가 발생했습니다.');
-                      console.error('Excel upload error:', err);
-                    }
-                    setExcelUploading(false);
-                    e.target.value = '';
-                  }}
-                />
-              </label>
+                      } catch { setExcelUploadResult('❌ 파일 처리 중 오류가 발생했습니다.'); }
+                      setExcelUploading(false); e.target.value = '';
+                    }} />
+                  </label>
+                  <details className="text-[10px]">
+                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 열 형식 안내</summary>
+                    <div className="mt-1 p-2 rounded bg-muted/50 space-y-0.5 text-muted-foreground">
+                      <p className="font-semibold text-foreground">필수: 장소명, 위도, 경도</p>
+                      <p>선택: 시군, 카테고리, 세부분류, 설명, 도로명주소, 학년, 홈페이지, 이미지URL, 유튜브</p>
+                      <p>카테고리: 관광, 자연, 문화, 공공, 체험, 시장</p>
+                      <p className="text-foreground mt-1">💡 먼저 다운로드로 형식을 참고하세요.</p>
+                    </div>
+                  </details>
+                </div>
+              )}
+
+              {excelTab === 'content' && (
+                <div className="space-y-2">
+                  <p className="text-[10px] text-muted-foreground">콘텐츠(옛이야기, 지명유래 등)를 Excel로 관리합니다. 이름이 같으면 덮어쓰기됩니다.</p>
+                  <button onClick={() => exportContentToExcel(getMergedContent())} className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📥 콘텐츠 데이터 Excel 다운로드
+                  </button>
+                  <label className="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-md bg-muted text-foreground text-xs font-medium hover:opacity-90 cursor-pointer">
+                    📤 콘텐츠 Excel 업로드 (추가/덮어쓰기)
+                    <input type="file" accept=".xlsx,.xls" className="hidden" disabled={excelUploading} onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      setExcelUploading(true); setExcelUploadResult(null);
+                      try {
+                        const parsed = parseExcelToContent(await file.arrayBuffer());
+                        if (parsed.length === 0) { setExcelUploadResult('⚠️ 유효한 콘텐츠 데이터가 없습니다.'); }
+                        else {
+                          const { toSave, added, updated } = deduplicateContent(parsed, getMergedContent());
+                          for (const content of toSave) await saveCustomContent(content);
+                          forceUpdate(n => n + 1);
+                          setExcelUploadResult(`✅ 총 ${toSave.length}개 처리 (신규 ${added}개, 수정 ${updated}개)`);
+                        }
+                      } catch { setExcelUploadResult('❌ 파일 처리 중 오류가 발생했습니다.'); }
+                      setExcelUploading(false); e.target.value = '';
+                    }} />
+                  </label>
+                  <details className="text-[10px]">
+                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 열 형식 안내</summary>
+                    <div className="mt-1 p-2 rounded bg-muted/50 space-y-0.5 text-muted-foreground">
+                      <p className="font-semibold text-foreground">필수: 이름, 위도, 경도</p>
+                      <p>선택: 카테고리, 설명, 학년, 아이콘, 출처, 홈페이지, 이미지URL, 유튜브</p>
+                      <p>카테고리: 옛이야기, 지명유래, 국가유산, 옛날과 오늘날, 자연, 장소</p>
+                      <p className="text-foreground mt-1">💡 먼저 다운로드로 형식을 참고하세요.</p>
+                    </div>
+                  </details>
+                </div>
+              )}
+
               {excelUploading && <p className="text-[10px] text-muted-foreground">⏳ 업로드 중...</p>}
               {excelUploadResult && <p className="text-[10px] font-medium">{excelUploadResult}</p>}
-
-              <details className="text-[10px]">
-                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">📋 Excel 열 형식 안내</summary>
-                <div className="mt-1 p-2 rounded bg-muted/50 space-y-0.5 text-muted-foreground">
-                  <p className="font-semibold text-foreground">필수 열: 장소명, 위도, 경도</p>
-                  <p>선택 열: 시군, 카테고리, 세부분류, 설명, 도로명주소, 학년, 홈페이지, 이미지URL, 유튜브</p>
-                  <p>카테고리: 관광, 자연, 문화, 공공, 체험, 시장</p>
-                  <p>세부분류(공공): 시청, 소방서, 경찰서, 병원, 우체국, 보건소, 교육</p>
-                  <p>학년: 3, 4, 전체</p>
-                  <p className="text-foreground mt-1">💡 먼저 "Excel 다운로드"로 현재 데이터를 받아 형식을 참고하세요.</p>
-                </div>
-              </details>
             </div>
 
             <div className="p-3 rounded-lg bg-muted/50 space-y-1.5">
