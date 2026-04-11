@@ -15,6 +15,7 @@ let customPlacesCache: Place[] = [];
 let contentEditsCache: Record<string, Partial<MapContent>> = {};
 let customContentCache: MapContent[] = [];
 let schoolEditsCache: Record<number, Partial<School>> = {};
+let deletedPlaceIdsCache: string[] = [];
 let siteSettingsCache: Record<string, any> = {};
 
 let dataLoaded = false;
@@ -133,6 +134,10 @@ export async function loadAllDataFromCloud(): Promise<void> {
       ssRes.data.forEach((row: any) => {
         siteSettingsCache[row.key] = row.value;
       });
+      const deletedPlaceIds = siteSettingsCache['deleted_place_ids'];
+      deletedPlaceIdsCache = Array.isArray(deletedPlaceIds)
+        ? deletedPlaceIds.filter((id: unknown): id is string => typeof id === 'string')
+        : [];
     }
 
 
@@ -156,6 +161,8 @@ function loadFromLocalStorage() {
     if (cc) customContentCache = JSON.parse(cc);
     const se = localStorage.getItem('geoje-school-edits');
     if (se) schoolEditsCache = JSON.parse(se);
+    const dp = localStorage.getItem('geoje-deleted-places');
+    if (dp) deletedPlaceIdsCache = JSON.parse(dp);
   } catch {}
 }
 
@@ -163,10 +170,12 @@ export function isDataLoaded(): boolean { return dataLoaded; }
 
 // ─── Place operations ───
 export function getMergedPlaces(): Place[] {
-  const merged = defaultPlaces.map(p => {
-    const edit = placeEditsCache[p.id];
-    return edit ? { ...p, ...edit } as Place : p;
-  });
+  const merged = defaultPlaces
+    .filter(p => !deletedPlaceIdsCache.includes(p.id))
+    .map(p => {
+      const edit = placeEditsCache[p.id];
+      return edit ? { ...p, ...edit } as Place : p;
+    });
   return [...merged, ...customPlacesCache];
 }
 
@@ -222,12 +231,35 @@ export async function saveCustomPlace(place: Place): Promise<void> {
   window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
 }
 
-export async function deleteCustomPlace(placeId: string): Promise<void> {
-  customPlacesCache = customPlacesCache.filter(p => p.id !== placeId);
-  localStorage.setItem('geoje-custom-places', JSON.stringify(customPlacesCache));
+export async function deletePlace(placeId: string): Promise<void> {
+  const isDefaultPlace = defaultPlaces.some(p => p.id === placeId);
+
+  if (!isDefaultPlace) {
+    customPlacesCache = customPlacesCache.filter(p => p.id !== placeId);
+    localStorage.setItem('geoje-custom-places', JSON.stringify(customPlacesCache));
+    try {
+      await supabase.from('custom_places').delete().eq('place_id', placeId);
+    } catch (e) { console.error('Failed to delete custom place:', e); }
+    window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
+    return;
+  }
+
+  deletedPlaceIdsCache = Array.from(new Set([...deletedPlaceIdsCache, placeId]));
+  delete placeEditsCache[placeId];
+  localStorage.setItem('geoje-place-edits', JSON.stringify(placeEditsCache));
+  localStorage.setItem('geoje-deleted-places', JSON.stringify(deletedPlaceIdsCache));
+
   try {
-    await supabase.from('custom_places').delete().eq('place_id', placeId);
-  } catch (e) { console.error('Failed to delete custom place:', e); }
+    await Promise.all([
+      supabase.from('place_edits').delete().eq('place_id', placeId),
+      supabase.from('site_settings').upsert({
+        key: 'deleted_place_ids',
+        value: deletedPlaceIdsCache,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'key' }),
+    ]);
+  } catch (e) { console.error('Failed to delete place:', e); }
+
   window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
 }
 
