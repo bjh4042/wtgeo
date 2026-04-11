@@ -393,8 +393,12 @@ const AdminPanel = () => {
                     <p className="text-xs font-semibold text-foreground truncate">{p.name}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{categoryLabels[p.category]?.split(' ')[0]} · {p.address}</p>
                   </div>
-                  <button onClick={() => setEditingPlace({ id: p.id, name: p.name, description: p.description, address: p.address, lat: p.lat, lng: p.lng, category: p.category, imageUrl: p.imageUrl, origin: p.origin, referenceUrl: p.referenceUrl, youtubeUrl: p.youtubeUrl })}
-                    className="p-1.5 rounded bg-muted cursor-pointer flex-shrink-0"><Edit3 size={12} /></button>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button onClick={() => setEditingPlace({ id: p.id, name: p.name, description: p.description, address: p.address, lat: p.lat, lng: p.lng, category: p.category, imageUrl: p.imageUrl, origin: p.origin, referenceUrl: p.referenceUrl, youtubeUrl: p.youtubeUrl })}
+                      className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
+                    <button onClick={() => { if (confirm(`"${p.name}" 장소를 삭제하시겠습니까?`)) { deleteCustomPlace(p.id); savePlaceEdit(p.id, { name: '___DELETED___' } as any); forceUpdate(n => n + 1); } }}
+                      className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
+                  </div>
                 </div>
               ))}
             </div>
