@@ -136,10 +136,13 @@ export async function loadAllDataFromCloud(): Promise<void> {
     }
 
     dataLoaded = true;
+    // 시트 동기화도 실행
+    syncFromSheet();
   } catch (e) {
     console.error('Failed to load data from cloud, falling back to localStorage:', e);
     loadFromLocalStorage();
     dataLoaded = true;
+    syncFromSheet();
   }
 }
 
