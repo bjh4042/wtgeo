@@ -315,7 +315,7 @@ const AdminPanel = () => {
 
   if (showLogin && !isAdmin) {
     return (
-      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={() => { setShowLogin(false); setError(false); setPassword(''); }}>
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
         <div className="bg-card rounded-2xl p-6 max-w-sm mx-4 shadow-2xl w-full" onClick={e => e.stopPropagation()}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-foreground">🔐 관리자 로그인</h3>
@@ -344,7 +344,7 @@ const AdminPanel = () => {
   ];
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={() => setIsAdmin(false)}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
       <div className="bg-card rounded-2xl p-4 md:p-5 max-w-lg mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base md:text-lg font-bold text-foreground">⚙️ 관리자 패널</h3>
