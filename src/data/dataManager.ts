@@ -3,6 +3,7 @@ import { places as defaultPlaces, Place, PlaceCategory } from './places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory } from './content';
 import { schools as defaultSchools, School, getInitialConsonant } from './schools';
 import { supabase } from '@/integrations/supabase/client';
+import { getSheetPlaces, clearSheetCache, SHEETS_SYNC_EVENT } from './googleSheetsSync';
 
 export const SCHOOLS_UPDATED_EVENT = 'geoje-schools-updated';
 export const PLACES_UPDATED_EVENT = 'geoje-places-updated';
