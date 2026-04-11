@@ -911,6 +911,78 @@ export const places: Place[] = [
     address: '경상남도 양산시 중앙로 39', lat: 35.334123, lng: 129.034567, grade: 4,
     referenceUrl: 'https://www.yangsan.go.kr',
   },
+  {
+    id: 'p4-gov-sacheon', name: '사천시청', category: 'public', subCategory: 'government',
+    description: '항공우주산업의 도시 사천시의 시청입니다. KAI(한국항공우주산업)가 위치해 있습니다. ☎ 055-831-2114',
+    address: '경상남도 사천시 용현면 시청로 77', lat: 35.003568, lng: 128.063798, grade: 4,
+    referenceUrl: 'https://www.sacheon.go.kr',
+  },
+  {
+    id: 'p4-gov-miryang', name: '밀양시청', category: 'public', subCategory: 'government',
+    description: '밀양아리랑과 영남루로 유명한 밀양시의 시청입니다. ☎ 055-359-5000',
+    address: '경상남도 밀양시 밀양대로 2047', lat: 35.503420, lng: 128.746533, grade: 4,
+    referenceUrl: 'https://www.miryang.go.kr',
+  },
+  {
+    id: 'p4-gov-geochang', name: '거창군청', category: 'public', subCategory: 'government',
+    description: '덕유산과 수승대가 있는 거창군의 군청입니다. ☎ 055-940-3000',
+    address: '경상남도 거창군 거창읍 중앙로 103', lat: 35.686678, lng: 127.909516, grade: 4,
+    referenceUrl: 'https://www.geochang.go.kr',
+  },
+  {
+    id: 'p4-gov-hapcheon', name: '합천군청', category: 'public', subCategory: 'government',
+    description: '해인사와 팔만대장경의 고장 합천군의 군청입니다. ☎ 055-930-3000',
+    address: '경상남도 합천군 합천읍 동서로 119', lat: 35.566693, lng: 128.165870, grade: 4,
+    referenceUrl: 'https://www.hapcheon.go.kr',
+  },
+  {
+    id: 'p4-gov-uiryeong', name: '의령군청', category: 'public', subCategory: 'government',
+    description: '의병장 곽재우의 고장 의령군의 군청입니다. ☎ 055-570-2000',
+    address: '경상남도 의령군 의령읍 충익로 63', lat: 35.322068, lng: 128.261637, grade: 4,
+    referenceUrl: 'https://www.uiryeong.go.kr',
+  },
+  {
+    id: 'p4-gov-haman', name: '함안군청', category: 'public', subCategory: 'government',
+    description: '아라가야의 역사가 깃든 함안군의 군청입니다. ☎ 055-580-2000',
+    address: '경상남도 함안군 가야읍 말산로 1', lat: 35.272465, lng: 128.406543, grade: 4,
+    referenceUrl: 'https://www.haman.go.kr',
+  },
+  {
+    id: 'p4-gov-changnyeong', name: '창녕군청', category: 'public', subCategory: 'government',
+    description: '우포늪(람사르습지)으로 유명한 창녕군의 군청입니다. ☎ 055-530-1000',
+    address: '경상남도 창녕군 창녕읍 군청길 1', lat: 35.544592, lng: 128.492328, grade: 4,
+    referenceUrl: 'https://www.cng.go.kr',
+  },
+  {
+    id: 'p4-gov-goseong', name: '고성군청', category: 'public', subCategory: 'government',
+    description: '공룡 화석지와 당항포로 유명한 고성군의 군청입니다. ☎ 055-670-2000',
+    address: '경상남도 고성군 고성읍 성내로 130', lat: 34.972981, lng: 128.322245, grade: 4,
+    referenceUrl: 'https://www.goseong.go.kr',
+  },
+  {
+    id: 'p4-gov-namhae', name: '남해군청', category: 'public', subCategory: 'government',
+    description: '보물섬으로 불리는 남해군의 군청입니다. 독일마을, 다랭이마을이 유명합니다. ☎ 055-860-3000',
+    address: '경상남도 남해군 남해읍 망운로9번길 12', lat: 34.837709, lng: 127.892571, grade: 4,
+    referenceUrl: 'https://www.namhae.go.kr',
+  },
+  {
+    id: 'p4-gov-hadong', name: '하동군청', category: 'public', subCategory: 'government',
+    description: '지리산과 섬진강, 하동녹차로 유명한 하동군의 군청입니다. ☎ 055-880-2000',
+    address: '경상남도 하동군 하동읍 군청로 23', lat: 35.067210, lng: 127.751268, grade: 4,
+    referenceUrl: 'https://www.hadong.go.kr',
+  },
+  {
+    id: 'p4-gov-sancheong', name: '산청군청', category: 'public', subCategory: 'government',
+    description: '지리산과 한방약초의 고장 산청군의 군청입니다. ☎ 055-970-6000',
+    address: '경상남도 산청군 산청읍 산엔청로 1', lat: 35.415447, lng: 127.873401, grade: 4,
+    referenceUrl: 'https://www.sancheong.go.kr',
+  },
+  {
+    id: 'p4-gov-hamyang', name: '함양군청', category: 'public', subCategory: 'government',
+    description: '지리산 자락의 선비 고장 함양군의 군청입니다. ☎ 055-960-4000',
+    address: '경상남도 함양군 함양읍 고운로 35', lat: 35.520553, lng: 127.725188, grade: 4,
+    referenceUrl: 'https://www.hamyang.go.kr',
+  },
 
   // ── 4학년: 경찰서 ──
   {
@@ -1003,6 +1075,18 @@ export const places: Place[] = [
     address: '경상남도 함양군 함양읍 함양로 1139', lat: 35.519876, lng: 127.728912, grade: 4,
     referenceUrl: 'https://hamyang.police.go.kr',
   },
+  {
+    id: 'p4-police-geochang', name: '거창경찰서', category: 'public', subCategory: 'police',
+    description: '거창군의 치안을 담당하는 경찰서입니다. ☎ 055-940-0112',
+    address: '경상남도 거창군 거창읍 중앙로 97', lat: 35.686112, lng: 127.909070, grade: 4,
+    referenceUrl: 'https://geochang.police.go.kr',
+  },
+  {
+    id: 'p4-police-hapcheon', name: '합천경찰서', category: 'public', subCategory: 'police',
+    description: '합천군의 치안을 담당하는 경찰서입니다. ☎ 055-930-0112',
+    address: '경상남도 합천군 합천읍 합천리 155-19', lat: 35.563731, lng: 128.169859, grade: 4,
+    referenceUrl: 'https://hapcheon.police.go.kr',
+  },
 
   // ── 4학년: 소방서 ──
   {
@@ -1093,6 +1177,18 @@ export const places: Place[] = [
     id: 'p4-fire-hamyang', name: '함양소방서', category: 'public', subCategory: 'fire',
     description: '함양군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
     address: '경상남도 함양군 함양읍 고운로 154', lat: 35.526789, lng: 127.734567, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-geochang', name: '거창소방서', category: 'public', subCategory: 'fire',
+    description: '거창군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 거창군 거창읍 거함대로 3324', lat: 35.677788, lng: 127.923324, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-hapcheon', name: '합천소방서', category: 'public', subCategory: 'fire',
+    description: '합천군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 합천군 합천읍 인곡리 34', lat: 35.566155, lng: 128.164181, grade: 4,
     referenceUrl: 'https://fire.gyeongnam.go.kr',
   },
 
