@@ -29,45 +29,6 @@ export interface SiteInfo {
   devEmail: string;
 }
 
-const DEFAULT_SITE_INFO: SiteInfo = {
-  serviceName: '거제탐험대',
-  version: '1.0',
-  devTool: 'Lovable',
-  mapApi: 'Kakao MAP',
-  dataSource: '공식 웹페이지',
-  siteNotice: '알림: 본 웹서비스는 타이핑 및 조사 학습이 제한적인 학생들을 위하여 학생들의 개인정보를 수집하지 않고, 성취기준과 별도로 우리 지역 거제를 쉽고 재미있게 탐험하기 위해 제작되었습니다. 데이터 수집 및 제작 시점에 따라 실제 장소의 내용이 다소 상이할 수 있으므로 사실 정보는 검색 엔진을 적극 활용하시길 바랍니다.',
-  devName: '수박쌤',
-  devTitle1: '경남 초등학교 교사',
-  devTitle2: '참쌤스쿨 크루',
-  devTitle3: '교사 크리에이터 협회 회원',
-  devEmail: 'bjh4042@naver.com',
-};
-
-export function getSiteInfo(): SiteInfo {
-  try {
-    const saved = localStorage.getItem(SITE_INFO_KEY);
-    if (saved) return { ...DEFAULT_SITE_INFO, ...JSON.parse(saved) };
-  } catch {}
-  return DEFAULT_SITE_INFO;
-}
-
-export function getNotice(): string | null {
-  return localStorage.getItem(NOTICE_KEY);
-}
-
-export function getVisitorCount(): number {
-  return parseInt(localStorage.getItem(VISITOR_KEY) || '0', 10);
-}
-
-export function incrementVisitorCount(): number {
-  const sessionKey = 'geoje-explorer-visited';
-  if (sessionStorage.getItem(sessionKey)) return getVisitorCount();
-  sessionStorage.setItem(sessionKey, 'true');
-  const count = getVisitorCount() + 1;
-  localStorage.setItem(VISITOR_KEY, String(count));
-  return count;
-}
-
 type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info';
 
 interface EditablePlace {
