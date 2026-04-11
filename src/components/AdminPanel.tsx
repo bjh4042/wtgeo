@@ -571,7 +571,7 @@ const AdminPanel = () => {
             <div className="max-h-[50vh] overflow-auto space-y-1">
               <p className="text-[10px] text-muted-foreground px-1">{filteredSchools.length}개 학교</p>
               {filteredSchools.map(({ school: display, index: origIdx }) => {
-                const edited = schoolEdits[origIdx];
+                const edited = display.name !== schools[origIdx]?.name || display.address !== schools[origIdx]?.address;
                 return (
                   <div key={origIdx} className="p-2 rounded-lg border bg-muted/10 flex items-center justify-between gap-2">
                     <div className="min-w-0">
