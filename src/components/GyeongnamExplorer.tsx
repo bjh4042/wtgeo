@@ -86,14 +86,14 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
           <div className="p-3 md:p-4 overflow-auto max-h-[75vh]">
             <p className="text-xs md:text-sm text-muted-foreground mb-3">경상남도의 18개 시·군을 선택하여 지명 유래, 마스코트, 인구 등을 알아보세요!</p>
             <div className="grid grid-cols-3 gap-1.5 md:gap-2">
-              {getGyeongnamCities().map(city => (
+              {cities.map(city => (
                 <button
                   key={city.id}
                   onClick={() => setSelectedCity(city)}
                   className="flex flex-col items-center gap-0.5 md:gap-1 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
                 >
-                  {city.mascotImageUrl ? (
-                    <img src={city.mascotImageUrl} alt={city.mascot} className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+                  {city.logoUrl ? (
+                    <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-8 h-8 md:w-10 md:h-10 object-contain" />
                   ) : (
                     <span className="text-xl md:text-2xl">{city.mascotEmoji}</span>
                   )}
