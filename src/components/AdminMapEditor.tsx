@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Place, PlaceCategory, categoryLabels, categoryColors, categoryIcons, publicSubCategoryLabels, PublicSubCategory } from '@/data/places';
 import { getMergedPlaces, savePlaceEdit, saveCustomPlace, deletePlace, PLACES_UPDATED_EVENT } from '@/data/dataManager';
 import { places as defaultPlaces } from '@/data/places';
-import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter } from 'lucide-react';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
