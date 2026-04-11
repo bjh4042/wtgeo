@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getGyeongnamCities, GyeongnamCity } from '@/data/gyeongnam';
+import { getGyeongnamCities, loadGyeongnamEditsFromCloud, isGyeongnamEditsLoaded, GyeongnamCity, GYEONGNAM_UPDATED_EVENT } from '@/data/gyeongnam';
 import { X, MapPin, Users, Ruler, Star, ExternalLink, ArrowLeft } from 'lucide-react';
 
 interface GyeongnamExplorerProps {
@@ -11,8 +11,22 @@ const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
   const [selectedCity, setSelectedCity] = useState<GyeongnamCity | null>(null);
   const [showMap, setShowMap] = useState(false);
+  const [cities, setCities] = useState<GyeongnamCity[]>(getGyeongnamCities());
+  const [loaded, setLoaded] = useState(isGyeongnamEditsLoaded());
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!loaded) {
+      loadGyeongnamEditsFromCloud().then(() => {
+        setCities(getGyeongnamCities());
+        setLoaded(true);
+      });
+    }
+    const handleUpdate = () => setCities(getGyeongnamCities());
+    window.addEventListener(GYEONGNAM_UPDATED_EVENT, handleUpdate);
+    return () => window.removeEventListener(GYEONGNAM_UPDATED_EVENT, handleUpdate);
+  }, [loaded]);
 
   // Initialize map when showing a city
   useEffect(() => {
