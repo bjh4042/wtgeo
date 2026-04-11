@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Place, PlaceCategory, categoryLabels, categoryColors, categoryIcons, publicSubCategoryLabels, PublicSubCategory } from '@/data/places';
 import { getMergedPlaces, savePlaceEdit, saveCustomPlace, deletePlace, PLACES_UPDATED_EVENT } from '@/data/dataManager';
 import { places as defaultPlaces } from '@/data/places';
-import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter } from 'lucide-react';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
@@ -38,13 +38,24 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [detailsExpanded, setDetailsExpanded] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<PlaceCategory[]>([]);
+  const [showFilter, setShowFilter] = useState(false);
 
   const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
 
+  const filteredPlaces = useMemo(() => {
+    if (activeFilters.length === 0) return allPlaces;
+    return allPlaces.filter(p => activeFilters.includes(p.category));
+  }, [allPlaces, activeFilters]);
+
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return [];
-    return allPlaces.filter(p => p.name.includes(searchTerm) || p.address?.includes(searchTerm)).slice(0, 10);
-  }, [allPlaces, searchTerm]);
+    return filteredPlaces.filter(p => p.name.includes(searchTerm) || p.address?.includes(searchTerm)).slice(0, 10);
+  }, [filteredPlaces, searchTerm]);
+
+  const toggleFilter = (cat: PlaceCategory) => {
+    setActiveFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
+  };
 
   // Load Kakao Maps
   useEffect(() => {
@@ -117,7 +128,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     overlaysRef.current.forEach(o => o.setMap(null));
     overlaysRef.current = [];
 
-    allPlaces.forEach((place) => {
+    filteredPlaces.forEach((place) => {
       const position = new window.kakao.maps.LatLng(place.lat, place.lng);
       const color = categoryColors[place.category];
       const icon = categoryIcons[place.category];
@@ -163,7 +174,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       });
       overlaysRef.current.push(overlay);
     });
-  }, [isLoaded, allPlaces, selectedPlace, isEditing]);
+  }, [isLoaded, filteredPlaces, selectedPlace, isEditing]);
 
   const handleSave = useCallback(() => {
     if (!selectedPlace || !selectedPlace.name.trim()) return;
@@ -225,10 +236,14 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       <div className="flex items-center justify-between px-3 py-2 bg-card border-b z-10 flex-shrink-0">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-bold text-foreground">🗺️ 지도 편집기</h3>
-          <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{allPlaces.length}개 장소</span>
+          <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{filteredPlaces.length}개 장소</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <button onClick={() => setShowSearch(!showSearch)}
+          <button onClick={() => { setShowFilter(!showFilter); setShowSearch(false); }}
+            className={`p-1.5 rounded-lg cursor-pointer transition-colors ${showFilter ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+            <Filter size={14} />
+          </button>
+          <button onClick={() => { setShowSearch(!showSearch); setShowFilter(false); }}
             className={`p-1.5 rounded-lg cursor-pointer transition-colors ${showSearch ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
             <Search size={14} />
           </button>
@@ -265,7 +280,29 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         </div>
       )}
 
-      {/* Adding hint */}
+      {/* Category filter */}
+      {showFilter && (
+        <div className="px-3 py-2 bg-card border-b z-10 flex-shrink-0">
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={() => setActiveFilters([])}
+              className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${activeFilters.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              전체 ({allPlaces.length})
+            </button>
+            {(Object.entries(categoryLabels) as [PlaceCategory, string][]).map(([key, label]) => {
+              const count = allPlaces.filter(p => p.category === key).length;
+              const active = activeFilters.includes(key);
+              return (
+                <button key={key} onClick={() => toggleFilter(key)}
+                  className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${active ? 'text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                  style={active ? { backgroundColor: categoryColors[key] } : {}}>
+                  {categoryIcons[key]} {label} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {isAdding && (
         <div className="px-3 py-2 bg-primary/10 border-b z-10 flex-shrink-0">
           <p className="text-xs text-primary font-medium text-center">📍 지도를 클릭하여 새 장소를 추가하세요</p>
