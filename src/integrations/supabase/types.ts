@@ -14,6 +14,165 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_edits: {
+        Row: {
+          content_id: string
+          content_type: string | null
+          created_at: string
+          description: string | null
+          grade: string | null
+          icon: string | null
+          id: string
+          image_url: string | null
+          lat: number | null
+          lng: number | null
+          name: string | null
+          reference_url: string | null
+          source: string | null
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          content_id: string
+          content_type?: string | null
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          reference_url?: string | null
+          source?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          content_id?: string
+          content_type?: string | null
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          reference_url?: string | null
+          source?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      custom_content: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          description: string | null
+          grade: string | null
+          icon: string | null
+          id: string
+          image_url: string | null
+          lat: number
+          lng: number
+          name: string
+          reference_url: string | null
+          source: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          lat: number
+          lng: number
+          name: string
+          reference_url?: string | null
+          source?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number
+          lng?: number
+          name?: string
+          reference_url?: string | null
+          source?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      custom_places: {
+        Row: {
+          address: string | null
+          category: string
+          created_at: string
+          description: string | null
+          grade: string | null
+          id: string
+          image_url: string | null
+          lat: number
+          lng: number
+          name: string
+          origin: string | null
+          place_id: string
+          reference_url: string | null
+          sub_category: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          address?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          id?: string
+          image_url?: string | null
+          lat: number
+          lng: number
+          name: string
+          origin?: string | null
+          place_id: string
+          reference_url?: string | null
+          sub_category?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number
+          lng?: number
+          name?: string
+          origin?: string | null
+          place_id?: string
+          reference_url?: string | null
+          sub_category?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       gyeongnam_edits: {
         Row: {
           area: number | null
@@ -71,6 +230,126 @@ export type Database = {
           official_site?: string | null
           population?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      place_edits: {
+        Row: {
+          address: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          grade: string | null
+          id: string
+          image_url: string | null
+          lat: number | null
+          lng: number | null
+          name: string | null
+          origin: string | null
+          place_id: string
+          reference_url: string | null
+          sub_category: string | null
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          address?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          origin?: string | null
+          place_id: string
+          reference_url?: string | null
+          sub_category?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          address?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          grade?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          origin?: string | null
+          place_id?: string
+          reference_url?: string | null
+          sub_category?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      school_edits: {
+        Row: {
+          address: string | null
+          created_at: string
+          district: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          name: string | null
+          phone: string | null
+          school_index: number
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          phone?: string | null
+          school_index: number
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          phone?: string | null
+          school_index?: number
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
