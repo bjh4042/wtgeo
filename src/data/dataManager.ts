@@ -141,6 +141,7 @@ export async function loadAllDataFromCloud(): Promise<void> {
     console.error('Failed to load data from cloud, falling back to localStorage:', e);
     loadFromLocalStorage();
     dataLoaded = true;
+  }
 }
 
 function loadFromLocalStorage() {
