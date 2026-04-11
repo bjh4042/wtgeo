@@ -196,10 +196,35 @@ const PlaceNameOrigins = ({ onClose }: PlaceNameOriginsProps) => {
                 <span className="ml-2 text-sm text-muted-foreground">유래 정보를 불러오는 중...</span>
               </div>
             ) : (
-              <div className="p-4">
-                <div className="prose prose-sm max-w-none text-foreground whitespace-pre-line leading-relaxed text-sm">
-                  {detailContent}
-                </div>
+              <div className="p-4 space-y-3">
+                {detailContent.split(/\n(?=###?\s)/).map((section, idx) => {
+                  const isH2 = section.startsWith('## ');
+                  const isH3 = section.startsWith('### ');
+                  if (isH2) {
+                    const [title, ...rest] = section.replace('## ', '').split('\n');
+                    return (
+                      <div key={idx}>
+                        <h3 className="text-base font-bold text-primary border-b border-primary/20 pb-1 mb-2">{title}</h3>
+                        <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">{rest.join('\n').trim()}</p>
+                      </div>
+                    );
+                  }
+                  if (isH3) {
+                    const [title, ...rest] = section.replace('### ', '').split('\n');
+                    return (
+                      <div key={idx} className="bg-muted/30 rounded-lg p-3">
+                        <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5 mb-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block flex-shrink-0" />
+                          {title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line pl-3">{rest.join('\n').trim()}</p>
+                      </div>
+                    );
+                  }
+                  return section.trim() ? (
+                    <p key={idx} className="text-sm text-foreground leading-relaxed whitespace-pre-line">{section.trim()}</p>
+                  ) : null;
+                })}
                 <div className="mt-4 pt-3 border-t">
                   <a
                     href={`https://www.geoje.go.kr/index.geoje?menuCd=${detailView.menuCd}`}
