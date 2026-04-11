@@ -12,7 +12,7 @@ import {
   saveSchoolEdit, getNotice, saveNotice, getSiteInfo, saveSiteInfo,
   getVisitorCount, loadAllDataFromCloud,
 } from '@/data/dataManager';
-import { parseExcelToPlaces, exportPlacesToExcel } from '@/data/excelSync';
+import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent } from '@/data/excelSync';
 
 const ADMIN_PASSWORD = '4042';
 
