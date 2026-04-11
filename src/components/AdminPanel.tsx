@@ -287,6 +287,8 @@ const AdminPanel = () => {
   ];
 
   return (
+    <>
+    {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); forceUpdate(n => n + 1); }} />}
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
       <div className="bg-card rounded-2xl p-4 md:p-5 max-w-lg mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
@@ -302,6 +304,10 @@ const AdminPanel = () => {
               {tab.label}
             </button>
           ))}
+          <button onClick={() => setShowMapEditor(true)}
+            className="px-2.5 py-1.5 rounded-full text-[11px] font-bold cursor-pointer whitespace-nowrap bg-accent text-accent-foreground hover:bg-accent/80 flex items-center gap-1">
+            <Map size={11} /> 지도
+          </button>
         </div>
 
         {/* Notice Tab */}
