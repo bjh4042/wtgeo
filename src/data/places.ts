@@ -502,7 +502,7 @@ export const places: Place[] = [
   {
     id: 'p-police-sadeung', name: '사등파출소', category: 'public', subCategory: 'police',
     description: '사등면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 사등면 거제대로 5286', lat: 34.9091, lng: 128.5375, grade: 3,
+    address: '경상남도 거제시 사등면 성포리 일원', lat: 34.919836, lng: 128.525706, grade: 3,
   },
   {
     id: 'p-police-hacheong', name: '하청파출소', category: 'public', subCategory: 'police',
@@ -755,9 +755,9 @@ export const places: Place[] = [
     address: '경상남도 거제시 남부면 저구해안길 37', lat: 34.7346, lng: 128.6048, grade: 3,
   },
   {
-    id: 'p-police-dundeok', name: '둔덕파출소', category: 'public', subCategory: 'police',
-    description: '둔덕면 지역의 치안을 담당하는 파출소입니다.',
-    address: '경상남도 거제시 둔덕면 거제남서로 4580', lat: 34.8468, lng: 128.5369, grade: 3,
+    id: 'p-police-dundeok', name: '둔덕파출소(둔덕치안센터)', category: 'public', subCategory: 'police',
+    description: '둔덕면 지역의 치안을 담당하는 치안센터입니다.',
+    address: '경상남도 거제시 둔덕면 하둔길 61', lat: 34.839973, lng: 128.507981, grade: 3,
   },
   {
     id: 'p-police-ilun', name: '일운파출소', category: 'public', subCategory: 'police',
@@ -822,9 +822,9 @@ export const places: Place[] = [
     address: '경상남도 거제시 일운면 지세포로 101', lat: 34.8302, lng: 128.7058, grade: 3,
   },
   {
-    id: 'p-post-sadeung', name: '거제사등우체국', category: 'public', subCategory: 'post',
+    id: 'p-post-sadeung', name: '거제사등우체국(성포우체국)', category: 'public', subCategory: 'post',
     description: '사등면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 사등면 성포로 136', lat: 34.9098, lng: 128.5398, grade: 3,
+    address: '경상남도 거제시 사등면 성포로 144', lat: 34.920501, lng: 128.524451, grade: 3,
   },
   {
     id: 'p-post-dongbu', name: '거제동부우체국', category: 'public', subCategory: 'post',
@@ -839,7 +839,7 @@ export const places: Place[] = [
   {
     id: 'p-post-dundeok', name: '거제둔덕우체국', category: 'public', subCategory: 'post',
     description: '둔덕면 지역의 우편 서비스를 제공하는 우체국입니다.',
-    address: '경상남도 거제시 둔덕면 하둔길 56', lat: 34.8458, lng: 128.5358, grade: 3,
+    address: '경상남도 거제시 둔덕면 하둔길 56', lat: 34.840362, lng: 128.508537, grade: 3,
   },
 
   // ===== 보건지소 =====
@@ -866,12 +866,12 @@ export const places: Place[] = [
   {
     id: 'p-health-dundeok', name: '둔덕면보건지소', category: 'public', subCategory: 'health',
     description: '둔덕면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
-    address: '경상남도 거제시 둔덕면 거제남서로 4606', lat: 34.8465, lng: 128.5372, grade: 3,
+    address: '경상남도 거제시 둔덕면 하둔리 365-38', lat: 34.837640, lng: 128.506148, grade: 3,
   },
   {
     id: 'p-health-sadeung', name: '사등면보건지소', category: 'public', subCategory: 'health',
     description: '사등면 주민의 건강을 위한 보건의료서비스를 제공하는 보건지소입니다.',
-    address: '경상남도 거제시 사등면 성포로 104-1', lat: 34.9085, lng: 128.5412, grade: 3,
+    address: '경상남도 거제시 사등면 성포리 376', lat: 34.918686, lng: 128.522561, grade: 3,
   },
   {
     id: 'p-health-yeoncho', name: '연초면보건지소', category: 'public', subCategory: 'health',
