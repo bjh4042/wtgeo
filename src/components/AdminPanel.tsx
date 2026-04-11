@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter } from 'lucide-react';
+import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter, Map } from 'lucide-react';
 import { places as defaultPlaces, Place, PlaceCategory, categoryLabels } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory, contentCategoryLabels } from '@/data/content';
 import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
@@ -31,6 +31,8 @@ export interface SiteInfo {
 }
 
 type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info';
+
+import AdminMapEditor from './AdminMapEditor';
 
 interface EditablePlace {
   id: string;
