@@ -280,7 +280,29 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         </div>
       )}
 
-      {/* Adding hint */}
+      {/* Category filter */}
+      {showFilter && (
+        <div className="px-3 py-2 bg-card border-b z-10 flex-shrink-0">
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={() => setActiveFilters([])}
+              className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${activeFilters.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              전체 ({allPlaces.length})
+            </button>
+            {(Object.entries(categoryLabels) as [PlaceCategory, string][]).map(([key, label]) => {
+              const count = allPlaces.filter(p => p.category === key).length;
+              const active = activeFilters.includes(key);
+              return (
+                <button key={key} onClick={() => toggleFilter(key)}
+                  className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${active ? 'text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                  style={active ? { backgroundColor: categoryColors[key] } : {}}>
+                  {categoryIcons[key]} {label} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {isAdding && (
         <div className="px-3 py-2 bg-primary/10 border-b z-10 flex-shrink-0">
           <p className="text-xs text-primary font-medium text-center">📍 지도를 클릭하여 새 장소를 추가하세요</p>
