@@ -533,11 +533,6 @@ export const places: Place[] = [
     address: '경상남도 창원시 의창구 사림동', lat: 35.2365, lng: 128.6944, grade: 4,
   },
   {
-    id: 'p13', name: '경남경찰청', category: 'public', subCategory: 'police',
-    description: '경상남도 전체의 치안을 총괄하는 경찰청입니다.',
-    address: '경상남도 창원시 의창구 사림동', lat: 35.2374, lng: 128.6936, grade: 4,
-  },
-  {
     id: 'p14', name: '창원지방법원', category: 'public', subCategory: 'government',
     description: '경상남도 관할의 재판 업무를 담당하는 법원으로, 법에 따라 공정하게 판결합니다.',
     address: '경상남도 창원시 성산구 사파동', lat: 35.2243, lng: 128.7010, grade: 4,
@@ -917,17 +912,187 @@ export const places: Place[] = [
     referenceUrl: 'https://www.yangsan.go.kr',
   },
 
-  // ── 4학년: 경찰·소방 ──
+  // ── 4학년: 경찰서 ──
+  {
+    id: 'p4-police-changwon', name: '창원중부경찰서', category: 'public', subCategory: 'police',
+    description: '창원시 성산구 일대의 치안을 담당하는 경찰서입니다. ☎ 055-280-0112',
+    address: '경상남도 창원시 성산구 상남로 114', lat: 35.221545, lng: 128.686523, grade: 4,
+    referenceUrl: 'https://changwon.police.go.kr',
+  },
   {
     id: 'p4-police-jinju', name: '진주경찰서', category: 'public', subCategory: 'police',
-    description: '진주시의 치안을 담당하는 경찰서입니다. 시민의 안전과 범죄 예방을 위해 활동합니다. ☎ 055-750-0112',
+    description: '진주시의 치안을 담당하는 경찰서입니다. ☎ 055-750-0112',
     address: '경상남도 진주시 비봉로 2', lat: 35.195312, lng: 128.083145, grade: 4,
     referenceUrl: 'https://jinju.police.go.kr',
   },
   {
+    id: 'p4-police-tongyeong', name: '통영경찰서', category: 'public', subCategory: 'police',
+    description: '통영시의 치안을 담당하는 경찰서입니다. ☎ 055-640-0112',
+    address: '경상남도 통영시 광도면 죽림2로 46', lat: 34.876123, lng: 128.423789, grade: 4,
+    referenceUrl: 'https://tongyeong.police.go.kr',
+  },
+  {
+    id: 'p4-police-sacheon', name: '사천경찰서', category: 'public', subCategory: 'police',
+    description: '사천시의 치안을 담당하는 경찰서입니다. ☎ 055-830-0112',
+    address: '경상남도 사천시 사천읍 하일길 14', lat: 35.083756, lng: 128.083412, grade: 4,
+    referenceUrl: 'https://sacheon.police.go.kr',
+  },
+  {
+    id: 'p4-police-gimhae', name: '김해중부경찰서', category: 'public', subCategory: 'police',
+    description: '김해시의 치안을 담당하는 경찰서입니다. ☎ 055-320-0112',
+    address: '경상남도 김해시 김해대로 2307', lat: 35.230145, lng: 128.878912, grade: 4,
+    referenceUrl: 'https://gimhae.police.go.kr',
+  },
+  {
+    id: 'p4-police-miryang', name: '밀양경찰서', category: 'public', subCategory: 'police',
+    description: '밀양시의 치안을 담당하는 경찰서입니다. ☎ 055-350-0112',
+    address: '경상남도 밀양시 상남면 밀양대로 1414', lat: 35.485123, lng: 128.749567, grade: 4,
+    referenceUrl: 'https://miryang.police.go.kr',
+  },
+  {
+    id: 'p4-police-yangsan', name: '양산경찰서', category: 'public', subCategory: 'police',
+    description: '양산시의 치안을 담당하는 경찰서입니다. ☎ 055-360-0112',
+    address: '경상남도 양산시 물금읍 신주2길 3', lat: 35.334145, lng: 129.006789, grade: 4,
+    referenceUrl: 'https://yangsan.police.go.kr',
+  },
+  {
+    id: 'p4-police-uiryeong', name: '의령경찰서', category: 'public', subCategory: 'police',
+    description: '의령군의 치안을 담당하는 경찰서입니다. ☎ 055-570-0112',
+    address: '경상남도 의령군 의령읍 충익로 59', lat: 35.321456, lng: 128.261234, grade: 4,
+    referenceUrl: 'https://uiryeong.police.go.kr',
+  },
+  {
+    id: 'p4-police-haman', name: '함안경찰서', category: 'public', subCategory: 'police',
+    description: '함안군의 치안을 담당하는 경찰서입니다. ☎ 055-580-0112',
+    address: '경상남도 함안군 가야읍 가야로 69', lat: 35.275612, lng: 128.411234, grade: 4,
+    referenceUrl: 'https://haman.police.go.kr',
+  },
+  {
+    id: 'p4-police-changnyeong', name: '창녕경찰서', category: 'public', subCategory: 'police',
+    description: '창녕군의 치안을 담당하는 경찰서입니다. ☎ 055-530-0112',
+    address: '경상남도 창녕군 창녕읍 창녕대로 44', lat: 35.541234, lng: 128.498765, grade: 4,
+    referenceUrl: 'https://changnyeong.police.go.kr',
+  },
+  {
+    id: 'p4-police-goseong', name: '고성경찰서', category: 'public', subCategory: 'police',
+    description: '고성군의 치안을 담당하는 경찰서입니다. ☎ 055-670-0112',
+    address: '경상남도 고성군 고성읍 동외로 188', lat: 34.975612, lng: 128.324567, grade: 4,
+    referenceUrl: 'https://goseong.police.go.kr',
+  },
+  {
+    id: 'p4-police-namhae', name: '남해경찰서', category: 'public', subCategory: 'police',
+    description: '남해군의 치안을 담당하는 경찰서입니다. ☎ 055-860-0112',
+    address: '경상남도 남해군 남해읍 화전로 89', lat: 34.839123, lng: 127.894567, grade: 4,
+    referenceUrl: 'https://namhae.police.go.kr',
+  },
+  {
+    id: 'p4-police-hadong', name: '하동경찰서', category: 'public', subCategory: 'police',
+    description: '하동군의 치안을 담당하는 경찰서입니다. ☎ 055-880-0112',
+    address: '경상남도 하동군 하동읍 군청로 56', lat: 35.068123, lng: 127.752345, grade: 4,
+    referenceUrl: 'https://hadong.police.go.kr',
+  },
+  {
+    id: 'p4-police-sancheong', name: '산청경찰서', category: 'public', subCategory: 'police',
+    description: '산청군의 치안을 담당하는 경찰서입니다. ☎ 055-970-0112',
+    address: '경상남도 산청군 산청읍 친환경로2631번길 8', lat: 35.418912, lng: 127.876543, grade: 4,
+    referenceUrl: 'https://sancheong.police.go.kr',
+  },
+  {
+    id: 'p4-police-hamyang', name: '함양경찰서', category: 'public', subCategory: 'police',
+    description: '함양군의 치안을 담당하는 경찰서입니다. ☎ 055-960-0112',
+    address: '경상남도 함양군 함양읍 함양로 1139', lat: 35.519876, lng: 127.728912, grade: 4,
+    referenceUrl: 'https://hamyang.police.go.kr',
+  },
+
+  // ── 4학년: 소방서 ──
+  {
     id: 'p4-fire-changwon', name: '창원소방서', category: 'public', subCategory: 'fire',
-    description: '창원시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. 119에 전화하면 가장 가까운 소방서에서 출동합니다. ☎ 119',
+    description: '창원시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
     address: '경상남도 창원시 성산구 창원대로 901', lat: 35.215234, lng: 128.673456, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-jinju', name: '진주소방서', category: 'public', subCategory: 'fire',
+    description: '진주시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 진주시 동진로 245', lat: 35.180456, lng: 128.115822, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-tongyeong', name: '통영소방서', category: 'public', subCategory: 'fire',
+    description: '통영시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 통영시 광도면 죽림4로 41', lat: 34.878912, lng: 128.420134, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-sacheon', name: '사천소방서', category: 'public', subCategory: 'fire',
+    description: '사천시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 사천시 사천읍 구암두문로 28', lat: 35.087234, lng: 128.088156, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-gimhae', name: '김해동부소방서', category: 'public', subCategory: 'fire',
+    description: '김해시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 김해시 김해대로 2507', lat: 35.225678, lng: 128.895423, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-miryang', name: '밀양소방서', category: 'public', subCategory: 'fire',
+    description: '밀양시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 밀양시 밀양대로 2125', lat: 35.509876, lng: 128.752345, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-yangsan', name: '양산소방서', category: 'public', subCategory: 'fire',
+    description: '양산시의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 양산시 물금읍 학산2길 7', lat: 35.336789, lng: 129.008912, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-uiryeong', name: '의령소방서', category: 'public', subCategory: 'fire',
+    description: '의령군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 의령군 의령읍 남강로 831', lat: 35.311789, lng: 128.273456, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-haman', name: '함안소방서', category: 'public', subCategory: 'fire',
+    description: '함안군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 함안군 가야읍 함안대로 558', lat: 35.279812, lng: 128.406567, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-changnyeong', name: '창녕소방서', category: 'public', subCategory: 'fire',
+    description: '창녕군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 창녕군 창녕읍 남창녕로 24', lat: 35.534567, lng: 128.490123, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-goseong', name: '고성소방서', category: 'public', subCategory: 'fire',
+    description: '고성군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 고성군 고성읍 남해안대로 2670', lat: 34.968912, lng: 128.330123, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-namhae', name: '남해소방서', category: 'public', subCategory: 'fire',
+    description: '남해군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 남해군 남해읍 스포츠로 125', lat: 34.831234, lng: 127.886789, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-hadong', name: '하동소방서', category: 'public', subCategory: 'fire',
+    description: '하동군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 하동군 금성면 산업로 832-15', lat: 34.935612, lng: 127.778912, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-sancheong', name: '산청소방서', category: 'public', subCategory: 'fire',
+    description: '산청군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 산청군 금서면 친환경로 2577', lat: 35.421234, lng: 127.868912, grade: 4,
+    referenceUrl: 'https://fire.gyeongnam.go.kr',
+  },
+  {
+    id: 'p4-fire-hamyang', name: '함양소방서', category: 'public', subCategory: 'fire',
+    description: '함양군의 화재 예방·진압과 구조·구급 활동을 담당하는 소방서입니다. ☎ 119',
+    address: '경상남도 함양군 함양읍 고운로 154', lat: 35.526789, lng: 127.734567, grade: 4,
     referenceUrl: 'https://fire.gyeongnam.go.kr',
   },
 
