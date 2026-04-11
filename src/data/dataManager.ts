@@ -3,7 +3,7 @@ import { places as defaultPlaces, Place, PlaceCategory } from './places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory } from './content';
 import { schools as defaultSchools, School, getInitialConsonant } from './schools';
 import { supabase } from '@/integrations/supabase/client';
-import { getSheetPlaces, clearSheetCache, SHEETS_SYNC_EVENT } from './googleSheetsSync';
+
 
 export const SCHOOLS_UPDATED_EVENT = 'geoje-schools-updated';
 export const PLACES_UPDATED_EVENT = 'geoje-places-updated';
@@ -16,7 +16,7 @@ let contentEditsCache: Record<string, Partial<MapContent>> = {};
 let customContentCache: MapContent[] = [];
 let schoolEditsCache: Record<number, Partial<School>> = {};
 let siteSettingsCache: Record<string, any> = {};
-let sheetPlacesCacheLocal: Place[] = [];
+
 let dataLoaded = false;
 
 // ─── Load all data from cloud ───
@@ -135,15 +135,12 @@ export async function loadAllDataFromCloud(): Promise<void> {
       });
     }
 
+
     dataLoaded = true;
-    // 시트 동기화도 실행
-    syncFromSheet();
   } catch (e) {
     console.error('Failed to load data from cloud, falling back to localStorage:', e);
     loadFromLocalStorage();
     dataLoaded = true;
-    syncFromSheet();
-  }
 }
 
 function loadFromLocalStorage() {
@@ -169,10 +166,7 @@ export function getMergedPlaces(): Place[] {
     const edit = placeEditsCache[p.id];
     return edit ? { ...p, ...edit } as Place : p;
   });
-  // 시트 데이터: 기존 ID와 중복되지 않는 것만 추가
-  const existingIds = new Set([...merged.map(p => p.id), ...customPlacesCache.map(p => p.id)]);
-  const uniqueSheetPlaces = sheetPlacesCacheLocal.filter(p => !existingIds.has(p.id));
-  return [...merged, ...customPlacesCache, ...uniqueSheetPlaces];
+  return [...merged, ...customPlacesCache];
 }
 
 export function getMergedPlacesByGrade(grade: 3 | 4): Place[] {
