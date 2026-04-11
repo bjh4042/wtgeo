@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getGyeongnamCities, GyeongnamCity } from '@/data/gyeongnam';
+import { getGyeongnamCities, loadGyeongnamEditsFromCloud, isGyeongnamEditsLoaded, GyeongnamCity, GYEONGNAM_UPDATED_EVENT } from '@/data/gyeongnam';
 import { X, MapPin, Users, Ruler, Star, ExternalLink, ArrowLeft } from 'lucide-react';
 
 interface GyeongnamExplorerProps {
@@ -11,8 +11,22 @@ const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
   const [selectedCity, setSelectedCity] = useState<GyeongnamCity | null>(null);
   const [showMap, setShowMap] = useState(false);
+  const [cities, setCities] = useState<GyeongnamCity[]>(getGyeongnamCities());
+  const [loaded, setLoaded] = useState(isGyeongnamEditsLoaded());
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!loaded) {
+      loadGyeongnamEditsFromCloud().then(() => {
+        setCities(getGyeongnamCities());
+        setLoaded(true);
+      });
+    }
+    const handleUpdate = () => setCities(getGyeongnamCities());
+    window.addEventListener(GYEONGNAM_UPDATED_EVENT, handleUpdate);
+    return () => window.removeEventListener(GYEONGNAM_UPDATED_EVENT, handleUpdate);
+  }, [loaded]);
 
   // Initialize map when showing a city
   useEffect(() => {
@@ -72,14 +86,14 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
           <div className="p-3 md:p-4 overflow-auto max-h-[75vh]">
             <p className="text-xs md:text-sm text-muted-foreground mb-3">경상남도의 18개 시·군을 선택하여 지명 유래, 마스코트, 인구 등을 알아보세요!</p>
             <div className="grid grid-cols-3 gap-1.5 md:gap-2">
-              {getGyeongnamCities().map(city => (
+              {cities.map(city => (
                 <button
                   key={city.id}
                   onClick={() => setSelectedCity(city)}
                   className="flex flex-col items-center gap-0.5 md:gap-1 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
                 >
-                  {city.mascotImageUrl ? (
-                    <img src={city.mascotImageUrl} alt={city.mascot} className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+                  {city.logoUrl ? (
+                    <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-8 h-8 md:w-10 md:h-10 object-contain" />
                   ) : (
                     <span className="text-xl md:text-2xl">{city.mascotEmoji}</span>
                   )}
@@ -96,9 +110,6 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
               <div className="flex items-center gap-3">
                 {selectedCity.logoUrl ? (
                   <img src={selectedCity.logoUrl} alt={`${selectedCity.name} 로고`} className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-lg" />
-                ) : null}
-                {selectedCity.mascotImageUrl ? (
-                  <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-12 h-12 md:w-16 md:h-16 object-contain" />
                 ) : (
                   <span className="text-3xl md:text-4xl">{selectedCity.mascotEmoji}</span>
                 )}
@@ -125,7 +136,11 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                   <p className="text-xs font-bold text-foreground">{selectedCity.area} km²</p>
                 </div>
                 <div className="bg-muted/50 rounded-xl p-2.5 text-center">
-                  <span className="text-sm">{selectedCity.mascotEmoji}</span>
+                  {selectedCity.mascotImageUrl ? (
+                    <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-6 h-6 mx-auto mb-0.5 object-contain" />
+                  ) : (
+                    <span className="text-sm">{selectedCity.mascotEmoji}</span>
+                  )}
                   <p className="text-[10px] text-muted-foreground">마스코트</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.mascot}</p>
                 </div>

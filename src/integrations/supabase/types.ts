@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      gyeongnam_edits: {
+        Row: {
+          area: number | null
+          city_id: string
+          created_at: string
+          highlights: string[] | null
+          id: string
+          lat: number | null
+          lng: number | null
+          logo_url: string | null
+          mascot: string | null
+          mascot_emoji: string | null
+          mascot_image_url: string | null
+          name: string | null
+          name_hanja: string | null
+          name_origin: string | null
+          official_site: string | null
+          population: number | null
+          updated_at: string
+        }
+        Insert: {
+          area?: number | null
+          city_id: string
+          created_at?: string
+          highlights?: string[] | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          logo_url?: string | null
+          mascot?: string | null
+          mascot_emoji?: string | null
+          mascot_image_url?: string | null
+          name?: string | null
+          name_hanja?: string | null
+          name_origin?: string | null
+          official_site?: string | null
+          population?: number | null
+          updated_at?: string
+        }
+        Update: {
+          area?: number | null
+          city_id?: string
+          created_at?: string
+          highlights?: string[] | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          logo_url?: string | null
+          mascot?: string | null
+          mascot_emoji?: string | null
+          mascot_image_url?: string | null
+          name?: string | null
+          name_hanja?: string | null
+          name_origin?: string | null
+          official_site?: string | null
+          population?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
