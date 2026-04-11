@@ -38,13 +38,24 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [detailsExpanded, setDetailsExpanded] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<PlaceCategory[]>([]);
+  const [showFilter, setShowFilter] = useState(false);
 
   const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
 
+  const filteredPlaces = useMemo(() => {
+    if (activeFilters.length === 0) return allPlaces;
+    return allPlaces.filter(p => activeFilters.includes(p.category));
+  }, [allPlaces, activeFilters]);
+
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return [];
-    return allPlaces.filter(p => p.name.includes(searchTerm) || p.address?.includes(searchTerm)).slice(0, 10);
-  }, [allPlaces, searchTerm]);
+    return filteredPlaces.filter(p => p.name.includes(searchTerm) || p.address?.includes(searchTerm)).slice(0, 10);
+  }, [filteredPlaces, searchTerm]);
+
+  const toggleFilter = (cat: PlaceCategory) => {
+    setActiveFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
+  };
 
   // Load Kakao Maps
   useEffect(() => {
