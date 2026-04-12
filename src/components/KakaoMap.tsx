@@ -235,7 +235,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         overlaysRef.current.push(overlay);
       });
     });
-  }, [isLoaded, grade, activeCategories, activePlaceCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect]);
+  }, [isLoaded, grade, activeCategories, activePlaceCategories, activePublicSubCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect]);
 
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedPlace) return;
