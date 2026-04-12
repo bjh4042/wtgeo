@@ -39,6 +39,7 @@ interface ErrorReport {
   place_id: string;
   place_name: string;
   message: string;
+  category: string | null;
   is_read: boolean;
   created_at: string;
 }
@@ -1001,6 +1002,9 @@ const AdminPanel = () => {
                   <span className="text-xs font-bold text-foreground">📍 {selectedReport.place_name}</span>
                   <button onClick={() => setSelectedReport(null)} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={14} /></button>
                 </div>
+                {selectedReport.category && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground inline-block">{selectedReport.category}</span>
+                )}
                 <p className="text-sm text-foreground leading-relaxed">{selectedReport.message}</p>
                 <p className="text-[10px] text-muted-foreground">{new Date(selectedReport.created_at).toLocaleString('ko-KR')}</p>
                 <div className="flex gap-2 pt-1">
@@ -1025,6 +1029,7 @@ const AdminPanel = () => {
                       <span className="text-xs font-bold text-foreground flex items-center gap-1">
                         {!r.is_read && <span className="w-1.5 h-1.5 rounded-full bg-destructive inline-block" />}
                         📍 {r.place_name}
+                        {r.category && <span className="text-[9px] font-normal px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{r.category}</span>}
                       </span>
                       <span className="text-[9px] text-muted-foreground">{new Date(r.created_at).toLocaleString('ko-KR')}</span>
                     </div>
