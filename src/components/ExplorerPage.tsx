@@ -285,6 +285,7 @@ const ExplorerPage = () => {
                   selectedContent={selectedContent}
                   onContentSelect={handleContentSelect}
                   activeCategories={activeCategories}
+                  activePlaceCategories={activePlaceCategories}
                   zoomIn={zoomIn}
                   onZoomComplete={handleZoomComplete}
                   isZooming={isZooming}
