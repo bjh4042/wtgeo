@@ -37,13 +37,23 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     const map = new window.kakao.maps.Map(mapRef.current, { center, level: 9 });
     mapInstanceRef.current = map;
 
-    // Draw boundary polygons (supports multi-polygon for islands)
-    if (selectedCity.boundary && selectedCity.boundary.length > 0) {
-      // Check if it's multi-polygon (array of arrays of arrays) or single polygon
-      const isMulti = Array.isArray(selectedCity.boundary[0]?.[0]);
+    // Draw boundary polygons
+    // For 경상남도 (province), draw all city boundaries
+    const isProvince = selectedCity.id === 'gyeongnam';
+    const citiesToDraw = isProvince
+      ? cities.filter(c => c.id !== 'gyeongnam' && c.boundary && c.boundary.length > 0)
+      : (selectedCity.boundary && selectedCity.boundary.length > 0 ? [selectedCity] : []);
+
+    const colors = ['#FF6B35', '#4A90D9', '#50C878', '#E74C3C', '#9B59B6', '#F39C12', '#1ABC9C', '#E91E63',
+      '#00BCD4', '#FF5722', '#795548', '#607D8B', '#8BC34A', '#FF9800', '#3F51B5', '#009688', '#CDDC39', '#673AB7'];
+
+    citiesToDraw.forEach((city, cityIdx) => {
+      const isMulti = Array.isArray(city.boundary![0]?.[0]);
       const rings: [number, number][][] = isMulti
-        ? (selectedCity.boundary as [number, number][][])
-        : [selectedCity.boundary as [number, number][]];
+        ? (city.boundary as [number, number][][])
+        : [city.boundary as [number, number][]];
+
+      const color = isProvince ? colors[cityIdx % colors.length] : '#FF6B35';
 
       rings.forEach(ring => {
         if (ring.length < 3) return;
@@ -52,15 +62,27 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
         );
         const polygon = new window.kakao.maps.Polygon({
           path,
-          strokeWeight: 3,
-          strokeColor: '#FF6B35',
+          strokeWeight: isProvince ? 2 : 3,
+          strokeColor: color,
           strokeOpacity: 0.8,
-          fillColor: '#FF6B35',
-          fillOpacity: 0.15,
+          fillColor: color,
+          fillOpacity: isProvince ? 0.2 : 0.15,
         });
         polygon.setMap(map);
       });
-    }
+
+      // Add city name label for province view
+      if (isProvince) {
+        const labelContent = document.createElement('div');
+        labelContent.innerHTML = `<div style="background:${color};color:white;padding:2px 6px;border-radius:10px;font-size:10px;font-weight:bold;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,0.3);">${city.mascotEmoji} ${city.name}</div>`;
+        const labelOverlay = new window.kakao.maps.CustomOverlay({
+          position: new window.kakao.maps.LatLng(city.lat, city.lng),
+          content: labelContent,
+          yAnchor: 0.5,
+          map,
+        });
+      }
+    });
 
     // City center marker
     const marker = new window.kakao.maps.Marker({ position: center, map });
