@@ -337,7 +337,7 @@ const AdminPanel = () => {
     <>
     {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); forceUpdate(n => n + 1); }} />}
     {!showMapEditor && <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
-      <div className="bg-card rounded-2xl p-4 md:p-5 max-w-lg mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
+      <div className="bg-card rounded-2xl p-4 md:p-5 max-w-3xl mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base md:text-lg font-bold text-foreground">⚙️ 관리자 패널</h3>
           <button onClick={() => setIsAdmin(false)} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
