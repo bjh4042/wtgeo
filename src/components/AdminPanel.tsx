@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import VisitorDashboard from './VisitorDashboard';
 import { places as defaultPlaces, Place, PlaceCategory, categoryLabels } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory, contentCategoryLabels } from '@/data/content';
-import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
 import { schools, School } from '@/data/schools';
 import { getGyeongnamCities, saveGyeongnamEdit, loadGyeongnamEditsFromCloud, GyeongnamCity } from '@/data/gyeongnam';
 import {
@@ -368,35 +367,6 @@ const AdminPanel = () => {
         {/* Notice Tab */}
         {activeTab === 'notice' && (
           <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-2">
-              <div className="p-2.5 rounded-lg bg-muted/50 text-center">
-                <p className="text-[10px] text-muted-foreground">총 방문자</p>
-                <p className="text-base font-bold text-primary">{visitorCount.toLocaleString()}</p>
-              </div>
-              <div className="p-2.5 rounded-lg bg-muted/50 text-center">
-                <p className="text-[10px] text-muted-foreground">오늘</p>
-                <p className="text-base font-bold text-foreground">{getTodayVisitors()}</p>
-              </div>
-              <div className="p-2.5 rounded-lg bg-muted/50 text-center">
-                <p className="text-[10px] text-muted-foreground">통계 합산</p>
-                <p className="text-base font-bold text-foreground">{getTotalVisitors()}</p>
-              </div>
-            </div>
-            <div className="p-3 rounded-lg border">
-              <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1"><BarChart3 size={13} /> 오늘 시간대별</p>
-              <div className="flex items-end gap-px h-16">
-                {getHourlyStats().map((s, i) => {
-                  const maxCount = Math.max(...getHourlyStats().map(h => h.count), 1);
-                  const height = s.count > 0 ? Math.max((s.count / maxCount) * 100, 8) : 2;
-                  return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-0.5" title={`${s.hour}: ${s.count}명`}>
-                      <div className="w-full rounded-t" style={{ height: `${height}%`, backgroundColor: s.count > 0 ? 'hsl(var(--primary))' : 'hsl(var(--muted))' }} />
-                      {i % 6 === 0 && <span className="text-[7px] text-muted-foreground">{i}</span>}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
             {currentNotice && (
               <div className="p-3 rounded-lg bg-accent/20 border border-accent/30">
                 <div className="flex items-start justify-between gap-2">

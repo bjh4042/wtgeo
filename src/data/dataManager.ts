@@ -460,15 +460,41 @@ export function getVisitorCount(): number {
   return parseInt(localStorage.getItem('geoje-explorer-visitors') || '0', 10);
 }
 
+export function getTodayVisitorCount(): number {
+  const cloud = siteSettingsCache['today_visitor_count'];
+  if (cloud && typeof cloud === 'object' && cloud !== null) {
+    const { date, count } = cloud as { date: string; count: number };
+    const today = new Date().toISOString().slice(0, 10);
+    if (date === today) return count || 0;
+  }
+  return 0;
+}
+
 export async function incrementVisitorCount(): Promise<number> {
   const sessionKey = 'geoje-explorer-visited';
   if (sessionStorage.getItem(sessionKey)) return getVisitorCount();
   sessionStorage.setItem(sessionKey, 'true');
+
+  // Total count
   const count = getVisitorCount() + 1;
   siteSettingsCache['visitor_count'] = count;
   localStorage.setItem('geoje-explorer-visitors', String(count));
+
+  // Today count
+  const today = new Date().toISOString().slice(0, 10);
+  const todayData = siteSettingsCache['today_visitor_count'];
+  let todayCount = 1;
+  if (todayData && typeof todayData === 'object' && todayData !== null) {
+    const { date, count: c } = todayData as { date: string; count: number };
+    if (date === today) todayCount = (c || 0) + 1;
+  }
+  siteSettingsCache['today_visitor_count'] = { date: today, count: todayCount };
+
   try {
-    await supabase.from('site_settings').upsert({ key: 'visitor_count', value: count, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    await Promise.all([
+      supabase.from('site_settings').upsert({ key: 'visitor_count', value: count, updated_at: new Date().toISOString() }, { onConflict: 'key' }),
+      supabase.from('site_settings').upsert({ key: 'today_visitor_count', value: { date: today, count: todayCount } as any, updated_at: new Date().toISOString() }, { onConflict: 'key' }),
+    ]);
   } catch (e) { console.error('Failed to save visitor count:', e); }
   return count;
 }
