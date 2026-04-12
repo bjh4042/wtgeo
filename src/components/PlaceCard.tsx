@@ -29,6 +29,7 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
       place_id: place.id,
       place_name: place.name,
       message: reportMsg.trim(),
+      category: categoryLabel,
     });
     setSending(false);
     if (error) { toast.error('전송 실패'); return; }
