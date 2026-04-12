@@ -178,7 +178,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       }
       places.forEach((place) => {
         const position = new window.kakao.maps.LatLng(place.lat, place.lng);
-        const color = categoryColors[place.category];
+        const color = (place.category === 'public' && place.subCategory) ? publicSubCategoryColors[place.subCategory] : categoryColors[place.category];
         const icon = categoryIcons[place.category];
         const isSelected = selectedPlace?.id === place.id;
 
