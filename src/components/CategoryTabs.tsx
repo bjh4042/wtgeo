@@ -132,7 +132,7 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                   <div className="h-px bg-border my-1" />
 
                   {placeCategories.map((pc) => {
-                    const isSoloActive = activePlaceCategories.length === 1 && activePlaceCategories.includes(pc) && activePublicSubCategories === null;
+                    const isActive = activePlaceCategories.includes(pc);
                     const pcColor = categoryColors[pc];
 
                     if (pc === 'public') {
@@ -173,26 +173,20 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                                 }}
                                 className="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"
                                 style={{
-                                  color: isSoloActive ? pcColor : 'hsl(var(--muted-foreground))',
+                                  color: isActive ? pcColor : 'hsl(var(--muted-foreground))',
                                 }}
                               >
                                 전체 공공기관
                               </button>
                               {publicSubCategories.map((sub) => {
                                 const subColor = publicSubCategoryColors[sub];
-                                const isSubActive = activePublicSubCategories?.includes(sub) && activePlaceCategories.length === 1 && activePlaceCategories.includes('public');
+                                const isSubActive = activePublicSubCategories?.includes(sub);
                                 return (
                                   <button
                                     key={sub}
                                     onClick={() => {
-                                      // Solo select this subcategory
-                                      placeCategories.forEach(p => {
-                                        if (p === 'public' && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                        if (p !== 'public' && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                      });
+                                      // Toggle this subcategory
                                       onPublicSubCategoryToggle(sub);
-                                      setShowPlaceDropdown(false);
-                                      setShowPublicSub(false);
                                     }}
                                     className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"
                                   >
@@ -201,7 +195,7 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                                       style={{ backgroundColor: subColor }}
                                     />
                                     <span style={{ color: isSubActive ? subColor : 'hsl(var(--foreground))' }}>
-                                      {publicSubCategoryLabels[sub]}
+                                      {isSubActive ? '✓ ' : ''}{publicSubCategoryLabels[sub]}
                                     </span>
                                   </button>
                                 );
@@ -216,13 +210,8 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                       <button
                         key={pc}
                         onClick={() => {
-                          // Solo select this category
-                          placeCategories.forEach(p => {
-                            if (p === pc && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                            if (p !== pc && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                          });
-                          setShowPlaceDropdown(false);
-                          setShowPublicSub(false);
+                          // Toggle this category
+                          onPlaceCategoryToggle(pc);
                         }}
                         className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium hover:bg-muted transition-colors"
                       >
@@ -230,8 +219,8 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                           className="w-3.5 h-3.5 rounded-full flex-shrink-0"
                           style={{ backgroundColor: pcColor }}
                         />
-                        <span style={{ color: isSoloActive ? pcColor : 'hsl(var(--foreground))', fontWeight: isSoloActive ? 700 : 500 }}>
-                          {categoryLabels[pc]}
+                        <span style={{ color: isActive ? pcColor : 'hsl(var(--muted-foreground))', fontWeight: isActive ? 700 : 500 }}>
+                          {isActive ? '✓ ' : ''}{categoryLabels[pc]}
                         </span>
                       </button>
                     );
