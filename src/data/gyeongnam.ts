@@ -105,6 +105,16 @@ export async function saveGyeongnamEdit(id: string, edit: Partial<GyeongnamCity>
 
 const defaultGyeongnamCities: GyeongnamCity[] = [
   {
+    id: 'gyeongnam', name: '경상남도', nameHanja: '慶尙南道',
+    population: 3205787, area: 10540.29,
+    mascot: '벼리', mascotEmoji: '🌟',
+    officialSite: 'https://www.gyeongnam.go.kr',
+    nameOrigin: '경상남도는 경상도의 남쪽 지역을 뜻해요. 경상도라는 이름은 경주(慶州)와 상주(尙州)의 첫 글자를 합친 것이랍니다. 신라의 수도 경주와 상주가 이 지역의 중심이었기 때문이에요. 경상남도는 남해 바다와 지리산, 낙동강이 어우러진 아름다운 곳으로, 가야 문명의 발상지이자 임진왜란 때 이순신 장군과 의병들이 활약한 역사가 깊은 땅이에요. 도청소재지는 창원시에 있답니다.',
+    lat: 35.2354, lng: 128.6922,
+    highlights: ['도청소재지: 창원시', '18개 시·군', '가야문명 발상지', '한려해상국립공원', '지리산국립공원'],
+    boundary: [],
+  },
+  {
     id: 'changwon', name: '창원시', nameHanja: '昌原市',
     population: 1005300, area: 748.06,
     mascot: '피우미', mascotEmoji: '🌸',
@@ -121,7 +131,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   {
     id: 'jinju', name: '진주시', nameHanja: '晉州市',
     population: 341200, area: 712.95,
-    mascot: '하모', mascotEmoji: '🏮',
+    mascot: '하모, 아요', mascotEmoji: '🏮',
     officialSite: 'https://www.jinju.go.kr',
     nameOrigin: '아름다운 남강이 흐르는 이곳은 옛날부터 나루터가 아주 유명했어요. \'나루터가 있는 큰 고을\'이라는 이름의 뜻처럼, 강을 따라 배들이 오가며 많은 물건과 소중한 이야기들이 모여들었답니다. 남강의 물결이 반짝이는 것처럼 진주라는 이름은 보석처럼 빛나는 역사를 품고 있어요. 친구들이 강가에서 등불을 띄우며 소원을 빌듯, 진주는 오래전부터 사람들의 꿈과 희망이 모여들던 따뜻하고 큰 동네였답니다.',
     lat: 35.1796, lng: 128.1076,
@@ -191,7 +201,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   {
     id: 'geoje', name: '거제시', nameHanja: '巨濟市',
     population: 233400, area: 403.86,
-    mascot: '몽이, 동이', mascotEmoji: '🌊',
+    mascot: '몽꾸', mascotEmoji: '🌊',
     officialSite: 'https://www.geoje.go.kr',
     nameOrigin: '바다 한가운데 떠 있는 커다란 섬인 이곳은 이름에 아주 특별한 약속이 숨겨져 있어요. \'크게 구제한다\'는 뜻의 이름처럼, 전쟁이나 어려운 일이 생겼을 때 수많은 사람을 품어주고 살려낸 따뜻한 곳이랍니다. 마치 엄마의 품처럼 넓고 깊은 바다가 우리를 감싸주는 것 같지요? 거제라는 이름 속에는 어려움에 처한 이웃을 도와주고 함께 살아가려는 착한 마음이 파도처럼 넘실거리고 있답니다.',
     lat: 34.8805, lng: 128.6211,
@@ -233,7 +243,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   {
     id: 'haman', name: '함안군', nameHanja: '咸安郡',
     population: 60400, area: 416.71,
-    mascot: '하마니, 토리', mascotEmoji: '🏺',
+    mascot: '함토리', mascotEmoji: '🏺',
     officialSite: 'https://www.haman.go.kr',
     nameOrigin: '함안은 \'모든 사람이 다 함께 편안하게 잘 산다\'는 아주 예쁜 뜻을 가지고 있어요. 아주 먼 옛날 아라가야라는 나라가 있던 시절부터, 사람들은 이 비옥한 땅에서 서로 돕고 나누며 행복하게 살았답니다. 말이산 고분군에 잠든 왕들의 이야기가 전해지는 것처럼, 함안은 평화로운 역사가 흐르는 곳이에요. 친구들이 교실에서 모두 사이좋게 지내길 바라는 마음처럼, 함안이라는 이름에는 평화와 행복의 약속이 들어있답니다.',
     lat: 35.2721, lng: 128.4065,
@@ -247,7 +257,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   {
     id: 'changnyeong', name: '창녕군', nameHanja: '昌寧郡',
     population: 57500, area: 532.81,
-    mascot: '우포따오기', mascotEmoji: '🐦',
+    mascot: '화왕동자, 우포따오기', mascotEmoji: '🐦',
     officialSite: 'https://www.cng.go.kr',
     nameOrigin: '창녕은 \'창성하고 편안한 고을\'이라는 뜻이에요. 생명이 살아 숨 쉬는 우포늪처럼, 이곳은 아주 오래전부터 동식물과 사람들이 어우러져 풍요롭게 살았답니다. 따오기가 날아다니고 신비로운 늪이 있는 창녕은 마치 자연이 준 커다란 선물 상자 같아요. 번영하고 편안하라는 이름의 뜻처럼, 창녕은 자연의 생명력을 가득 품고 우리 친구들에게 맑은 공기와 건강한 미래를 선물해 주는 아주 소중한 동네랍니다.',
     lat: 35.5417, lng: 128.4914,
@@ -261,7 +271,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   {
     id: 'gosung', name: '고성군', nameHanja: '固城郡',
     population: 48900, area: 517.89,
-    mascot: '온고지신', mascotEmoji: '🦕',
+    mascot: '고니, 시니, 오니, 지니', mascotEmoji: '🦕',
     officialSite: 'https://www.goseong.go.kr',
     nameOrigin: '고성이라는 이름은 \'굳건한 성이 있는 고을\'이라는 뜻이에요. 아주 옛날 공룡들이 살았던 때부터, 이곳은 바닷가에 위치해 성처럼 튼튼하게 사람들을 지켜주었답니다. 공룡 발자국이 바위에 새겨진 것처럼, 고성은 긴 시간 동안 변치 않는 든든함을 가지고 있어요. \'온고지신\'이라는 마스코트 이름처럼 옛것을 배우고 새로운 것을 익혀서, 성처럼 튼튼하고 멋진 미래를 만들어가려는 꿈이 담긴 고장이랍니다.',
     lat: 34.9727, lng: 128.3220,
@@ -303,7 +313,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
   {
     id: 'sancheong', name: '산청군', nameHanja: '山清郡',
     population: 33800, area: 794.73,
-    mascot: '산 넘어 친구들', mascotEmoji: '⛰️',
+    mascot: '산너머친구들', mascotEmoji: '⛰️',
     officialSite: 'https://www.sancheong.go.kr',
     nameOrigin: '산청이라는 이름은 \'산과 물이 아주 맑은 고을\'이라는 뜻이에요. 지리산의 높은 봉우리가 병풍처럼 둘러싸여 있고, 맑은 물이 끊임없이 흐른답니다. 공기가 너무 깨끗해서 옛날부터 몸을 낫게 해주는 약초들이 많이 자랐지요. 허준 선생님의 정성이 담긴 동의보감촌 이야기처럼, 산청은 자연의 깨끗한 힘으로 사람들의 마음과 몸을 치료해 주는 \'치유의 숲\' 같은 동네라는 따뜻한 의미를 담고 있답니다.',
     lat: 35.4157, lng: 127.8733,
