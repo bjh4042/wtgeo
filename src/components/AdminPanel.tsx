@@ -321,8 +321,9 @@ const AdminPanel = () => {
 
   const inputClass = "w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
-  const tabConfig: { key: AdminTab; label: string }[] = [
+  const tabConfig: { key: AdminTab; label: string; badge?: number }[] = [
     { key: 'notice', label: '📢 공지' },
+    { key: 'reports', label: '⚠️ 제보', badge: unreadCount },
     { key: 'places', label: '📍 장소' },
     { key: 'content', label: '📖 콘텐츠' },
     { key: 'schools', label: '🏫 학교' },
@@ -344,9 +345,12 @@ const AdminPanel = () => {
         {/* Tabs */}
         <div className="flex gap-1 mb-3 overflow-x-auto no-scrollbar">
           {tabConfig.map(tab => (
-            <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearchTerm(''); setEditingSiteInfo(false); setPlaceCategoryFilter('all'); setContentTypeFilter('all'); }}
-              className={`px-2.5 py-1.5 rounded-full text-[11px] font-bold cursor-pointer whitespace-nowrap ${activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+            <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearchTerm(''); setEditingSiteInfo(false); setPlaceCategoryFilter('all'); setContentTypeFilter('all'); if (tab.key === 'reports') loadReports(); }}
+              className={`relative px-2.5 py-1.5 rounded-full text-[11px] font-bold cursor-pointer whitespace-nowrap ${activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
               {tab.label}
+              {tab.badge != null && tab.badge > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold">{tab.badge}</span>
+              )}
             </button>
           ))}
           <button onClick={() => setShowMapEditor(true)}
