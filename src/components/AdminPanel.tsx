@@ -927,6 +927,11 @@ const AdminPanel = () => {
             </button>
           </div>
         )}
+
+        {/* Stats Tab */}
+        {activeTab === 'stats' && (
+          <VisitorDashboard />
+        )}
       </div>
     </div>}
     </>

@@ -1,15 +1,17 @@
 import { Place, categoryColors, categoryIcons, getRoadViewUrl, getDirectionUrl, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
-import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube } from 'lucide-react';
+import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube, Star } from 'lucide-react';
 import { useState } from 'react';
 
 interface PlaceCardProps {
   place: Place;
   school: School;
   onClose: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (place: Place) => void;
 }
 
-const PlaceCard = ({ place, school, onClose }: PlaceCardProps) => {
+const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: PlaceCardProps) => {
   const color = categoryColors[place.category];
   const icon = categoryIcons[place.category];
   const [imgError, setImgError] = useState(false);
@@ -41,10 +43,17 @@ const PlaceCard = ({ place, school, onClose }: PlaceCardProps) => {
       )}
 
       <div className="flex items-start justify-between mb-2">
-        <h3 className="text-lg font-bold text-foreground">{place.name}</h3>
-        <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer ml-2 flex-shrink-0">
-          <X size={20} />
-        </button>
+        <h3 className="text-base sm:text-lg font-bold text-foreground flex-1 min-w-0 truncate">{place.name}</h3>
+        <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+          {onToggleFavorite && (
+            <button onClick={() => onToggleFavorite(place)} className="cursor-pointer transition-colors" title={isFavorite ? '즐겨찾기 해제' : '즐겨찾기'}>
+              <Star size={20} className={isFavorite ? 'text-accent fill-accent' : 'text-muted-foreground hover:text-accent'} />
+            </button>
+          )}
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+            <X size={20} />
+          </button>
+        </div>
       </div>
 
       <p className="text-sm text-muted-foreground mb-2 leading-relaxed">{place.description}</p>
