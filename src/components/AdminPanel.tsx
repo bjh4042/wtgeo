@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter, Map, BarChart } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter, Map, BarChart, AlertTriangle, CheckCircle, Eye } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import VisitorDashboard from './VisitorDashboard';
 import { places as defaultPlaces, Place, PlaceCategory, categoryLabels } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory, contentCategoryLabels } from '@/data/content';
@@ -31,7 +32,16 @@ export interface SiteInfo {
   devEmail: string;
 }
 
-type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info' | 'stats';
+type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info' | 'stats' | 'reports';
+
+interface ErrorReport {
+  id: string;
+  place_id: string;
+  place_name: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
 
 import AdminMapEditor from './AdminMapEditor';
 
@@ -100,6 +110,38 @@ const AdminPanel = () => {
   // Force re-render trigger
   const [renderKey, forceUpdate] = useState(0);
   const [showMapEditor, setShowMapEditor] = useState(false);
+  const [reports, setReports] = useState<ErrorReport[]>([]);
+  const [selectedReport, setSelectedReport] = useState<ErrorReport | null>(null);
+
+  const unreadCount = reports.filter(r => !r.is_read).length;
+
+  const loadReports = useCallback(async () => {
+    const { data } = await supabase.from('error_reports').select('*').order('created_at', { ascending: false });
+    if (data) setReports(data as ErrorReport[]);
+  }, []);
+
+  const markAsRead = async (id: string) => {
+    await supabase.from('error_reports').update({ is_read: true }).eq('id', id);
+    setReports(prev => prev.map(r => r.id === id ? { ...r, is_read: true } : r));
+    if (selectedReport?.id === id) setSelectedReport(prev => prev ? { ...prev, is_read: true } : null);
+  };
+
+  const markAllRead = async () => {
+    await supabase.from('error_reports').update({ is_read: true }).eq('is_read', false);
+    setReports(prev => prev.map(r => ({ ...r, is_read: true })));
+  };
+
+  const deleteReport = async (id: string) => {
+    await supabase.from('error_reports').delete().eq('id', id);
+    setReports(prev => prev.filter(r => r.id !== id));
+    setSelectedReport(null);
+  };
+
+  const deleteAllReports = async () => {
+    await supabase.from('error_reports').delete().neq('id', '');
+    setReports([]);
+    setSelectedReport(null);
+  };
 
   useEffect(() => {
     setCurrentNotice(getNotice());
