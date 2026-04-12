@@ -112,6 +112,21 @@ const ExplorerPage = () => {
     });
   };
 
+  const handlePublicSubCategoryToggle = (sub: PublicSubCategory) => {
+    setActivePublicSubCategories(prev => {
+      if (prev === null) {
+        // First time selecting a subcategory - set only this one
+        return [sub];
+      }
+      if (prev.includes(sub)) {
+        const next = prev.filter(s => s !== sub);
+        // If none left, reset to null (show all)
+        return next.length === 0 ? null : next;
+      }
+      return [...prev, sub];
+    });
+  };
+
   const handleReset = () => {
     setStep('consonant');
     setSelectedConsonant('');
@@ -177,7 +192,7 @@ const ExplorerPage = () => {
             <div className="bg-card border-b z-20 shadow-sm">
               <div className="flex items-center">
                 <div className="flex-1 overflow-x-auto">
-                  <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} activePlaceCategories={activePlaceCategories} onPlaceCategoryToggle={handlePlaceCategoryToggle} />
+                  <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} activePlaceCategories={activePlaceCategories} onPlaceCategoryToggle={handlePlaceCategoryToggle} activePublicSubCategories={activePublicSubCategories} onPublicSubCategoryToggle={handlePublicSubCategoryToggle} />
                 </div>
                 {/* Action buttons */}
                 <div className="flex-shrink-0 flex items-center gap-0.5 sm:gap-1 pr-1 md:pr-2">
