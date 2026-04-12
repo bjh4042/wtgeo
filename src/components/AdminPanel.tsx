@@ -232,6 +232,11 @@ const AdminPanel = () => {
     forceUpdate(n => n + 1);
   };
 
+  const handleDeleteContent = (id: string) => {
+    deleteCustomContent(id);
+    forceUpdate(n => n + 1);
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'place' | 'content') => {
     const file = e.target.files?.[0];
     if (!file) return;

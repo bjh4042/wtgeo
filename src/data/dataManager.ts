@@ -265,7 +265,11 @@ export async function deletePlace(placeId: string): Promise<void> {
 
 // ─── Content operations ───
 export function getMergedContent(): MapContent[] {
-  const allDefaults = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+  const deletedContentIds: string[] = Array.isArray(siteSettingsCache['deleted_content_ids'])
+    ? siteSettingsCache['deleted_content_ids'].filter((id: unknown): id is string => typeof id === 'string')
+    : [];
+  const allDefaults = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent]
+    .filter(c => !deletedContentIds.includes(c.id));
   const merged = allDefaults.map(c => {
     const edit = contentEditsCache[c.id];
     return edit ? { ...c, ...edit } as MapContent : c;
