@@ -18,9 +18,11 @@ import SourcesPopup from '@/components/SourcesPopup';
 import GyeongnamExplorer from '@/components/GyeongnamExplorer';
 import RouteExplorer from '@/components/RouteExplorer';
 import PlaceNameOrigins from '@/components/PlaceNameOrigins';
+import FavoriteCourse from '@/components/FavoriteCourse';
+import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, List, X, Users, Map, Route, MapPin } from 'lucide-react';
+import { Home, List, X, Users, Map, Route, MapPin, Star } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -41,6 +43,9 @@ const ExplorerPage = () => {
   const [showGyeongnam, setShowGyeongnam] = useState(false);
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
   const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
+
+  const { favorites, isFavorite, toggleFavorite, removeFavorite, clearAll, reorder, courseName, setCourseName } = useFavorites();
 
   useEffect(() => {
     loadAllDataFromCloud().then(() => {
@@ -51,14 +56,10 @@ const ExplorerPage = () => {
 
   useEffect(() => {
     if (!selectedSchool) return;
-
     const syncSelectedSchool = () => {
       const updatedSchool = getMergedSchoolByName(selectedSchool.name);
-      if (updatedSchool) {
-        setSelectedSchool(updatedSchool);
-      }
+      if (updatedSchool) setSelectedSchool(updatedSchool);
     };
-
     window.addEventListener(SCHOOLS_UPDATED_EVENT, syncSelectedSchool);
     return () => window.removeEventListener(SCHOOLS_UPDATED_EVENT, syncSelectedSchool);
   }, [selectedSchool]);
@@ -113,7 +114,7 @@ const ExplorerPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-[100dvh] overflow-hidden">
       {/* Header: hidden during zoom */}
       {(!isZooming || step !== 'explore') && (
         <AppHeader
@@ -131,9 +132,22 @@ const ExplorerPage = () => {
         <RouteExplorer grade={selectedGrade} school={selectedSchool} onClose={() => setShowRouteExplorer(false)} onPlaceSelect={(p) => { handlePlaceSelect(p); setShowRouteExplorer(false); }} />
       )}
       {showPlaceNameOrigins && <PlaceNameOrigins onClose={() => setShowPlaceNameOrigins(false)} />}
+      {showFavorites && (
+        <FavoriteCourse
+          onClose={() => setShowFavorites(false)}
+          onPlaceSelect={(p) => { handlePlaceSelect(p); setShowFavorites(false); }}
+          onContentSelect={(c) => { handleContentSelect(c); setShowFavorites(false); }}
+          favorites={favorites}
+          removeFavorite={removeFavorite}
+          clearAll={clearAll}
+          reorder={reorder}
+          courseName={courseName}
+          setCourseName={setCourseName}
+        />
+      )}
 
       {step !== 'explore' ? (
-        <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-auto">
+        <main className="flex-1 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-auto">
           <div className="w-full max-w-2xl">
             {step === 'consonant' && <ConsonantFilter onSelect={handleConsonantSelect} />}
             {step === 'school' && (
@@ -153,11 +167,24 @@ const ExplorerPage = () => {
                 <div className="flex-1 overflow-x-auto">
                   <CategoryTabs activeCategories={activeCategories} onCategoryToggle={handleCategoryToggle} />
                 </div>
-                {/* Action buttons - compact on mobile */}
-                <div className="flex-shrink-0 flex items-center gap-1 pr-1 md:pr-2">
+                {/* Action buttons */}
+                <div className="flex-shrink-0 flex items-center gap-0.5 sm:gap-1 pr-1 md:pr-2">
+                  {/* Favorites button */}
+                  <button
+                    onClick={() => setShowFavorites(true)}
+                    className="relative flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent/20 text-accent-foreground hover:bg-accent/40 transition-colors"
+                  >
+                    <Star size={10} className="md:w-3 md:h-3 fill-accent text-accent" />
+                    <span className="hidden sm:inline">코스</span>
+                    {favorites.length > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[8px] flex items-center justify-center font-bold">
+                        {favorites.length}
+                      </span>
+                    )}
+                  </button>
                   <button
                     onClick={() => setShowRouteExplorer(true)}
-                    className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
+                    className="flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
                   >
                     <Route size={10} className="md:w-3 md:h-3" />
                     <span className="hidden sm:inline">경로탐험</span>
@@ -166,7 +193,7 @@ const ExplorerPage = () => {
                   {selectedGrade === 3 && (
                     <button
                       onClick={() => setShowPlaceNameOrigins(true)}
-                      className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                      className="flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-[hsl(142,50%,42%)] text-[hsl(0,0%,100%)] hover:opacity-90 transition-colors"
                     >
                       <MapPin size={10} className="md:w-3 md:h-3" />
                       <span className="hidden sm:inline">지명유래</span>
@@ -176,7 +203,7 @@ const ExplorerPage = () => {
                   {selectedGrade === 4 && (
                     <button
                       onClick={() => setShowGyeongnam(true)}
-                      className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                      className="flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                     >
                       <Map size={10} className="md:w-3 md:h-3" />
                       <span className="hidden sm:inline">경남 시·군</span>
@@ -191,8 +218,8 @@ const ExplorerPage = () => {
           <div className="flex-1 flex overflow-hidden relative">
             {/* Desktop Sidebar: hidden during zoom */}
             {!isZooming && (
-              <aside className="hidden md:flex w-72 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
-                <div className="p-4 border-b flex items-center justify-between">
+              <aside className="hidden md:flex w-72 lg:w-80 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
+                <div className="p-3 lg:p-4 border-b flex items-center justify-between">
                   <button className="back-btn" onClick={handleReset}>
                     <Home size={16} /> 처음으로
                   </button>
@@ -202,7 +229,7 @@ const ExplorerPage = () => {
                     {selectedGrade}학년
                   </span>
                 </div>
-                <div className="flex-1 overflow-auto p-4">
+                <div className="flex-1 overflow-auto p-3 lg:p-4">
                   {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
                 </div>
               </aside>
@@ -220,9 +247,9 @@ const ExplorerPage = () => {
                     {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
                   </div>
                 )}
-                <div className="bg-card border-t px-3 py-1.5 flex items-center justify-between gap-2 safe-bottom">
+                <div className="bg-card border-t px-2 sm:px-3 py-1.5 flex items-center justify-between gap-1 sm:gap-2 safe-bottom">
                   <button className="back-btn text-xs" onClick={handleReset}>
-                    <Home size={14} /> 처음으로
+                    <Home size={14} /> <span className="hidden xs:inline">처음으로</span><span className="xs:hidden">홈</span>
                   </button>
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
@@ -254,14 +281,25 @@ const ExplorerPage = () => {
               )}
 
               {!isZooming && selectedPlace && selectedSchool && (
-                <div className="absolute bottom-14 md:bottom-4 left-2 right-2 md:left-4 md:right-auto md:max-w-sm z-20">
-                  <PlaceCard place={selectedPlace} school={selectedSchool} onClose={() => setSelectedPlace(null)} />
+                <div className="absolute bottom-14 md:bottom-4 left-1 right-1 sm:left-2 sm:right-2 md:left-4 md:right-auto md:max-w-sm z-20">
+                  <PlaceCard
+                    place={selectedPlace}
+                    school={selectedSchool}
+                    onClose={() => setSelectedPlace(null)}
+                    isFavorite={isFavorite(selectedPlace.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
                 </div>
               )}
 
               {!isZooming && selectedContent && (
-                <div className="absolute bottom-14 md:bottom-4 left-2 right-2 md:left-4 md:right-auto md:max-w-sm z-20">
-                  <ContentCard content={selectedContent} onClose={() => setSelectedContent(null)} />
+                <div className="absolute bottom-14 md:bottom-4 left-1 right-1 sm:left-2 sm:right-2 md:left-4 md:right-auto md:max-w-sm z-20">
+                  <ContentCard
+                    content={selectedContent}
+                    onClose={() => setSelectedContent(null)}
+                    isFavorite={isFavorite(selectedContent.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
                 </div>
               )}
             </div>

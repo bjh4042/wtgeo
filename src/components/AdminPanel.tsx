@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter, Map } from 'lucide-react';
+import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter, Map, BarChart } from 'lucide-react';
+import VisitorDashboard from './VisitorDashboard';
 import { places as defaultPlaces, Place, PlaceCategory, categoryLabels } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory, contentCategoryLabels } from '@/data/content';
 import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
@@ -30,7 +31,7 @@ export interface SiteInfo {
   devEmail: string;
 }
 
-type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info';
+type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info' | 'stats';
 
 import AdminMapEditor from './AdminMapEditor';
 
@@ -284,6 +285,7 @@ const AdminPanel = () => {
     { key: 'schools', label: '🏫 학교' },
     { key: 'gyeongnam', label: '🗺️ 경남' },
     { key: 'info', label: 'ℹ️ 정보' },
+    { key: 'stats', label: '📊 통계' },
   ];
 
   return (
@@ -924,6 +926,11 @@ const AdminPanel = () => {
               <Save size={14} /> 저장
             </button>
           </div>
+        )}
+
+        {/* Stats Tab */}
+        {activeTab === 'stats' && (
+          <VisitorDashboard />
         )}
       </div>
     </div>}
