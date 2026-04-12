@@ -24,6 +24,7 @@ export const schools: School[] = [
   { name: "능포초등학교", address: "경상남도 거제시 능포로 149", lat: 34.8810, lng: 128.7368, district: "능포동", website: "http://neungpo.gne.go.kr" },
   { name: "대우초등학교", address: "경상남도 거제시 옥포대로3길 63", lat: 34.8610, lng: 128.6848, district: "아주동", website: "http://daewoo.gne.go.kr" },
   { name: "동부초등학교", address: "경상남도 거제시 동부면 동부로 19", lat: 34.8207, lng: 128.6100, district: "동부면", website: "http://gjdb.gne.go.kr" },
+  { name: "송정초등학교", address: "경상남도 거제시 연초면 송정이목로 47", lat: 34.9180, lng: 128.6400, district: "연초면", website: "http://gjsongjeong-p.gne.go.kr" },
   { name: "수월초등학교", address: "경상남도 거제시 수양로 456", lat: 34.8902, lng: 128.6438, district: "수양동", website: "http://suwol.gne.go.kr" },
   { name: "숭덕초등학교", address: "경상남도 거제시 둔덕면 거림길 62", lat: 34.8363, lng: 128.4960, district: "둔덕면", website: "http://sungdeok.gne.go.kr" },
   { name: "신현초등학교", address: "경상남도 거제시 거제중앙로13길 18", lat: 34.8881, lng: 128.6169, district: "신현동", website: "http://gjsh.gne.go.kr" },
