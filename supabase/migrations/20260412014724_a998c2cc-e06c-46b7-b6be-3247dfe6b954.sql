@@ -1,0 +1,1 @@
+ALTER TABLE public.error_reports ADD COLUMN category TEXT;

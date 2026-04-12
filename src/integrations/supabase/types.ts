@@ -175,6 +175,7 @@ export type Database = {
       }
       error_reports: {
         Row: {
+          category: string | null
           created_at: string
           id: string
           is_read: boolean
@@ -183,6 +184,7 @@ export type Database = {
           place_name: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           id?: string
           is_read?: boolean
@@ -191,6 +193,7 @@ export type Database = {
           place_name: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           id?: string
           is_read?: boolean
