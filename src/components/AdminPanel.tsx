@@ -340,7 +340,7 @@ const AdminPanel = () => {
       <div className="bg-card rounded-2xl p-4 md:p-5 max-w-3xl mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base md:text-lg font-bold text-foreground">⚙️ 관리자 패널</h3>
-          <button onClick={() => setIsAdmin(false)} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+          <button onClick={() => { setIsAdmin(false); setShowLogin(false); }} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
         </div>
 
         {/* Tabs */}
@@ -561,8 +561,12 @@ const AdminPanel = () => {
                     <p className="text-xs font-semibold text-foreground truncate">{c.icon} {c.name}</p>
                     <p className="text-[10px] text-muted-foreground">{contentCategoryLabels[c.contentType] || c.contentType}</p>
                   </div>
-                  <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, source: c.source, referenceUrl: c.referenceUrl, youtubeUrl: c.youtubeUrl })}
-                    className="p-1.5 rounded bg-muted cursor-pointer flex-shrink-0"><Edit3 size={12} /></button>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, source: c.source, referenceUrl: c.referenceUrl, youtubeUrl: c.youtubeUrl })}
+                      className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
+                    <button onClick={() => { if (confirm(`"${c.name}" 콘텐츠를 삭제하시겠습니까?`)) { handleDeleteContent(c.id); } }}
+                      className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
+                  </div>
                 </div>
               ))}
             </div>
