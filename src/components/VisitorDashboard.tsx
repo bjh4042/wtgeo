@@ -1,5 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
+import { getHourlyStats, getDailyStats, getTodayVisitors } from '@/data/visitorStats';
 import { getVisitorCount } from '@/data/dataManager';
 import { Users, Clock, Calendar, TrendingUp } from 'lucide-react';
 
@@ -7,14 +7,13 @@ const VisitorDashboard = () => {
   const hourlyData = getHourlyStats();
   const dailyData = getDailyStats();
   const todayCount = getTodayVisitors();
-  const totalLocal = getTotalVisitors();
   const cloudTotal = getVisitorCount();
 
   const stats = [
     { label: '오늘 방문자', value: todayCount, icon: Clock, color: 'hsl(var(--primary))' },
     { label: '누적 방문자', value: cloudTotal, icon: Users, color: 'hsl(var(--accent))' },
     { label: '통계 기간', value: `${dailyData.length}일`, icon: Calendar, color: 'hsl(142 50% 42%)' },
-    { label: '일평균', value: dailyData.length > 0 ? Math.round(totalLocal / dailyData.length) : 0, icon: TrendingUp, color: 'hsl(210 60% 50%)' },
+    { label: '일평균', value: dailyData.length > 0 ? Math.round(cloudTotal / Math.max(dailyData.length, 1)) : 0, icon: TrendingUp, color: 'hsl(210 60% 50%)' },
   ];
 
   return (
