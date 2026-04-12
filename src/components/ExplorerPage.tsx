@@ -26,6 +26,8 @@ import { Home, List, X, Users, Map, Route, MapPin, Star } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
+const GRADE4_DEFAULT_PLACE_IDS = new Set(['p1', 'p2', 'p3']); // 거제시청, 거제경찰서, 거제소방서
+
 const ExplorerPage = () => {
   const [step, setStep] = useState<Step>('consonant');
   const [selectedConsonant, setSelectedConsonant] = useState<string>('');
@@ -46,6 +48,7 @@ const ExplorerPage = () => {
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
   const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [grade4VisibleIds, setGrade4VisibleIds] = useState<Set<string>>(new Set(GRADE4_DEFAULT_PLACE_IDS));
 
   const { favorites, isFavorite, toggleFavorite, removeFavorite, clearAll, reorder, courseName, setCourseName } = useFavorites();
 
@@ -84,6 +87,13 @@ const ExplorerPage = () => {
     setSelectedPlace(place);
     setSelectedContent(null);
     setShowMobileSidebar(false);
+    // For grade 4, reveal the place on map when selected from filter
+    setGrade4VisibleIds(prev => {
+      if (prev.has(place.id)) return prev;
+      const next = new Set(prev);
+      next.add(place.id);
+      return next;
+    });
   }, []);
 
   const handleContentSelect = useCallback((content: MapContent) => {
@@ -138,6 +148,7 @@ const ExplorerPage = () => {
     setShowMobileSidebar(false);
     setZoomIn(false);
     setIsZooming(false);
+    setGrade4VisibleIds(new Set(GRADE4_DEFAULT_PLACE_IDS));
   };
 
   return (
