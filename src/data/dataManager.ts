@@ -470,10 +470,34 @@ export function getTodayVisitorCount(): number {
   return 0;
 }
 
+export function getCloudHourlyStats(): { hour: string; count: number }[] {
+  const cloud = siteSettingsCache['hourly_visitor_stats'] as Record<string, number> | undefined;
+  const today = new Date().toISOString().slice(0, 10);
+  const result: { hour: string; count: number }[] = [];
+  for (let h = 0; h < 24; h++) {
+    const key = `${today}-${String(h).padStart(2, '0')}`;
+    result.push({ hour: `${h}시`, count: cloud?.[key] || 0 });
+  }
+  return result;
+}
+
+export function getCloudDailyStats(): { date: string; count: number }[] {
+  const cloud = siteSettingsCache['daily_visitor_stats'] as Record<string, number> | undefined;
+  if (!cloud) return [];
+  return Object.entries(cloud)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-14)
+    .map(([date, count]) => ({ date: date.slice(5), count }));
+}
+
 export async function incrementVisitorCount(): Promise<number> {
   const sessionKey = 'geoje-explorer-visited';
   if (sessionStorage.getItem(sessionKey)) return getVisitorCount();
   sessionStorage.setItem(sessionKey, 'true');
+
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+  const hourKey = `${today}-${String(now.getHours()).padStart(2, '0')}`;
 
   // Total count
   const count = getVisitorCount() + 1;
@@ -481,7 +505,6 @@ export async function incrementVisitorCount(): Promise<number> {
   localStorage.setItem('geoje-explorer-visitors', String(count));
 
   // Today count
-  const today = new Date().toISOString().slice(0, 10);
   const todayData = siteSettingsCache['today_visitor_count'];
   let todayCount = 1;
   if (todayData && typeof todayData === 'object' && todayData !== null) {
@@ -490,10 +513,26 @@ export async function incrementVisitorCount(): Promise<number> {
   }
   siteSettingsCache['today_visitor_count'] = { date: today, count: todayCount };
 
+  // Hourly stats (cloud) - keep last 7 days
+  const hourly = { ...(siteSettingsCache['hourly_visitor_stats'] as Record<string, number> || {}) };
+  hourly[hourKey] = (hourly[hourKey] || 0) + 1;
+  const hKeys = Object.keys(hourly).sort();
+  if (hKeys.length > 168) hKeys.slice(0, hKeys.length - 168).forEach(k => delete hourly[k]);
+  siteSettingsCache['hourly_visitor_stats'] = hourly;
+
+  // Daily stats (cloud) - keep last 30 days
+  const daily = { ...(siteSettingsCache['daily_visitor_stats'] as Record<string, number> || {}) };
+  daily[today] = (daily[today] || 0) + 1;
+  const dKeys = Object.keys(daily).sort();
+  if (dKeys.length > 30) dKeys.slice(0, dKeys.length - 30).forEach(k => delete daily[k]);
+  siteSettingsCache['daily_visitor_stats'] = daily;
+
   try {
     await Promise.all([
-      supabase.from('site_settings').upsert({ key: 'visitor_count', value: count, updated_at: new Date().toISOString() }, { onConflict: 'key' }),
-      supabase.from('site_settings').upsert({ key: 'today_visitor_count', value: { date: today, count: todayCount } as any, updated_at: new Date().toISOString() }, { onConflict: 'key' }),
+      supabase.from('site_settings').upsert({ key: 'visitor_count', value: count, updated_at: now.toISOString() }, { onConflict: 'key' }),
+      supabase.from('site_settings').upsert({ key: 'today_visitor_count', value: { date: today, count: todayCount } as any, updated_at: now.toISOString() }, { onConflict: 'key' }),
+      supabase.from('site_settings').upsert({ key: 'hourly_visitor_stats', value: hourly as any, updated_at: now.toISOString() }, { onConflict: 'key' }),
+      supabase.from('site_settings').upsert({ key: 'daily_visitor_stats', value: daily as any, updated_at: now.toISOString() }, { onConflict: 'key' }),
     ]);
   } catch (e) { console.error('Failed to save visitor count:', e); }
   return count;

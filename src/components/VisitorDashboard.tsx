@@ -1,11 +1,10 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { getHourlyStats, getDailyStats } from '@/data/visitorStats';
-import { getVisitorCount, getTodayVisitorCount } from '@/data/dataManager';
+import { getVisitorCount, getTodayVisitorCount, getCloudHourlyStats, getCloudDailyStats } from '@/data/dataManager';
 import { Users, Clock, Calendar, TrendingUp } from 'lucide-react';
 
 const VisitorDashboard = () => {
-  const hourlyData = getHourlyStats();
-  const dailyData = getDailyStats();
+  const hourlyData = getCloudHourlyStats();
+  const dailyData = getCloudDailyStats();
   const todayCount = getTodayVisitorCount();
   const cloudTotal = getVisitorCount();
 
