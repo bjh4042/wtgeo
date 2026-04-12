@@ -105,6 +105,16 @@ export async function saveGyeongnamEdit(id: string, edit: Partial<GyeongnamCity>
 
 const defaultGyeongnamCities: GyeongnamCity[] = [
   {
+    id: 'gyeongnam', name: '경상남도', nameHanja: '慶尙南道',
+    population: 3205787, area: 10540.29,
+    mascot: '벼리', mascotEmoji: '🌟',
+    officialSite: 'https://www.gyeongnam.go.kr',
+    nameOrigin: '경상남도는 경상도의 남쪽 지역을 뜻해요. 경상도라는 이름은 경주(慶州)와 상주(尙州)의 첫 글자를 합친 것이랍니다. 신라의 수도 경주와 상주가 이 지역의 중심이었기 때문이에요. 경상남도는 남해 바다와 지리산, 낙동강이 어우러진 아름다운 곳으로, 가야 문명의 발상지이자 임진왜란 때 이순신 장군과 의병들이 활약한 역사가 깊은 땅이에요. 도청소재지는 창원시에 있답니다.',
+    lat: 35.2354, lng: 128.6922,
+    highlights: ['도청소재지: 창원시', '18개 시·군', '가야문명 발상지', '한려해상국립공원', '지리산국립공원'],
+    boundary: [],
+  },
+  {
     id: 'changwon', name: '창원시', nameHanja: '昌原市',
     population: 1005300, area: 748.06,
     mascot: '피우미', mascotEmoji: '🌸',
