@@ -1,14 +1,16 @@
 import { MapContent, contentCategoryColors, contentCategoryIcons, contentCategoryLabels } from '@/data/content';
 import { getRoadViewUrl } from '@/data/places';
-import { X, ExternalLink, Youtube, Eye, MapPin } from 'lucide-react';
+import { X, ExternalLink, Youtube, Eye, MapPin, Star } from 'lucide-react';
 import { useState } from 'react';
 
 interface ContentCardProps {
   content: MapContent;
   onClose: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (content: MapContent) => void;
 }
 
-const ContentCard = ({ content, onClose }: ContentCardProps) => {
+const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: ContentCardProps) => {
   const color = contentCategoryColors[content.contentType];
   const icon = contentCategoryIcons[content.contentType];
   const label = contentCategoryLabels[content.contentType];
@@ -43,6 +45,11 @@ const ContentCard = ({ content, onClose }: ContentCardProps) => {
         >
           <X size={20} />
         </button>
+        {onToggleFavorite && (
+          <button onClick={() => onToggleFavorite(content)} className="cursor-pointer transition-colors ml-1 flex-shrink-0" title={isFavorite ? '즐겨찾기 해제' : '즐겨찾기'}>
+            <Star size={18} className={isFavorite ? 'text-accent fill-accent' : 'text-muted-foreground hover:text-accent'} />
+          </button>
+        )}
       </div>
 
       <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
