@@ -8,25 +8,22 @@ export interface School {
   website?: string;
 }
 
-// 거제시 초등학교 목록 (38개교) - 좌표 Nominatim 기반 검증 완료
+// 거제시 초등학교 목록 (41개교, 분교 포함) - 2026년 4월 기준
 export const schools: School[] = [
   { name: "거제고현초등학교", address: "경상남도 거제시 거제중앙로 1891-1", lat: 34.8733, lng: 128.6289, district: "고현동", website: "http://gjgh.gne.go.kr" },
   { name: "거제양정초등학교", address: "경상남도 거제시 양정1길 45", lat: 34.8712, lng: 128.6511, district: "양정동", website: "http://gjyj.gne.go.kr" },
   { name: "거제중앙초등학교", address: "경상남도 거제시 상동5길 21", lat: 34.8615, lng: 128.6340, district: "상동", website: "http://gjja.gne.go.kr" },
   { name: "거제초등학교", address: "경상남도 거제시 거제면 기성로 34", lat: 34.8514, lng: 128.5919, district: "거제면", website: "http://geoje.gne.go.kr" },
+  { name: "거제용산초등학교", address: "경상남도 거제시 상동7길 58", lat: 34.8575, lng: 128.6355, district: "상동동", website: "https://gjyongsan-p.gne.go.kr" },
   { name: "거제용소초등학교", address: "경상남도 거제시 아주로 90", lat: 34.8655, lng: 128.6910, district: "아주동", website: "http://gjys.gne.go.kr" },
+  { name: "거제상동초등학교", address: "경상남도 거제시 상동5길 75-41", lat: 34.8590, lng: 128.6360, district: "상동동", website: "http://gjsangdong-p.gne.go.kr" },
   { name: "국산초등학교", address: "경상남도 거제시 옥포대첩로 100", lat: 34.8968, lng: 128.6934, district: "옥포동", website: "http://guksan.gne.go.kr" },
   { name: "기성초등학교", address: "경상남도 거제시 사등면 거제남서로 5345", lat: 34.9011, lng: 128.5515, district: "사등면", website: "http://giseong.gne.go.kr" },
   { name: "계룡초등학교", address: "경상남도 거제시 고현천로 84", lat: 34.8806, lng: 128.6254, district: "고현동", website: "http://gyeryong.gne.go.kr" },
   { name: "내곡초등학교", address: "경상남도 거제시 아주1로 100", lat: 34.8707, lng: 128.6788, district: "아주동", website: "http://naegok.gne.go.kr" },
   { name: "능포초등학교", address: "경상남도 거제시 능포로 149", lat: 34.8810, lng: 128.7368, district: "능포동", website: "http://neungpo.gne.go.kr" },
+  { name: "대우초등학교", address: "경상남도 거제시 옥포대로3길 63", lat: 34.8610, lng: 128.6848, district: "아주동", website: "http://daewoo.gne.go.kr" },
   { name: "동부초등학교", address: "경상남도 거제시 동부면 동부로 19", lat: 34.8207, lng: 128.6100, district: "동부면", website: "http://gjdb.gne.go.kr" },
-  { name: "동부초등학교 율포분교장", address: "경상남도 거제시 동부면 율포로 333", lat: 34.7788, lng: 128.5941, district: "동부면" },
-  { name: "마전초등학교", address: "경상남도 거제시 장승포로 152", lat: 34.8599, lng: 128.7207, district: "장승포동", website: "http://majeon.gne.go.kr" },
-  { name: "명사초등학교", address: "경상남도 거제시 남부면 명사해수욕장길 25", lat: 34.7255, lng: 128.6037, district: "남부면", website: "http://myeongsa.gne.go.kr" },
-  { name: "사등초등학교", address: "경상남도 거제시 사등면 성포로3길 16", lat: 34.9130, lng: 128.5161, district: "사등면", website: "http://sadeung.gne.go.kr" },
-  { name: "삼룡초등학교", address: "경상남도 거제시 상동3길 20", lat: 34.8617, lng: 128.6443, district: "상동", website: "http://samryong.gne.go.kr" },
-  { name: "상동초등학교", address: "경상남도 거제시 상동7길 36", lat: 34.8590, lng: 128.6360, district: "상동", website: "http://gjsd.gne.go.kr" },
   { name: "수월초등학교", address: "경상남도 거제시 수양로 456", lat: 34.8902, lng: 128.6438, district: "수양동", website: "http://suwol.gne.go.kr" },
   { name: "숭덕초등학교", address: "경상남도 거제시 둔덕면 거림길 62", lat: 34.8363, lng: 128.4960, district: "둔덕면", website: "http://sungdeok.gne.go.kr" },
   { name: "신현초등학교", address: "경상남도 거제시 거제중앙로13길 18", lat: 34.8881, lng: 128.6169, district: "신현동", website: "http://gjsh.gne.go.kr" },
