@@ -1,7 +1,9 @@
 import { Place, categoryColors, categoryIcons, getRoadViewUrl, getDirectionUrl, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
-import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube, Star } from 'lucide-react';
+import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube, Star, AlertTriangle, Send } from 'lucide-react';
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface PlaceCardProps {
   place: Place;
@@ -16,6 +18,24 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
   const icon = categoryIcons[place.category];
   const [imgError, setImgError] = useState(false);
   const [showOrigin, setShowOrigin] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportMsg, setReportMsg] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const handleReport = async () => {
+    if (!reportMsg.trim()) return;
+    setSending(true);
+    const { error } = await supabase.from('error_reports').insert({
+      place_id: place.id,
+      place_name: place.name,
+      message: reportMsg.trim(),
+    });
+    setSending(false);
+    if (error) { toast.error('전송 실패'); return; }
+    toast.success('오류가 제보되었습니다');
+    setReportMsg('');
+    setShowReport(false);
+  };
   const roadViewUrl = getRoadViewUrl(place.lat, place.lng);
   const directionUrl = getDirectionUrl(place.lat, place.lng, place.name);
 
@@ -105,6 +125,28 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
           <a href={place.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-colors">
             <Youtube size={14} />영상 보기
           </a>
+        )}
+      </div>
+
+      {/* Error Report */}
+      <div className="mt-2 border-t pt-2">
+        {!showReport ? (
+          <button onClick={() => setShowReport(true)} className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive transition-colors cursor-pointer">
+            <AlertTriangle size={12} /> 오류 제보
+          </button>
+        ) : (
+          <div className="space-y-1.5">
+            <textarea value={reportMsg} onChange={e => setReportMsg(e.target.value)} placeholder="어떤 오류가 있나요? (예: 주소가 잘못됨, 사진이 다름)" rows={2}
+              className="w-full px-2.5 py-1.5 rounded-lg border bg-background text-foreground text-xs resize-none focus:outline-none focus:ring-1 focus:ring-destructive" />
+            <div className="flex gap-1.5">
+              <button onClick={handleReport} disabled={!reportMsg.trim() || sending}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer disabled:opacity-50">
+                <Send size={11} />{sending ? '전송 중...' : '제보'}
+              </button>
+              <button onClick={() => { setShowReport(false); setReportMsg(''); }}
+                className="px-2.5 py-1 rounded-lg text-[11px] text-muted-foreground bg-muted hover:bg-muted/80 cursor-pointer">취소</button>
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter, Map, BarChart } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Settings, X, Send, Trash2, Plus, Save, Edit3, ChevronDown, ChevronUp, Youtube, BarChart3, Search, Filter, Map, BarChart, AlertTriangle, CheckCircle, Eye } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import VisitorDashboard from './VisitorDashboard';
 import { places as defaultPlaces, Place, PlaceCategory, categoryLabels } from '@/data/places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory, contentCategoryLabels } from '@/data/content';
@@ -31,7 +32,16 @@ export interface SiteInfo {
   devEmail: string;
 }
 
-type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info' | 'stats';
+type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info' | 'stats' | 'reports';
+
+interface ErrorReport {
+  id: string;
+  place_id: string;
+  place_name: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
 
 import AdminMapEditor from './AdminMapEditor';
 
@@ -100,11 +110,44 @@ const AdminPanel = () => {
   // Force re-render trigger
   const [renderKey, forceUpdate] = useState(0);
   const [showMapEditor, setShowMapEditor] = useState(false);
+  const [reports, setReports] = useState<ErrorReport[]>([]);
+  const [selectedReport, setSelectedReport] = useState<ErrorReport | null>(null);
+
+  const unreadCount = reports.filter(r => !r.is_read).length;
+
+  const loadReports = useCallback(async () => {
+    const { data } = await supabase.from('error_reports').select('*').order('created_at', { ascending: false });
+    if (data) setReports(data as ErrorReport[]);
+  }, []);
+
+  const markAsRead = async (id: string) => {
+    await supabase.from('error_reports').update({ is_read: true }).eq('id', id);
+    setReports(prev => prev.map(r => r.id === id ? { ...r, is_read: true } : r));
+    if (selectedReport?.id === id) setSelectedReport(prev => prev ? { ...prev, is_read: true } : null);
+  };
+
+  const markAllRead = async () => {
+    await supabase.from('error_reports').update({ is_read: true }).eq('is_read', false);
+    setReports(prev => prev.map(r => ({ ...r, is_read: true })));
+  };
+
+  const deleteReport = async (id: string) => {
+    await supabase.from('error_reports').delete().eq('id', id);
+    setReports(prev => prev.filter(r => r.id !== id));
+    setSelectedReport(null);
+  };
+
+  const deleteAllReports = async () => {
+    await supabase.from('error_reports').delete().neq('id', '');
+    setReports([]);
+    setSelectedReport(null);
+  };
 
   useEffect(() => {
     setCurrentNotice(getNotice());
     setSiteInfo(getSiteInfo() as SiteInfo);
-  }, []);
+    loadReports();
+  }, [loadReports]);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
@@ -278,8 +321,9 @@ const AdminPanel = () => {
 
   const inputClass = "w-full mt-1 px-3 py-2 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
-  const tabConfig: { key: AdminTab; label: string }[] = [
+  const tabConfig: { key: AdminTab; label: string; badge?: number }[] = [
     { key: 'notice', label: '📢 공지' },
+    { key: 'reports', label: '⚠️ 제보', badge: unreadCount },
     { key: 'places', label: '📍 장소' },
     { key: 'content', label: '📖 콘텐츠' },
     { key: 'schools', label: '🏫 학교' },
@@ -301,9 +345,12 @@ const AdminPanel = () => {
         {/* Tabs */}
         <div className="flex gap-1 mb-3 overflow-x-auto no-scrollbar">
           {tabConfig.map(tab => (
-            <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearchTerm(''); setEditingSiteInfo(false); setPlaceCategoryFilter('all'); setContentTypeFilter('all'); }}
-              className={`px-2.5 py-1.5 rounded-full text-[11px] font-bold cursor-pointer whitespace-nowrap ${activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+            <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearchTerm(''); setEditingSiteInfo(false); setPlaceCategoryFilter('all'); setContentTypeFilter('all'); if (tab.key === 'reports') loadReports(); }}
+              className={`relative px-2.5 py-1.5 rounded-full text-[11px] font-bold cursor-pointer whitespace-nowrap ${activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
               {tab.label}
+              {tab.badge != null && tab.badge > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold">{tab.badge}</span>
+              )}
             </button>
           ))}
           <button onClick={() => setShowMapEditor(true)}
@@ -931,6 +978,62 @@ const AdminPanel = () => {
         {/* Stats Tab */}
         {activeTab === 'stats' && (
           <VisitorDashboard />
+        )}
+
+        {/* Reports Tab */}
+        {activeTab === 'reports' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-foreground">오류 제보 ({reports.length}건)</p>
+              <div className="flex gap-1.5">
+                <button onClick={markAllRead} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer font-medium">
+                  <span className="flex items-center gap-1"><CheckCircle size={10} />전체 읽음</span>
+                </button>
+                <button onClick={deleteAllReports} className="text-[10px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 cursor-pointer font-medium">
+                  <span className="flex items-center gap-1"><Trash2 size={10} />전체 삭제</span>
+                </button>
+              </div>
+            </div>
+
+            {selectedReport ? (
+              <div className="p-3 rounded-lg border space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground">📍 {selectedReport.place_name}</span>
+                  <button onClick={() => setSelectedReport(null)} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={14} /></button>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">{selectedReport.message}</p>
+                <p className="text-[10px] text-muted-foreground">{new Date(selectedReport.created_at).toLocaleString('ko-KR')}</p>
+                <div className="flex gap-2 pt-1">
+                  {!selectedReport.is_read && (
+                    <button onClick={() => markAsRead(selectedReport.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 cursor-pointer">
+                      <CheckCircle size={12} />확인
+                    </button>
+                  )}
+                  <button onClick={() => deleteReport(selectedReport.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer">
+                    <Trash2 size={12} />삭제
+                  </button>
+                </div>
+              </div>
+            ) : reports.length === 0 ? (
+              <p className="text-center text-xs text-muted-foreground py-8">오류 제보가 없습니다</p>
+            ) : (
+              <div className="space-y-1.5 max-h-[50vh] overflow-auto">
+                {reports.map(r => (
+                  <button key={r.id} onClick={() => setSelectedReport(r)}
+                    className={`w-full text-left p-2.5 rounded-lg border cursor-pointer transition-colors ${r.is_read ? 'bg-muted/30 border-muted' : 'bg-accent/10 border-accent/30'}`}>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-xs font-bold text-foreground flex items-center gap-1">
+                        {!r.is_read && <span className="w-1.5 h-1.5 rounded-full bg-destructive inline-block" />}
+                        📍 {r.place_name}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground">{new Date(r.created_at).toLocaleString('ko-KR')}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground truncate">{r.message}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>}
