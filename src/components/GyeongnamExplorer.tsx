@@ -34,7 +34,8 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     if (!window.kakao?.maps) return;
 
     const center = new window.kakao.maps.LatLng(selectedCity.lat, selectedCity.lng);
-    const map = new window.kakao.maps.Map(mapRef.current, { center, level: 9 });
+    const zoomLevel = selectedCity.id === 'gyeongnam' ? 11 : 9;
+    const map = new window.kakao.maps.Map(mapRef.current, { center, level: zoomLevel });
     mapInstanceRef.current = map;
 
     // Draw boundary polygons
