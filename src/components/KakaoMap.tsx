@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Place, PlaceCategory, categoryColors, categoryIcons } from '@/data/places';
+import { Place, PlaceCategory, PublicSubCategory, categoryColors, categoryIcons, publicSubCategoryColors } from '@/data/places';
 import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcons } from '@/data/content';
 import { getMergedPlacesByGrade, getMergedContentByCategory } from '@/data/dataManager';
 import { School } from '@/data/schools';
@@ -20,6 +20,7 @@ interface KakaoMapProps {
   onContentSelect: (content: MapContent) => void;
   activeCategories: ContentCategory[];
   activePlaceCategories?: PlaceCategory[];
+  activePublicSubCategories?: PublicSubCategory[] | null;
   zoomIn?: boolean;
   onZoomComplete?: () => void;
   isZooming?: boolean;
@@ -43,7 +44,7 @@ function getZoomMessage(stageIndex: number, district: string): string {
   }
 }
 
-const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, zoomIn, onZoomComplete, isZooming }: KakaoMapProps) => {
+const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, activePublicSubCategories, zoomIn, onZoomComplete, isZooming }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
@@ -163,9 +164,18 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
     if (activeCategories.includes('place')) {
       const allPlaces = getMergedPlacesByGrade(grade);
-      const places = activePlaceCategories
+      let places = activePlaceCategories
         ? allPlaces.filter(p => activePlaceCategories.includes(p.category))
         : allPlaces;
+      // Filter public places by subcategory if active
+      if (activePublicSubCategories && activePublicSubCategories.length > 0) {
+        places = places.filter(p => {
+          if (p.category === 'public') {
+            return p.subCategory ? activePublicSubCategories.includes(p.subCategory) : false;
+          }
+          return true;
+        });
+      }
       places.forEach((place) => {
         const position = new window.kakao.maps.LatLng(place.lat, place.lng);
         const color = categoryColors[place.category];
