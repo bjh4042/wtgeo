@@ -979,6 +979,62 @@ const AdminPanel = () => {
         {activeTab === 'stats' && (
           <VisitorDashboard />
         )}
+
+        {/* Reports Tab */}
+        {activeTab === 'reports' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-foreground">오류 제보 ({reports.length}건)</p>
+              <div className="flex gap-1.5">
+                <button onClick={markAllRead} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer font-medium">
+                  <span className="flex items-center gap-1"><CheckCircle size={10} />전체 읽음</span>
+                </button>
+                <button onClick={deleteAllReports} className="text-[10px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 cursor-pointer font-medium">
+                  <span className="flex items-center gap-1"><Trash2 size={10} />전체 삭제</span>
+                </button>
+              </div>
+            </div>
+
+            {selectedReport ? (
+              <div className="p-3 rounded-lg border space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground">📍 {selectedReport.place_name}</span>
+                  <button onClick={() => setSelectedReport(null)} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={14} /></button>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">{selectedReport.message}</p>
+                <p className="text-[10px] text-muted-foreground">{new Date(selectedReport.created_at).toLocaleString('ko-KR')}</p>
+                <div className="flex gap-2 pt-1">
+                  {!selectedReport.is_read && (
+                    <button onClick={() => markAsRead(selectedReport.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 cursor-pointer">
+                      <CheckCircle size={12} />확인
+                    </button>
+                  )}
+                  <button onClick={() => deleteReport(selectedReport.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer">
+                    <Trash2 size={12} />삭제
+                  </button>
+                </div>
+              </div>
+            ) : reports.length === 0 ? (
+              <p className="text-center text-xs text-muted-foreground py-8">오류 제보가 없습니다</p>
+            ) : (
+              <div className="space-y-1.5 max-h-[50vh] overflow-auto">
+                {reports.map(r => (
+                  <button key={r.id} onClick={() => setSelectedReport(r)}
+                    className={`w-full text-left p-2.5 rounded-lg border cursor-pointer transition-colors ${r.is_read ? 'bg-muted/30 border-muted' : 'bg-accent/10 border-accent/30'}`}>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-xs font-bold text-foreground flex items-center gap-1">
+                        {!r.is_read && <span className="w-1.5 h-1.5 rounded-full bg-destructive inline-block" />}
+                        📍 {r.place_name}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground">{new Date(r.created_at).toLocaleString('ko-KR')}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground truncate">{r.message}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>}
     </>
