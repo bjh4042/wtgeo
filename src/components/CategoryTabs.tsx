@@ -195,7 +195,7 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                                       style={{ backgroundColor: subColor }}
                                     />
                                     <span style={{ color: isSubActive ? subColor : 'hsl(var(--foreground))' }}>
-                                      {publicSubCategoryLabels[sub]}
+                                      {isSubActive ? '✓ ' : ''}{publicSubCategoryLabels[sub]}
                                     </span>
                                   </button>
                                 );
@@ -220,7 +220,7 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                           style={{ backgroundColor: pcColor }}
                         />
                         <span style={{ color: isActive ? pcColor : 'hsl(var(--muted-foreground))', fontWeight: isActive ? 700 : 500 }}>
-                          {categoryLabels[pc]}
+                          {isActive ? '✓ ' : ''}{categoryLabels[pc]}
                         </span>
                       </button>
                     );
