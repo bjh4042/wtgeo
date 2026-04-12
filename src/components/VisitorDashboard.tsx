@@ -1,5 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { getHourlyStats, getDailyStats, getTodayVisitors, getTotalVisitors } from '@/data/visitorStats';
+import { getHourlyStats, getDailyStats, getTodayVisitors } from '@/data/visitorStats';
 import { getVisitorCount } from '@/data/dataManager';
 import { Users, Clock, Calendar, TrendingUp } from 'lucide-react';
 
