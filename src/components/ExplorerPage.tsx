@@ -317,6 +317,7 @@ const ExplorerPage = () => {
                   zoomIn={zoomIn}
                   onZoomComplete={handleZoomComplete}
                   isZooming={isZooming}
+                  visiblePlaceIds={selectedGrade === 4 ? grade4VisibleIds : null}
                 />
               )}
 
