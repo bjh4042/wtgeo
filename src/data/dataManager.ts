@@ -265,7 +265,11 @@ export async function deletePlace(placeId: string): Promise<void> {
 
 // ─── Content operations ───
 export function getMergedContent(): MapContent[] {
-  const allDefaults = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+  const deletedContentIds: string[] = Array.isArray(siteSettingsCache['deleted_content_ids'])
+    ? siteSettingsCache['deleted_content_ids'].filter((id: unknown): id is string => typeof id === 'string')
+    : [];
+  const allDefaults = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent]
+    .filter(c => !deletedContentIds.includes(c.id));
   const merged = allDefaults.map(c => {
     const edit = contentEditsCache[c.id];
     return edit ? { ...c, ...edit } as MapContent : c;
@@ -326,13 +330,48 @@ export async function saveCustomContent(content: MapContent): Promise<void> {
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
 }
 
-export async function deleteCustomContent(contentId: string): Promise<void> {
-  customContentCache = customContentCache.filter(c => c.id !== contentId);
-  localStorage.setItem('geoje-custom-content', JSON.stringify(customContentCache));
+export async function deleteContent(contentId: string): Promise<void> {
+  const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+  const isDefault = allDefault.some(c => c.id === contentId);
+
+  if (!isDefault) {
+    // Custom content - just remove it
+    customContentCache = customContentCache.filter(c => c.id !== contentId);
+    localStorage.setItem('geoje-custom-content', JSON.stringify(customContentCache));
+    try {
+      await supabase.from('custom_content').delete().eq('content_id', contentId);
+    } catch (e) { console.error('Failed to delete custom content:', e); }
+    window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
+    return;
+  }
+
+  // Default content - use tombstone
+  let deletedContentIds: string[] = [];
+  const existing = siteSettingsCache['deleted_content_ids'];
+  if (Array.isArray(existing)) {
+    deletedContentIds = existing.filter((id: unknown): id is string => typeof id === 'string');
+  }
+  deletedContentIds = Array.from(new Set([...deletedContentIds, contentId]));
+  siteSettingsCache['deleted_content_ids'] = deletedContentIds;
+  delete contentEditsCache[contentId];
+  localStorage.setItem('geoje-content-edits', JSON.stringify(contentEditsCache));
+
   try {
-    await supabase.from('custom_content').delete().eq('content_id', contentId);
-  } catch (e) { console.error('Failed to delete custom content:', e); }
+    await Promise.all([
+      supabase.from('content_edits').delete().eq('content_id', contentId),
+      supabase.from('site_settings').upsert({
+        key: 'deleted_content_ids',
+        value: deletedContentIds,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'key' }),
+    ]);
+  } catch (e) { console.error('Failed to delete content:', e); }
+
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
+}
+
+export async function deleteCustomContent(contentId: string): Promise<void> {
+  return deleteContent(contentId);
 }
 
 // ─── School operations ───
