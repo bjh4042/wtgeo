@@ -173,26 +173,20 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                                 }}
                                 className="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"
                                 style={{
-                                  color: isSoloActive ? pcColor : 'hsl(var(--muted-foreground))',
+                                  color: isActive ? pcColor : 'hsl(var(--muted-foreground))',
                                 }}
                               >
                                 전체 공공기관
                               </button>
                               {publicSubCategories.map((sub) => {
                                 const subColor = publicSubCategoryColors[sub];
-                                const isSubActive = activePublicSubCategories?.includes(sub) && activePlaceCategories.length === 1 && activePlaceCategories.includes('public');
+                                const isSubActive = activePublicSubCategories?.includes(sub);
                                 return (
                                   <button
                                     key={sub}
                                     onClick={() => {
-                                      // Solo select this subcategory
-                                      placeCategories.forEach(p => {
-                                        if (p === 'public' && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                        if (p !== 'public' && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                      });
+                                      // Toggle this subcategory
                                       onPublicSubCategoryToggle(sub);
-                                      setShowPlaceDropdown(false);
-                                      setShowPublicSub(false);
                                     }}
                                     className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"
                                   >
