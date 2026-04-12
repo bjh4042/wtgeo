@@ -146,7 +146,8 @@ const AdminPanel = () => {
   useEffect(() => {
     setCurrentNotice(getNotice());
     setSiteInfo(getSiteInfo() as SiteInfo);
-  }, []);
+    loadReports();
+  }, [loadReports]);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
