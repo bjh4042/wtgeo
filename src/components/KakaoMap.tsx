@@ -24,6 +24,7 @@ interface KakaoMapProps {
   zoomIn?: boolean;
   onZoomComplete?: () => void;
   isZooming?: boolean;
+  visiblePlaceIds?: Set<string> | null;
 }
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
@@ -44,7 +45,7 @@ function getZoomMessage(stageIndex: number, district: string): string {
   }
 }
 
-const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, activePublicSubCategories, zoomIn, onZoomComplete, isZooming }: KakaoMapProps) => {
+const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, activePublicSubCategories, zoomIn, onZoomComplete, isZooming, visiblePlaceIds }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
@@ -176,6 +177,10 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
           return true;
         });
       }
+      // For grade 4, only show places that are in the visible set
+      if (visiblePlaceIds) {
+        places = places.filter(p => visiblePlaceIds.has(p.id));
+      }
       places.forEach((place) => {
         const position = new window.kakao.maps.LatLng(place.lat, place.lng);
         const color = (place.category === 'public' && place.subCategory) ? publicSubCategoryColors[place.subCategory] : categoryColors[place.category];
@@ -235,7 +240,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         overlaysRef.current.push(overlay);
       });
     });
-  }, [isLoaded, grade, activeCategories, activePlaceCategories, activePublicSubCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect]);
+  }, [isLoaded, grade, activeCategories, activePlaceCategories, activePublicSubCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect, visiblePlaceIds]);
 
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedPlace) return;
