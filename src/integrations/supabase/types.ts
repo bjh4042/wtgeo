@@ -173,6 +173,33 @@ export type Database = {
         }
         Relationships: []
       }
+      error_reports: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          place_id: string
+          place_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          place_id: string
+          place_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          place_id?: string
+          place_name?: string
+        }
+        Relationships: []
+      }
       gyeongnam_edits: {
         Row: {
           area: number | null
