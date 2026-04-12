@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ContentCategory, contentCategoryLabels, contentCategoryColors, contentCategoryIcons } from '@/data/content';
 import { PlaceCategory, categoryLabels, categoryColors } from '@/data/places';
 import { ChevronDown } from 'lucide-react';
@@ -15,11 +16,23 @@ const placeCategories: PlaceCategory[] = ['tourism', 'nature', 'culture', 'publi
 
 const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategories, onPlaceCategoryToggle }: CategoryTabsProps) => {
   const [showPlaceDropdown, setShowPlaceDropdown] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (showPlaceDropdown && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 4, left: rect.left });
+    }
+  }, [showPlaceDropdown]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(e.target as Node) &&
+        buttonRef.current && !buttonRef.current.contains(e.target as Node)
+      ) {
         setShowPlaceDropdown(false);
       }
     };
@@ -38,8 +51,9 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
 
         if (cat === 'place') {
           return (
-            <div key={cat} className="relative flex-shrink-0" ref={dropdownRef}>
+            <div key={cat} className="relative flex-shrink-0">
               <button
+                ref={buttonRef}
                 onClick={() => {
                   if (!isPlaceActive) {
                     onCategoryToggle('place');
@@ -57,14 +71,16 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                 <ChevronDown size={12} className={`transition-transform ${showPlaceDropdown ? 'rotate-180' : ''}`} />
               </button>
 
-              {showPlaceDropdown && (
-                <div className="absolute top-full left-0 mt-1 bg-popover border rounded-xl shadow-lg z-50 p-2 min-w-[160px] animate-in fade-in-0 zoom-in-95 duration-150">
+              {showPlaceDropdown && createPortal(
+                <div
+                  ref={dropdownRef}
+                  className="fixed bg-popover border rounded-xl shadow-lg p-2 min-w-[170px] animate-in fade-in-0 zoom-in-95 duration-150"
+                  style={{ top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999 }}
+                >
                   {/* 전체 선택/해제 */}
                   <button
                     onClick={() => {
-                      if (allPlaceCatsActive) {
-                        // Can't deselect all - keep at least one
-                      } else {
+                      if (!allPlaceCatsActive) {
                         placeCategories.forEach(pc => {
                           if (!activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
                         });
@@ -75,7 +91,7 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                       color: allPlaceCatsActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
                     }}
                   >
-                    {allPlaceCatsActive ? '✓ 전체' : '전체'}
+                    {allPlaceCatsActive ? '✓ 전체' : '○ 전체'}
                   </button>
                   <div className="h-px bg-border mb-1" />
                   {placeCategories.map((pc) => {
@@ -85,10 +101,10 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                       <button
                         key={pc}
                         onClick={() => onPlaceCategoryToggle(pc)}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-muted transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium hover:bg-muted transition-colors"
                       >
                         <span
-                          className="w-3 h-3 rounded-full flex-shrink-0 border-2 flex items-center justify-center"
+                          className="w-3.5 h-3.5 rounded-full flex-shrink-0 border-2 flex items-center justify-center"
                           style={{
                             borderColor: pcColor,
                             backgroundColor: pcActive ? pcColor : 'transparent',
@@ -104,7 +120,8 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                       </button>
                     );
                   })}
-                </div>
+                </div>,
+                document.body
               )}
             </div>
           );
