@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Place, categoryColors, categoryIcons } from '@/data/places';
+import { Place, PlaceCategory, categoryColors, categoryIcons } from '@/data/places';
 import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcons } from '@/data/content';
 import { getMergedPlacesByGrade, getMergedContentByCategory } from '@/data/dataManager';
 import { School } from '@/data/schools';
@@ -19,6 +19,7 @@ interface KakaoMapProps {
   selectedContent: MapContent | null;
   onContentSelect: (content: MapContent) => void;
   activeCategories: ContentCategory[];
+  activePlaceCategories?: PlaceCategory[];
   zoomIn?: boolean;
   onZoomComplete?: () => void;
   isZooming?: boolean;
@@ -42,7 +43,7 @@ function getZoomMessage(stageIndex: number, district: string): string {
   }
 }
 
-const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, zoomIn, onZoomComplete, isZooming }: KakaoMapProps) => {
+const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, zoomIn, onZoomComplete, isZooming }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
@@ -161,7 +162,10 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     overlaysRef.current = [];
 
     if (activeCategories.includes('place')) {
-      const places = getMergedPlacesByGrade(grade);
+      const allPlaces = getMergedPlacesByGrade(grade);
+      const places = activePlaceCategories
+        ? allPlaces.filter(p => activePlaceCategories.includes(p.category))
+        : allPlaces;
       places.forEach((place) => {
         const position = new window.kakao.maps.LatLng(place.lat, place.lng);
         const color = categoryColors[place.category];
@@ -221,7 +225,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         overlaysRef.current.push(overlay);
       });
     });
-  }, [isLoaded, grade, activeCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect]);
+  }, [isLoaded, grade, activeCategories, activePlaceCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect]);
 
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedPlace) return;
