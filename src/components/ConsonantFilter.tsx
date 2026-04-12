@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getMergedAvailableConsonants, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 import { Monitor } from 'lucide-react';
-import logoImg from '@/assets/logo.png';
+import logoImg from '@/assets/logo_optimized.webp';
 
 interface ConsonantFilterProps {
   onSelect: (consonant: string) => void;
