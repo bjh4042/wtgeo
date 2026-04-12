@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { School } from '@/data/schools';
-import { Place, PlaceCategory } from '@/data/places';
+import { Place, PlaceCategory, PublicSubCategory } from '@/data/places';
 import { MapContent, ContentCategory } from '@/data/content';
 import AppHeader from '@/components/AppHeader';
 import ConsonantFilter from '@/components/ConsonantFilter';
@@ -35,6 +35,7 @@ const ExplorerPage = () => {
   const [selectedContent, setSelectedContent] = useState<MapContent | null>(null);
   const [activeCategories, setActiveCategories] = useState<ContentCategory[]>(['place']);
   const [activePlaceCategories, setActivePlaceCategories] = useState<PlaceCategory[]>(['tourism', 'nature', 'culture', 'public', 'experience', 'market']);
+  const [activePublicSubCategories, setActivePublicSubCategories] = useState<PublicSubCategory[] | null>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [zoomIn, setZoomIn] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
