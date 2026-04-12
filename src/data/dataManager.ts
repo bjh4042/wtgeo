@@ -410,7 +410,24 @@ export async function saveSchoolEdit(index: number, edit: Partial<School>): Prom
 
 // ─── Site settings ───
 export function getNotice(): string | null {
-  return siteSettingsCache['notice'] || localStorage.getItem('geoje-explorer-notice');
+  const cached = siteSettingsCache['notice'];
+  if (cached) return typeof cached === 'string' ? cached : JSON.stringify(cached);
+  return null;
+}
+
+export async function getNoticeFromCloud(): Promise<string | null> {
+  try {
+    const { data } = await supabase.from('site_settings').select('value').eq('key', 'notice').maybeSingle();
+    if (data?.value) {
+      const val = data.value;
+      const notice = typeof val === 'string' ? val : (typeof val === 'object' ? JSON.stringify(val) : String(val));
+      // Remove wrapping quotes if JSON-stringified string
+      const parsed = notice.startsWith('"') ? JSON.parse(notice) : notice;
+      siteSettingsCache['notice'] = parsed;
+      return parsed || null;
+    }
+  } catch (e) { console.error('Failed to fetch notice:', e); }
+  return null;
 }
 
 export async function saveNotice(notice: string | null): Promise<void> {

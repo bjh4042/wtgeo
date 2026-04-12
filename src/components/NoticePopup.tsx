@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Megaphone } from 'lucide-react';
-import { getNotice } from '@/data/dataManager';
+import { getNoticeFromCloud } from '@/data/dataManager';
 
 const DISMISSED_KEY = 'geoje-notice-dismissed';
 
@@ -9,15 +9,15 @@ const NoticePopup = () => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const current = getNotice();
-    if (!current) return;
+    getNoticeFromCloud().then(current => {
+      if (!current) return;
 
-    const dismissed = sessionStorage.getItem(DISMISSED_KEY);
-    if (dismissed === current) return;
+      const dismissed = sessionStorage.getItem(DISMISSED_KEY);
+      if (dismissed === current) return;
 
-    setNotice(current);
-    // slight delay for entrance animation
-    setTimeout(() => setShow(true), 500);
+      setNotice(current);
+      setTimeout(() => setShow(true), 500);
+    });
   }, []);
 
   const handleClose = () => {
