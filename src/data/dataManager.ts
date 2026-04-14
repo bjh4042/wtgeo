@@ -478,7 +478,8 @@ export function getVisitorCount(): number {
 }
 
 export function getTodayVisitorCount(): number {
-  const cloud = siteSettingsCache['today_visitor_count'];
+  // Check both old and new key names (DB function uses 'visitor_today')
+  const cloud = siteSettingsCache['today_visitor_count'] || siteSettingsCache['visitor_today'];
   if (cloud && typeof cloud === 'object' && cloud !== null) {
     const { date, count } = cloud as { date: string; count: number };
     const today = new Date().toISOString().slice(0, 10);
@@ -488,7 +489,7 @@ export function getTodayVisitorCount(): number {
 }
 
 export function getCloudHourlyStats(): { hour: string; count: number }[] {
-  const cloud = siteSettingsCache['hourly_visitor_stats'] as Record<string, number> | undefined;
+  const cloud = (siteSettingsCache['hourly_visitor_stats'] || siteSettingsCache['visitor_hourly']) as Record<string, number> | undefined;
   const today = new Date().toISOString().slice(0, 10);
   const result: { hour: string; count: number }[] = [];
   for (let h = 0; h < 24; h++) {
@@ -499,7 +500,7 @@ export function getCloudHourlyStats(): { hour: string; count: number }[] {
 }
 
 export function getCloudDailyStats(): { date: string; count: number }[] {
-  const cloud = siteSettingsCache['daily_visitor_stats'] as Record<string, number> | undefined;
+  const cloud = (siteSettingsCache['daily_visitor_stats'] || siteSettingsCache['visitor_daily']) as Record<string, number> | undefined;
   if (!cloud) return [];
   return Object.entries(cloud)
     .sort(([a], [b]) => a.localeCompare(b))
