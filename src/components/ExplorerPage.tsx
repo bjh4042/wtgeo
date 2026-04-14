@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { School } from '@/data/schools';
 import { Place, PlaceCategory, PublicSubCategory } from '@/data/places';
 import { MapContent, ContentCategory } from '@/data/content';
@@ -15,7 +15,7 @@ import AdminPanel from '@/components/AdminPanel';
 import NoticePopup from '@/components/NoticePopup';
 import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
-import GyeongnamExplorer from '@/components/GyeongnamExplorer';
+const GyeongnamExplorer = lazy(() => import('@/components/GyeongnamExplorer'));
 import RouteExplorer from '@/components/RouteExplorer';
 import PlaceNameOrigins from '@/components/PlaceNameOrigins';
 import FavoriteCourse from '@/components/FavoriteCourse';
@@ -165,7 +165,7 @@ const ExplorerPage = () => {
       <NoticePopup />
       {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} />}
       {showSources && <SourcesPopup onClose={() => setShowSources(false)} />}
-      {showGyeongnam && <GyeongnamExplorer onClose={() => setShowGyeongnam(false)} />}
+      {showGyeongnam && <Suspense fallback={<div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"><div className="text-white">로딩 중...</div></div>}><GyeongnamExplorer onClose={() => setShowGyeongnam(false)} /></Suspense>}
       {showRouteExplorer && selectedSchool && selectedGrade && (
         <RouteExplorer grade={selectedGrade} school={selectedSchool} onClose={() => setShowRouteExplorer(false)} onPlaceSelect={(p) => { handlePlaceSelect(p); setShowRouteExplorer(false); }} />
       )}
