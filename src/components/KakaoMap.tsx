@@ -157,8 +157,9 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   }, [isLoaded, school, grade]);
 
   // Add markers for active categories - using merged data
+  // Skip rendering markers while zoom animation is in progress
   useEffect(() => {
-    if (!isLoaded || !mapInstance.current) return;
+    if (!isLoaded || !mapInstance.current || isZooming) return;
 
     overlaysRef.current.forEach(o => o.setMap(null));
     overlaysRef.current = [];
@@ -240,7 +241,7 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         overlaysRef.current.push(overlay);
       });
     });
-  }, [isLoaded, grade, activeCategories, activePlaceCategories, activePublicSubCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect, visiblePlaceIds]);
+  }, [isLoaded, grade, activeCategories, activePlaceCategories, activePublicSubCategories, selectedPlace, selectedContent, onPlaceSelect, onContentSelect, visiblePlaceIds, isZooming]);
 
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedPlace) return;
