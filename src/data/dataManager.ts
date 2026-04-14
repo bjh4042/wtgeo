@@ -512,47 +512,26 @@ export async function incrementVisitorCount(): Promise<number> {
   if (sessionStorage.getItem(sessionKey)) return getVisitorCount();
   sessionStorage.setItem(sessionKey, 'true');
 
-  const now = new Date();
-  const today = now.toISOString().slice(0, 10);
-  const hourKey = `${today}-${String(now.getHours()).padStart(2, '0')}`;
-
-  // Total count
-  const count = getVisitorCount() + 1;
-  siteSettingsCache['visitor_count'] = count;
-  localStorage.setItem('geoje-explorer-visitors', String(count));
-
-  // Today count
-  const todayData = siteSettingsCache['today_visitor_count'];
-  let todayCount = 1;
-  if (todayData && typeof todayData === 'object' && todayData !== null) {
-    const { date, count: c } = todayData as { date: string; count: number };
-    if (date === today) todayCount = (c || 0) + 1;
-  }
-  siteSettingsCache['today_visitor_count'] = { date: today, count: todayCount };
-
-  // Hourly stats (cloud) - keep last 7 days
-  const hourly = { ...(siteSettingsCache['hourly_visitor_stats'] as Record<string, number> || {}) };
-  hourly[hourKey] = (hourly[hourKey] || 0) + 1;
-  const hKeys = Object.keys(hourly).sort();
-  if (hKeys.length > 168) hKeys.slice(0, hKeys.length - 168).forEach(k => delete hourly[k]);
-  siteSettingsCache['hourly_visitor_stats'] = hourly;
-
-  // Daily stats (cloud) - keep last 30 days
-  const daily = { ...(siteSettingsCache['daily_visitor_stats'] as Record<string, number> || {}) };
-  daily[today] = (daily[today] || 0) + 1;
-  const dKeys = Object.keys(daily).sort();
-  if (dKeys.length > 30) dKeys.slice(0, dKeys.length - 30).forEach(k => delete daily[k]);
-  siteSettingsCache['daily_visitor_stats'] = daily;
-
   try {
-    await Promise.all([
-      supabase.from('site_settings').upsert({ key: 'visitor_count', value: count, updated_at: now.toISOString() }, { onConflict: 'key' }),
-      supabase.from('site_settings').upsert({ key: 'today_visitor_count', value: { date: today, count: todayCount } as any, updated_at: now.toISOString() }, { onConflict: 'key' }),
-      supabase.from('site_settings').upsert({ key: 'hourly_visitor_stats', value: hourly as any, updated_at: now.toISOString() }, { onConflict: 'key' }),
-      supabase.from('site_settings').upsert({ key: 'daily_visitor_stats', value: daily as any, updated_at: now.toISOString() }, { onConflict: 'key' }),
-    ]);
-  } catch (e) { console.error('Failed to save visitor count:', e); }
-  return count;
+    // Atomic increment via DB function — no race conditions
+    await supabase.rpc('increment_visitor');
+
+    // Refresh caches from DB after atomic update
+    const { data } = await supabase.from('site_settings')
+      .select('key, value')
+      .in('key', ['visitor_count', 'visitor_today', 'visitor_hourly', 'visitor_daily']);
+
+    if (data) {
+      data.forEach((row: any) => {
+        if (row.key === 'visitor_count') siteSettingsCache['visitor_count'] = row.value;
+        if (row.key === 'visitor_today') siteSettingsCache['today_visitor_count'] = row.value;
+        if (row.key === 'visitor_hourly') siteSettingsCache['hourly_visitor_stats'] = row.value;
+        if (row.key === 'visitor_daily') siteSettingsCache['daily_visitor_stats'] = row.value;
+      });
+    }
+  } catch (e) { console.error('Failed to increment visitor:', e); }
+
+  return getVisitorCount();
 }
 
 // ─── Consonant helpers ───
