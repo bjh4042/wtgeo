@@ -384,7 +384,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
 export function getGyeongnamCities(): GyeongnamCity[] {
   return defaultGyeongnamCities.map(city => {
     const edit = cloudEditsCache[city.id];
-    const boundary = detailedBoundaries[city.id] || city.boundary;
+    const boundary = detailedBoundariesCache?.[city.id] || city.boundary;
     const merged = edit ? { ...city, ...edit } as GyeongnamCity : city;
     if (!edit?.boundary && boundary) {
       merged.boundary = boundary;
