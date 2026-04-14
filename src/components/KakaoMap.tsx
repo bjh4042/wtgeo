@@ -118,7 +118,18 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         if (current <= targetLevel) { onDone(); return; }
         const next = Math.max(current - 1, targetLevel);
         mapInstance.current.setLevel(next, { animate: true });
-        setTimeout(() => smoothZoom(targetLevel, onDone), 350);
+
+        // Wait for tiles to finish loading before next zoom step
+        const onTilesLoaded = () => {
+          window.kakao.maps.event.removeListener(mapInstance.current, 'tilesloaded', onTilesLoaded);
+          smoothZoom(targetLevel, onDone);
+        };
+        window.kakao.maps.event.addListener(mapInstance.current, 'tilesloaded', onTilesLoaded);
+        // Fallback in case tilesloaded never fires
+        setTimeout(() => {
+          window.kakao.maps.event.removeListener(mapInstance.current, 'tilesloaded', onTilesLoaded);
+          smoothZoom(targetLevel, onDone);
+        }, 1200);
       };
 
       let stageIdx = 0;
