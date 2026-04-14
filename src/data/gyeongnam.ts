@@ -1,5 +1,17 @@
 // 경상남도 18개 시군 데이터
-import { detailedBoundaries } from './gyeongnamBoundaries';
+// Lazy-loaded to reduce initial bundle size (~1.3MB)
+let detailedBoundariesCache: Record<string, [number, number][][]> | null = null;
+let boundariesLoading: Promise<void> | null = null;
+
+export async function loadDetailedBoundaries(): Promise<void> {
+  if (detailedBoundariesCache) return;
+  if (boundariesLoading) return boundariesLoading;
+  boundariesLoading = import('./gyeongnamBoundaries').then(mod => {
+    detailedBoundariesCache = mod.detailedBoundaries;
+  });
+  return boundariesLoading;
+}
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface GyeongnamCity {
@@ -372,7 +384,7 @@ const defaultGyeongnamCities: GyeongnamCity[] = [
 export function getGyeongnamCities(): GyeongnamCity[] {
   return defaultGyeongnamCities.map(city => {
     const edit = cloudEditsCache[city.id];
-    const boundary = detailedBoundaries[city.id] || city.boundary;
+    const boundary = detailedBoundariesCache?.[city.id] || city.boundary;
     const merged = edit ? { ...city, ...edit } as GyeongnamCity : city;
     if (!edit?.boundary && boundary) {
       merged.boundary = boundary;

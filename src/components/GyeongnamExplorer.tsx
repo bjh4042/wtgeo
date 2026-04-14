@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getGyeongnamCities, loadGyeongnamEditsFromCloud, isGyeongnamEditsLoaded, GyeongnamCity, GYEONGNAM_UPDATED_EVENT } from '@/data/gyeongnam';
+import { getGyeongnamCities, loadGyeongnamEditsFromCloud, loadDetailedBoundaries, isGyeongnamEditsLoaded, GyeongnamCity, GYEONGNAM_UPDATED_EVENT } from '@/data/gyeongnam';
 import { X, MapPin, Users, Ruler, Star, ExternalLink, ArrowLeft } from 'lucide-react';
 
 interface GyeongnamExplorerProps {
@@ -17,12 +17,14 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
   const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!loaded) {
-      loadGyeongnamEditsFromCloud().then(() => {
-        setCities(getGyeongnamCities());
-        setLoaded(true);
-      });
-    }
+    // Load boundaries lazily + cloud edits
+    Promise.all([
+      loadDetailedBoundaries(),
+      loaded ? Promise.resolve() : loadGyeongnamEditsFromCloud(),
+    ]).then(() => {
+      setCities(getGyeongnamCities());
+      setLoaded(true);
+    });
     const handleUpdate = () => setCities(getGyeongnamCities());
     window.addEventListener(GYEONGNAM_UPDATED_EVENT, handleUpdate);
     return () => window.removeEventListener(GYEONGNAM_UPDATED_EVENT, handleUpdate);
