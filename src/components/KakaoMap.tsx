@@ -50,9 +50,26 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
   const scaleRef = useRef<HTMLDivElement>(null);
+  const zoomTimeoutsRef = useRef<number[]>([]);
+  const zoomRunIdRef = useRef(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [zoomMessage, setZoomMessage] = useState<string | null>(null);
+
+  const clearZoomTimeouts = useCallback(() => {
+    zoomTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    zoomTimeoutsRef.current = [];
+  }, []);
+
+  const scheduleZoomTimeout = useCallback((callback: () => void, delay: number) => {
+    const timeoutId = window.setTimeout(() => {
+      zoomTimeoutsRef.current = zoomTimeoutsRef.current.filter((id) => id !== timeoutId);
+      callback();
+    }, delay);
+
+    zoomTimeoutsRef.current.push(timeoutId);
+    return timeoutId;
+  }, []);
 
   useEffect(() => {
     if (window.kakao?.maps) { setIsLoaded(true); return; }
@@ -96,72 +113,116 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
   useEffect(() => {
     if (!isLoaded || !mapRef.current) return;
+
+    clearZoomTimeouts();
+    const runId = zoomRunIdRef.current + 1;
+    zoomRunIdRef.current = runId;
+
     const center = new window.kakao.maps.LatLng(school.lat, school.lng);
     const startLevel = zoomIn ? ZOOM_STAGES[0].level : 3;
 
     mapInstance.current = new window.kakao.maps.Map(mapRef.current, { center, level: startLevel });
+    const currentMap = mapInstance.current;
 
-    const schoolMarker = new window.kakao.maps.Marker({ position: center, map: mapInstance.current });
+    const schoolMarker = new window.kakao.maps.Marker({ position: center, map: currentMap });
     const schoolInfo = new window.kakao.maps.InfoWindow({
       content: `<div style="padding:8px 12px;font-size:13px;font-weight:bold;white-space:nowrap;">🏫 ${school.name}</div>`,
     });
-    schoolInfo.open(mapInstance.current, schoolMarker);
+    schoolInfo.open(currentMap, schoolMarker);
 
-    window.kakao.maps.event.addListener(mapInstance.current, 'zoom_changed', updateScale);
+    const isStaleRun = () => zoomRunIdRef.current !== runId || mapInstance.current !== currentMap;
+
+    const finishZoomSequence = () => {
+      if (isStaleRun()) return;
+      setZoomMessage(null);
+      const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
+      currentMap.setCenter(pos);
+      onZoomComplete?.();
+    };
+
+    const waitForMapIdle = (callback: () => void) => {
+      if (isStaleRun()) return;
+
+      let settled = false;
+      let fallbackId: number | null = null;
+
+      const handleIdle = () => finalize();
+
+      const finalize = () => {
+        if (settled) return;
+        settled = true;
+
+        window.kakao.maps.event.removeListener(currentMap, 'idle', handleIdle);
+
+        if (fallbackId !== null) {
+          window.clearTimeout(fallbackId);
+          zoomTimeoutsRef.current = zoomTimeoutsRef.current.filter((id) => id !== fallbackId);
+        }
+
+        if (isStaleRun()) return;
+        callback();
+      };
+
+      fallbackId = scheduleZoomTimeout(finalize, 1500);
+      window.kakao.maps.event.addListener(currentMap, 'idle', handleIdle);
+    };
+
+    const smoothZoom = (targetLevel: number, onDone: () => void) => {
+      if (isStaleRun()) return;
+
+      const currentLevel = currentMap.getLevel();
+      if (currentLevel === targetLevel) {
+        onDone();
+        return;
+      }
+
+      const delta = currentLevel > targetLevel ? -1 : 1;
+      currentMap.setLevel(currentLevel + delta, { animate: true });
+      waitForMapIdle(() => smoothZoom(targetLevel, onDone));
+    };
+
+    window.kakao.maps.event.addListener(currentMap, 'zoom_changed', updateScale);
     updateScale();
 
     if (zoomIn) {
-      setZoomMessage(getZoomMessage(0, school.district));
-
-      const smoothZoom = (targetLevel: number, onDone: () => void) => {
-        const current = mapInstance.current.getLevel();
-        if (current <= targetLevel) { onDone(); return; }
-        const next = Math.max(current - 1, targetLevel);
-        mapInstance.current.setLevel(next, { animate: true });
-
-        // Wait for tiles to finish loading before next zoom step
-        const onTilesLoaded = () => {
-          window.kakao.maps.event.removeListener(mapInstance.current, 'tilesloaded', onTilesLoaded);
-          smoothZoom(targetLevel, onDone);
-        };
-        window.kakao.maps.event.addListener(mapInstance.current, 'tilesloaded', onTilesLoaded);
-        // Fallback in case tilesloaded never fires
-        setTimeout(() => {
-          window.kakao.maps.event.removeListener(mapInstance.current, 'tilesloaded', onTilesLoaded);
-          smoothZoom(targetLevel, onDone);
-        }, 1200);
-      };
-
       let stageIdx = 0;
+
       const runStage = () => {
+        if (isStaleRun()) return;
+
         if (stageIdx >= ZOOM_STAGES.length) {
-          setZoomMessage(null);
-          const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
-          mapInstance.current.setCenter(pos);
-          onZoomComplete?.();
+          finishZoomSequence();
           return;
         }
+
         const stage = ZOOM_STAGES[stageIdx];
         const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
-        mapInstance.current.setCenter(pos);
+        const msg = getZoomMessage(stageIdx, school.district);
+
+        setZoomMessage(msg || null);
+        currentMap.setCenter(pos);
+
         smoothZoom(stage.level, () => {
-          const msg = getZoomMessage(stageIdx, school.district);
-          if (msg) setZoomMessage(msg);
-          else setZoomMessage(null);
-          stageIdx++;
-          setTimeout(runStage, stage.delay);
+          if (isStaleRun()) return;
+          stageIdx += 1;
+          scheduleZoomTimeout(runStage, stage.delay);
         });
       };
 
-      setTimeout(runStage, 800);
+      scheduleZoomTimeout(runStage, 800);
     } else {
-      setTimeout(() => {
+      setZoomMessage(null);
+      scheduleZoomTimeout(() => {
+        if (isStaleRun()) return;
         const pos = new window.kakao.maps.LatLng(school.lat, school.lng);
-        mapInstance.current.setCenter(pos);
+        currentMap.setCenter(pos);
       }, 100);
     }
 
     return () => {
+      zoomRunIdRef.current += 1;
+      clearZoomTimeouts();
+      window.kakao.maps.event.removeListener(currentMap, 'zoom_changed', updateScale);
       overlaysRef.current.forEach(o => o.setMap(null));
       overlaysRef.current = [];
     };
