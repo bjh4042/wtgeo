@@ -63,6 +63,12 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
   const allSchools = useMemo(() => getMergedSchools().map((s, i) => ({ ...s, index: i })), [renderKey]);
+  const allContent = useMemo(() => getMergedContent(), [renderKey]);
+
+  const filteredContent = useMemo(() => {
+    if (activeContentFilters.length === 0) return allContent;
+    return allContent.filter(c => activeContentFilters.includes(c.contentType));
+  }, [allContent, activeContentFilters]);
 
   const filteredPlaces = useMemo(() => {
     if (activeFilters.length === 0) return allPlaces;
