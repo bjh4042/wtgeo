@@ -513,7 +513,7 @@ const AdminPanel = () => {
                 className={`px-2 py-1 rounded-full text-[10px] font-bold whitespace-nowrap cursor-pointer ${contentTypeFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                 전체 ({allContentItems.length})
               </button>
-              {(['story', 'placename', 'heritage', 'pastpresent', 'nature'] as ContentCategory[]).map(cat => {
+              {(Object.keys(contentCategoryLabels) as ContentCategory[]).map(cat => {
                 const count = allContentItems.filter(c => c.contentType === cat).length;
                 const label = contentCategoryLabels[cat] || cat;
                 return (
@@ -563,8 +563,9 @@ const AdminPanel = () => {
             <div>
               <label className="text-[10px] font-semibold text-foreground">콘텐츠 유형</label>
               <select value={editingContent.contentType} onChange={e => setEditingContent({ ...editingContent, contentType: e.target.value as ContentCategory })} className={inputClass}>
-                <option value="story">옛이야기</option><option value="placename">지명</option><option value="heritage">국가유산</option>
-                <option value="pastpresent">옛날과 오늘날</option><option value="nature">자연</option>
+                {(Object.entries(contentCategoryLabels) as [ContentCategory, string][]).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
               </select>
             </div>
             <div className="grid grid-cols-2 gap-2">
