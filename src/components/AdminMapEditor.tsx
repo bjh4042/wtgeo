@@ -331,8 +331,14 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
           <h3 className="text-sm font-bold text-foreground">🗺️ 지도 편집기</h3>
           <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{filteredPlaces.length}개 장소</span>
           <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{allSchools.length}개 학교</span>
+          <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{allContent.length}개 콘텐츠</span>
         </div>
         <div className="flex items-center gap-1.5">
+          <button onClick={() => setShowContent(!showContent)}
+            className={`flex items-center gap-1 p-1.5 rounded-lg cursor-pointer transition-colors ${showContent ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+            title="콘텐츠 표시/숨기기">
+            <BookOpen size={14} />
+          </button>
           <button onClick={() => setShowSchools(!showSchools)}
             className={`flex items-center gap-1 p-1.5 rounded-lg cursor-pointer transition-colors ${showSchools ? 'bg-[#6366f1] text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
             title="학교 표시/숨기기">
