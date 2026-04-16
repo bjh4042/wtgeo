@@ -131,6 +131,28 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
           </a>
         )}
       </div>
+
+      {/* Error Report */}
+      <div className="mt-2 border-t pt-2">
+        {!showReport ? (
+          <button onClick={() => setShowReport(true)} className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive transition-colors cursor-pointer">
+            <AlertTriangle size={12} /> 오류 제보
+          </button>
+        ) : (
+          <div className="space-y-1.5">
+            <textarea value={reportMsg} onChange={e => setReportMsg(e.target.value)} placeholder="어떤 오류가 있나요? (예: 위치가 잘못됨, 설명이 다름)" rows={2}
+              className="w-full px-2.5 py-1.5 rounded-lg border bg-background text-foreground text-xs resize-none focus:outline-none focus:ring-1 focus:ring-destructive" />
+            <div className="flex gap-1.5">
+              <button onClick={handleReport} disabled={!reportMsg.trim() || sending}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer disabled:opacity-50">
+                <Send size={11} />{sending ? '전송 중...' : '제보'}
+              </button>
+              <button onClick={() => { setShowReport(false); setReportMsg(''); }}
+                className="px-2.5 py-1 rounded-lg text-[11px] text-muted-foreground bg-muted hover:bg-muted/80 cursor-pointer">취소</button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
