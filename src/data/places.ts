@@ -109,14 +109,14 @@ export const places: Place[] = [
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 't6', name: '거제 맹종죽 테마파크', category: 'tourism',
+    id: 't6', name: '거제 맹종죽 테마파크', category: 'experience',
     description: '울창한 대나무숲 속을 산책할 수 있는 테마파크로, 사계절 푸른 맹종죽이 아름답습니다.',
     address: '경상남도 거제시 하청면 거제북로 700', lat: 34.9676, lng: 128.6505, grade: 'all',
     origin: '맹종죽(孟宗竹)은 효자 맹종이 겨울에 어머니를 위해 죽순을 구했다는 고사에서 이름이 유래되었습니다.',
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 't7', name: '거제 씨월드', category: 'tourism',
+    id: 't7', name: '거제 씨월드', category: 'experience',
     description: '다양한 해양생물을 관찰하고 체험할 수 있는 해양테마파크입니다.',
     address: '경상남도 거제시 일운면 지세포해안로 15', lat: 34.828564, lng: 128.711542, grade: 'all',
     referenceUrl: 'https://tour.geoje.go.kr',
@@ -142,7 +142,7 @@ export const places: Place[] = [
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 't16', name: '수협효시공원', category: 'tourism',
+    id: 't16', name: '수협효시공원', category: 'culture',
     description: '1908년 7월 8일 거제도 가조도에서 우리나라 최초의 수산업협동조합이 설립된 역사적 장소를 기념하는 공원입니다. 수산업 협동조합의 발상지로서 어업인들의 공동 이익 추구와 수산업 발전의 역사를 배울 수 있습니다.',
     address: '경상남도 거제시 사등면 가조서로 7', lat: 34.9085, lng: 128.5230, grade: 'all',
     origin: '1908년 가조도 어업인과 수산가공업자들이 공동 이익을 위해 전국 최초로 수산조합을 설립한 곳으로, 대한민국 수산업협동조합의 효시(시작)라는 의미에서 이름이 붙었습니다.',
@@ -163,14 +163,14 @@ export const places: Place[] = [
     origin: '노자(老子)가 이 산에서 수행했다는 전설에서 이름이 유래되었습니다.',
   },
   {
-    id: 'n3', name: '구조라해수욕장', category: 'nature',
+    id: 'n3', name: '구조라해수욕장', category: 'tourism',
     description: '고운 모래사장과 잔잔한 파도가 특징인 해수욕장으로, 가족 단위 여행객에게 인기가 많습니다.',
     address: '경상남도 거제시 일운면 구조라로 44', lat: 34.815612, lng: 128.723456, grade: 'all',
     origin: '"구조라"는 아홉(九)개의 낚시(釣) 바위가 나란히(羅) 있다는 뜻에서 유래되었습니다.',
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'n4', name: '와현해수욕장', category: 'nature',
+    id: 'n4', name: '와현해수욕장', category: 'tourism',
     description: '맑은 물과 고운 모래가 아름다운 해수욕장으로, 거제도 동쪽에 위치하고 있습니다.',
     address: '경상남도 거제시 일운면 와현리', lat: 34.821234, lng: 128.715612, grade: 'all',
     origin: '마을 뒤의 산이 누워(臥) 있는 고개(峴) 같다 하여 "와현"이라 불리게 되었습니다.',
@@ -194,14 +194,14 @@ export const places: Place[] = [
     origin: '산에서 금(金)이 많이 났다 하여 "대금산(大金山)"이라 불리게 되었습니다.',
   },
   {
-    id: 'n8', name: '공곶이', category: 'nature',
+    id: 'n8', name: '공곶이', category: 'tourism',
     description: '수선화와 동백이 아름다운 해안 정원으로, 숲길 산책과 바다 풍경을 동시에 즐길 수 있습니다.',
     address: '경상남도 거제시 일운면 와현리 산183-3', lat: 34.801234, lng: 128.735612, grade: 'all',
     origin: '곶(串)은 바다로 뻗은 땅을 뜻하며, 활(弓) 모양으로 생긴 곶이라 "공곶이"라 합니다.',
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'n9', name: '거제식물원(정글돔)', category: 'nature',
+    id: 'n9', name: '거제식물원(정글돔)', category: 'experience',
     description: '독특한 유리 온실 "정글돔"이 유명한 시립 식물원으로, 열대·아열대 식물과 다양한 테마정원을 감상할 수 있습니다. 정글타워에서 거제 전경도 볼 수 있습니다.',
     address: '경상남도 거제시 거제면 거제남서로 3595', lat: 34.851234, lng: 128.583456, grade: 'all',
     referenceUrl: 'https://www.geoje.go.kr/gbg/index.do',
@@ -282,13 +282,13 @@ export const places: Place[] = [
     address: '경상남도 통영시 도남동', lat: 34.8265, lng: 128.4261, grade: 4,
   },
   {
-    id: 't13', name: '남해 보리암', category: 'tourism',
+    id: 't13', name: '남해 보리암', category: 'culture',
     description: '남해 금산 정상 근처에 위치한 사찰로, 한국 3대 기도처 중 하나로 유명합니다.',
     address: '경상남도 남해군 상주면 상주리', lat: 34.7522, lng: 127.9830, grade: 4,
     origin: '신라 원효대사가 창건했다고 전해지며, 보리(菩提, 깨달음)를 구하는 암자라는 뜻입니다.',
   },
   {
-    id: 't14', name: '산청 지리산', category: 'tourism',
+    id: 't14', name: '산청 지리산', category: 'nature',
     description: '한반도 남부의 최고봉 천왕봉(1,915m)이 있는 국립공원으로, 경남의 대표 명산입니다.',
     address: '경상남도 산청군 시천면', lat: 35.3312, lng: 127.6530, grade: 4,
     origin: '어리석은(智) 사람도 머물면 지혜로운(理) 사람이 된다는 뜻의 "지리산(智異山)"입니다.',
@@ -475,13 +475,13 @@ export const places: Place[] = [
 
   // ===== 체험학습 =====
   {
-    id: 'e1', name: '거제자연휴양림', category: 'experience',
+    id: 'e1', name: '거제자연휴양림', category: 'nature',
     description: '자연 속에서 숲 체험, 산책, 야영 등 다양한 자연 체험활동을 할 수 있는 휴양림입니다.',
     address: '경상남도 거제시 동부면 거제남서로 3449', lat: 34.815234, lng: 128.601245, grade: 'all',
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'e2', name: '거제어촌민속전시관', category: 'experience',
+    id: 'e2', name: '거제어촌민속전시관', category: 'culture',
     description: '거제도의 어촌 문화와 어업 역사를 배우고, 전통 어구를 직접 볼 수 있는 전시관입니다.',
     address: '경상남도 거제시 일운면 지세포해안로 41', lat: 34.829212, lng: 128.710234, grade: 3,
     origin: '거제도는 예로부터 풍부한 어장을 가진 섬으로, 어촌 문화가 깊이 뿌리내린 곳입니다.',
@@ -507,7 +507,7 @@ export const places: Place[] = [
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
-    id: 'e6', name: '거제 동백숲길(지심도)', category: 'experience',
+    id: 'e6', name: '거제 동백숲길(지심도)', category: 'nature',
     description: '겨울부터 봄까지 동백꽃이 만발하는 아름다운 숲길로, 자연관찰 학습에 좋습니다.',
     address: '경상남도 거제시 일운면 옥림리', lat: 34.8050, lng: 128.7300, grade: 3,
     referenceUrl: 'https://tour.geoje.go.kr',
@@ -518,7 +518,7 @@ export const places: Place[] = [
     address: '경상남도 김해시 어방동', lat: 35.2507, lng: 128.8930, grade: 4,
   },
   {
-    id: 'e8', name: '거제파노라마 케이블카', category: 'experience',
+    id: 'e8', name: '거제파노라마 케이블카', category: 'tourism',
     description: '거제의 산과 바다를 한눈에 내려다볼 수 있는 케이블카로, 2022년 개장하였습니다. 노자산 정상까지 이동하며 한려수도의 절경을 감상할 수 있습니다.',
     address: '경상남도 거제시 동부면 거제중앙로 263', lat: 34.812512, lng: 128.598812, grade: 'all',
     referenceUrl: 'https://tour.geoje.go.kr',
