@@ -1,7 +1,9 @@
 import { MapContent, contentCategoryColors, contentCategoryIcons, contentCategoryLabels } from '@/data/content';
 import { getRoadViewUrl } from '@/data/places';
-import { X, ExternalLink, Youtube, Eye, MapPin, Star } from 'lucide-react';
+import { X, ExternalLink, Youtube, Eye, MapPin, Star, AlertTriangle, Send } from 'lucide-react';
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ContentCardProps {
   content: MapContent;
