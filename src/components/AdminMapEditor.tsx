@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Place, PlaceCategory, categoryLabels, categoryColors, categoryIcons, publicSubCategoryLabels, PublicSubCategory } from '@/data/places';
+import { MapContent, ContentCategory, contentCategoryLabels, contentCategoryColors, contentCategoryIcons } from '@/data/content';
 import { School } from '@/data/schools';
-import { getMergedPlaces, getMergedSchools, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
+import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
 import { places as defaultPlaces } from '@/data/places';
-import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap } from 'lucide-react';
+import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen } from 'lucide-react';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
@@ -57,9 +58,17 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [showFilter, setShowFilter] = useState(false);
   const [editorMode, setEditorMode] = useState<EditorMode>('place');
   const [showSchools, setShowSchools] = useState(true);
+  const [showContent, setShowContent] = useState(true);
+  const [activeContentFilters, setActiveContentFilters] = useState<ContentCategory[]>([]);
 
   const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
   const allSchools = useMemo(() => getMergedSchools().map((s, i) => ({ ...s, index: i })), [renderKey]);
+  const allContent = useMemo(() => getMergedContent(), [renderKey]);
+
+  const filteredContent = useMemo(() => {
+    if (activeContentFilters.length === 0) return allContent;
+    return allContent.filter(c => activeContentFilters.includes(c.contentType));
+  }, [allContent, activeContentFilters]);
 
   const filteredPlaces = useMemo(() => {
     if (activeFilters.length === 0) return allPlaces;
@@ -75,6 +84,10 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const toggleFilter = (cat: PlaceCategory) => {
     setActiveFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
+  };
+
+  const toggleContentFilter = (cat: ContentCategory) => {
+    setActiveContentFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
   };
 
   // Load Kakao Maps
@@ -206,7 +219,38 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         overlaysRef.current.push(overlay);
       });
     }
-  }, [isLoaded, filteredPlaces, allSchools, selectedPlace, selectedSchool, isEditing, editorMode, showSchools]);
+
+    // Content markers
+    if (showContent) {
+      filteredContent.forEach((item) => {
+        const position = new window.kakao.maps.LatLng(item.lat, item.lng);
+        const color = contentCategoryColors[item.contentType];
+        const catIcon = contentCategoryIcons[item.contentType];
+
+        const el = document.createElement('div');
+        el.innerHTML = `<div style="
+          background:${color};color:white;
+          padding:3px 8px;
+          border-radius:16px;font-size:10px;font-weight:600;
+          white-space:nowrap;cursor:pointer;
+          box-shadow:0 1px 4px rgba(0,0,0,0.2);
+          transform:translateX(-50%);
+          transition:all 0.2s ease;
+          opacity:0.85;
+        ">${item.icon || catIcon} ${item.name}</div>`;
+
+        const overlay = new window.kakao.maps.CustomOverlay({
+          position, content: el, yAnchor: 1.3,
+          zIndex: 1, map: mapInstance.current,
+        });
+        el.addEventListener('click', () => {
+          const pos = new window.kakao.maps.LatLng(item.lat, item.lng);
+          mapInstance.current.panTo(pos);
+        });
+        overlaysRef.current.push(overlay);
+      });
+    }
+  }, [isLoaded, filteredPlaces, filteredContent, allSchools, selectedPlace, selectedSchool, isEditing, editorMode, showSchools, showContent]);
 
   const handleSavePlace = useCallback(() => {
     if (!selectedPlace || !selectedPlace.name.trim()) return;
@@ -271,7 +315,8 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     const handler = () => setRenderKey(n => n + 1);
     window.addEventListener(PLACES_UPDATED_EVENT, handler);
     window.addEventListener(SCHOOLS_UPDATED_EVENT, handler);
-    return () => { window.removeEventListener(PLACES_UPDATED_EVENT, handler); window.removeEventListener(SCHOOLS_UPDATED_EVENT, handler); };
+    window.addEventListener(CONTENT_UPDATED_EVENT, handler);
+    return () => { window.removeEventListener(PLACES_UPDATED_EVENT, handler); window.removeEventListener(SCHOOLS_UPDATED_EVENT, handler); window.removeEventListener(CONTENT_UPDATED_EVENT, handler); };
   }, []);
 
   const inputClass = "w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary";
@@ -286,8 +331,14 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
           <h3 className="text-sm font-bold text-foreground">🗺️ 지도 편집기</h3>
           <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{filteredPlaces.length}개 장소</span>
           <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{allSchools.length}개 학교</span>
+          <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{allContent.length}개 콘텐츠</span>
         </div>
         <div className="flex items-center gap-1.5">
+          <button onClick={() => setShowContent(!showContent)}
+            className={`flex items-center gap-1 p-1.5 rounded-lg cursor-pointer transition-colors ${showContent ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+            title="콘텐츠 표시/숨기기">
+            <BookOpen size={14} />
+          </button>
           <button onClick={() => setShowSchools(!showSchools)}
             className={`flex items-center gap-1 p-1.5 rounded-lg cursor-pointer transition-colors ${showSchools ? 'bg-[#6366f1] text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
             title="학교 표시/숨기기">
@@ -348,6 +399,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       {/* Category filter */}
       {showFilter && (
         <div className="px-3 py-2 bg-card border-b z-10 flex-shrink-0">
+          <p className="text-[9px] text-muted-foreground font-bold mb-1">📍 장소 카테고리</p>
           <div className="flex flex-wrap gap-1.5">
             <button onClick={() => setActiveFilters([])}
               className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${activeFilters.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
@@ -361,6 +413,24 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                   className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${active ? 'text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                   style={active ? { backgroundColor: categoryColors[key] } : {}}>
                   {categoryIcons[key]} {label} ({count})
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[9px] text-muted-foreground font-bold mt-2 mb-1">📚 콘텐츠 카테고리</p>
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={() => setActiveContentFilters([])}
+              className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${activeContentFilters.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              전체 ({allContent.length})
+            </button>
+            {(Object.entries(contentCategoryLabels) as [ContentCategory, string][]).filter(([key]) => key !== 'place').map(([key, label]) => {
+              const count = allContent.filter(c => c.contentType === key).length;
+              const active = activeContentFilters.includes(key);
+              return (
+                <button key={key} onClick={() => toggleContentFilter(key)}
+                  className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${active ? 'text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                  style={active ? { backgroundColor: contentCategoryColors[key] } : {}}>
+                  {contentCategoryIcons[key]} {label} ({count})
                 </button>
               );
             })}
