@@ -315,7 +315,8 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     const handler = () => setRenderKey(n => n + 1);
     window.addEventListener(PLACES_UPDATED_EVENT, handler);
     window.addEventListener(SCHOOLS_UPDATED_EVENT, handler);
-    return () => { window.removeEventListener(PLACES_UPDATED_EVENT, handler); window.removeEventListener(SCHOOLS_UPDATED_EVENT, handler); };
+    window.addEventListener(CONTENT_UPDATED_EVENT, handler);
+    return () => { window.removeEventListener(PLACES_UPDATED_EVENT, handler); window.removeEventListener(SCHOOLS_UPDATED_EVENT, handler); window.removeEventListener(CONTENT_UPDATED_EVENT, handler); };
   }, []);
 
   const inputClass = "w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary";
