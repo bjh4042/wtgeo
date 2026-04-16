@@ -283,7 +283,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         overlaysRef.current.push(overlay);
       });
     }
-  }, [isLoaded, filteredPlaces, filteredContent, allSchools, selectedPlace, selectedSchool, isEditing, editorMode, showSchools, showContent]);
+  }, [isLoaded, filteredPlaces, filteredContent, allSchools, selectedPlace, selectedSchool, selectedContentItem, isEditing, editorMode, showSchools, showContent]);
 
   const handleSavePlace = useCallback(() => {
     if (!selectedPlace || !selectedPlace.name.trim()) return;
