@@ -513,7 +513,7 @@ const AdminPanel = () => {
                 className={`px-2 py-1 rounded-full text-[10px] font-bold whitespace-nowrap cursor-pointer ${contentTypeFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                 전체 ({allContentItems.length})
               </button>
-              {(['story', 'placename', 'heritage', 'pastpresent', 'nature'] as ContentCategory[]).map(cat => {
+              {(Object.keys(contentCategoryLabels) as ContentCategory[]).map(cat => {
                 const count = allContentItems.filter(c => c.contentType === cat).length;
                 const label = contentCategoryLabels[cat] || cat;
                 return (

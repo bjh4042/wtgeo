@@ -17,6 +17,25 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
   const icon = contentCategoryIcons[content.contentType];
   const label = contentCategoryLabels[content.contentType];
   const [imgError, setImgError] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportMsg, setReportMsg] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const handleReport = async () => {
+    if (!reportMsg.trim()) return;
+    setSending(true);
+    const { error } = await supabase.from('error_reports').insert({
+      place_id: content.id,
+      place_name: content.name,
+      message: reportMsg.trim(),
+      category: label,
+    });
+    setSending(false);
+    if (error) { toast.error('전송 실패'); return; }
+    toast.success('오류가 제보되었습니다');
+    setReportMsg('');
+    setShowReport(false);
+  };
 
   return (
     <div className="place-card animate-scale-in max-w-sm">
