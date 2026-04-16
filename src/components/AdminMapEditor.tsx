@@ -245,24 +245,38 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         const position = new window.kakao.maps.LatLng(item.lat, item.lng);
         const color = contentCategoryColors[item.contentType];
         const catIcon = contentCategoryIcons[item.contentType];
+        const isSelected = selectedContentItem?.id === item.id && editorMode === 'content' && !isEditing;
 
         const el = document.createElement('div');
         el.innerHTML = `<div style="
           background:${color};color:white;
-          padding:3px 8px;
-          border-radius:16px;font-size:10px;font-weight:600;
+          padding:${isSelected ? '5px 12px' : '3px 8px'};
+          border-radius:16px;font-size:${isSelected ? '12px' : '10px'};font-weight:600;
           white-space:nowrap;cursor:pointer;
-          box-shadow:0 1px 4px rgba(0,0,0,0.2);
-          transform:translateX(-50%);
+          box-shadow:${isSelected ? `0 4px 16px ${color}80` : '0 1px 4px rgba(0,0,0,0.2)'};
+          transform:translateX(-50%) ${isSelected ? 'scale(1.1)' : 'scale(1)'};
           transition:all 0.2s ease;
-          opacity:0.85;
+          border:${isSelected ? '2px solid white' : 'none'};
+          z-index:${isSelected ? '100' : '1'};
         ">${item.icon || catIcon} ${item.name}</div>`;
 
         const overlay = new window.kakao.maps.CustomOverlay({
           position, content: el, yAnchor: 1.3,
-          zIndex: 1, map: mapInstance.current,
+          zIndex: isSelected ? 100 : 1, map: mapInstance.current,
         });
         el.addEventListener('click', () => {
+          setSelectedPlace(null);
+          setSelectedSchool(null);
+          setEditorMode('content');
+          setSelectedContentItem({
+            id: item.id, name: item.name, contentType: item.contentType,
+            description: item.description, lat: item.lat, lng: item.lng,
+            icon: item.icon, imageUrl: item.imageUrl, oldImageUrl: item.oldImageUrl,
+            oldImageCaption: item.oldImageCaption, source: item.source,
+            grade: item.grade, referenceUrl: item.referenceUrl, youtubeUrl: item.youtubeUrl,
+          });
+          setIsEditing(false);
+          setDetailsExpanded(false);
           const pos = new window.kakao.maps.LatLng(item.lat, item.lng);
           mapInstance.current.panTo(pos);
         });
