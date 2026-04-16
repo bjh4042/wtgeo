@@ -373,7 +373,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const inputClass = "w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary";
 
-  const currentItem = editorMode === 'place' ? selectedPlace : selectedSchool;
+  const currentItem = editorMode === 'place' ? selectedPlace : editorMode === 'content' ? selectedContentItem : selectedSchool;
 
   return (
     <div className="fixed inset-0 z-[200] flex flex-col bg-background">
