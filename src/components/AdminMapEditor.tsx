@@ -36,7 +36,24 @@ interface EditableSchool {
   website?: string;
 }
 
-type EditorMode = 'place' | 'school';
+type EditorMode = 'place' | 'school' | 'content';
+
+interface EditableContent {
+  id: string;
+  name: string;
+  contentType: ContentCategory;
+  description: string;
+  lat: number;
+  lng: number;
+  icon: string;
+  imageUrl?: string;
+  oldImageUrl?: string;
+  oldImageCaption?: string;
+  source?: string;
+  grade?: 3 | 4 | 'all';
+  referenceUrl?: string;
+  youtubeUrl?: string;
+}
 
 interface AdminMapEditorProps {
   onClose: () => void;
