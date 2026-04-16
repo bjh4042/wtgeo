@@ -86,6 +86,10 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     setActiveFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
   };
 
+  const toggleContentFilter = (cat: ContentCategory) => {
+    setActiveContentFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
+  };
+
   // Load Kakao Maps
   useEffect(() => {
     if (window.kakao?.maps) { setIsLoaded(true); return; }
