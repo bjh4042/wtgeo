@@ -399,6 +399,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       {/* Category filter */}
       {showFilter && (
         <div className="px-3 py-2 bg-card border-b z-10 flex-shrink-0">
+          <p className="text-[9px] text-muted-foreground font-bold mb-1">📍 장소 카테고리</p>
           <div className="flex flex-wrap gap-1.5">
             <button onClick={() => setActiveFilters([])}
               className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${activeFilters.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
@@ -412,6 +413,24 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                   className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${active ? 'text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                   style={active ? { backgroundColor: categoryColors[key] } : {}}>
                   {categoryIcons[key]} {label} ({count})
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[9px] text-muted-foreground font-bold mt-2 mb-1">📚 콘텐츠 카테고리</p>
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={() => setActiveContentFilters([])}
+              className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${activeContentFilters.length === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              전체 ({allContent.length})
+            </button>
+            {(Object.entries(contentCategoryLabels) as [ContentCategory, string][]).filter(([key]) => key !== 'place').map(([key, label]) => {
+              const count = allContent.filter(c => c.contentType === key).length;
+              const active = activeContentFilters.includes(key);
+              return (
+                <button key={key} onClick={() => toggleContentFilter(key)}
+                  className={`px-2 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-colors ${active ? 'text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                  style={active ? { backgroundColor: contentCategoryColors[key] } : {}}>
+                  {contentCategoryIcons[key]} {label} ({count})
                 </button>
               );
             })}
