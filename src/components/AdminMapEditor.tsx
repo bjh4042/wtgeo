@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Place, PlaceCategory, categoryLabels, categoryColors, categoryIcons, publicSubCategoryLabels, PublicSubCategory } from '@/data/places';
 import { MapContent, ContentCategory, contentCategoryLabels, contentCategoryColors, contentCategoryIcons } from '@/data/content';
 import { School } from '@/data/schools';
-import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
+import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, saveContentEdit, saveCustomContent, deleteContent, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
+import { stories, placenames, heritages, pastPresent, natureContent } from '@/data/content';
 import { places as defaultPlaces } from '@/data/places';
 import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen } from 'lucide-react';
 
