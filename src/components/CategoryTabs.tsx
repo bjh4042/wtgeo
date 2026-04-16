@@ -185,6 +185,11 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                                   <button
                                     key={sub}
                                     onClick={() => {
+                                      // Ensure only public category is active when selecting subcategory
+                                      placeCategories.forEach(p => {
+                                        if (p === 'public' && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
+                                        if (p !== 'public' && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
+                                      });
                                       // Toggle this subcategory
                                       onPublicSubCategoryToggle(sub);
                                     }}
