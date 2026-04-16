@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Place, PlaceCategory, categoryLabels, categoryColors, categoryIcons, publicSubCategoryLabels, PublicSubCategory } from '@/data/places';
 import { MapContent, ContentCategory, contentCategoryLabels, contentCategoryColors, contentCategoryIcons } from '@/data/content';
 import { School } from '@/data/schools';
-import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
+import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, saveContentEdit, saveCustomContent, deleteContent, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
+import { stories, placenames, heritages, pastPresent, natureContent } from '@/data/content';
 import { places as defaultPlaces } from '@/data/places';
 import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen } from 'lucide-react';
 
@@ -35,7 +36,24 @@ interface EditableSchool {
   website?: string;
 }
 
-type EditorMode = 'place' | 'school';
+type EditorMode = 'place' | 'school' | 'content';
+
+interface EditableContent {
+  id: string;
+  name: string;
+  contentType: ContentCategory;
+  description: string;
+  lat: number;
+  lng: number;
+  icon: string;
+  imageUrl?: string;
+  oldImageUrl?: string;
+  oldImageCaption?: string;
+  source?: string;
+  grade?: 3 | 4 | 'all';
+  referenceUrl?: string;
+  youtubeUrl?: string;
+}
 
 interface AdminMapEditorProps {
   onClose: () => void;
@@ -48,6 +66,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<EditablePlace | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<EditableSchool | null>(null);
+  const [selectedContentItem, setSelectedContentItem] = useState<EditableContent | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [renderKey, setRenderKey] = useState(0);
@@ -226,31 +245,45 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         const position = new window.kakao.maps.LatLng(item.lat, item.lng);
         const color = contentCategoryColors[item.contentType];
         const catIcon = contentCategoryIcons[item.contentType];
+        const isSelected = selectedContentItem?.id === item.id && editorMode === 'content' && !isEditing;
 
         const el = document.createElement('div');
         el.innerHTML = `<div style="
           background:${color};color:white;
-          padding:3px 8px;
-          border-radius:16px;font-size:10px;font-weight:600;
+          padding:${isSelected ? '5px 12px' : '3px 8px'};
+          border-radius:16px;font-size:${isSelected ? '12px' : '10px'};font-weight:600;
           white-space:nowrap;cursor:pointer;
-          box-shadow:0 1px 4px rgba(0,0,0,0.2);
-          transform:translateX(-50%);
+          box-shadow:${isSelected ? `0 4px 16px ${color}80` : '0 1px 4px rgba(0,0,0,0.2)'};
+          transform:translateX(-50%) ${isSelected ? 'scale(1.1)' : 'scale(1)'};
           transition:all 0.2s ease;
-          opacity:0.85;
+          border:${isSelected ? '2px solid white' : 'none'};
+          z-index:${isSelected ? '100' : '1'};
         ">${item.icon || catIcon} ${item.name}</div>`;
 
         const overlay = new window.kakao.maps.CustomOverlay({
           position, content: el, yAnchor: 1.3,
-          zIndex: 1, map: mapInstance.current,
+          zIndex: isSelected ? 100 : 1, map: mapInstance.current,
         });
         el.addEventListener('click', () => {
+          setSelectedPlace(null);
+          setSelectedSchool(null);
+          setEditorMode('content');
+          setSelectedContentItem({
+            id: item.id, name: item.name, contentType: item.contentType,
+            description: item.description, lat: item.lat, lng: item.lng,
+            icon: item.icon, imageUrl: item.imageUrl, oldImageUrl: item.oldImageUrl,
+            oldImageCaption: item.oldImageCaption, source: item.source,
+            grade: item.grade, referenceUrl: item.referenceUrl, youtubeUrl: item.youtubeUrl,
+          });
+          setIsEditing(false);
+          setDetailsExpanded(false);
           const pos = new window.kakao.maps.LatLng(item.lat, item.lng);
           mapInstance.current.panTo(pos);
         });
         overlaysRef.current.push(overlay);
       });
     }
-  }, [isLoaded, filteredPlaces, filteredContent, allSchools, selectedPlace, selectedSchool, isEditing, editorMode, showSchools, showContent]);
+  }, [isLoaded, filteredPlaces, filteredContent, allSchools, selectedPlace, selectedSchool, selectedContentItem, isEditing, editorMode, showSchools, showContent]);
 
   const handleSavePlace = useCallback(() => {
     if (!selectedPlace || !selectedPlace.name.trim()) return;
@@ -278,6 +311,25 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     setIsEditing(false);
     setRenderKey(n => n + 1);
   }, [selectedSchool]);
+
+  const handleSaveContent = useCallback(() => {
+    if (!selectedContentItem || !selectedContentItem.name.trim()) return;
+    const parsed = { ...selectedContentItem, lat: parseFloat(String(selectedContentItem.lat)) || 0, lng: parseFloat(String(selectedContentItem.lng)) || 0 };
+    const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+    const isDefault = allDefault.some(c => c.id === parsed.id);
+    if (isDefault) { saveContentEdit(parsed.id, parsed as any); } else { saveCustomContent(parsed as any); }
+    setIsEditing(false);
+    setRenderKey(n => n + 1);
+  }, [selectedContentItem]);
+
+  const handleDeleteContent = useCallback(() => {
+    if (!selectedContentItem) return;
+    if (!confirm(`"${selectedContentItem.name}" 콘텐츠를 삭제하시겠습니까?`)) return;
+    deleteContent(selectedContentItem.id);
+    setSelectedContentItem(null);
+    setIsEditing(false);
+    setRenderKey(n => n + 1);
+  }, [selectedContentItem]);
 
   const handleSearchSelectPlace = useCallback((place: Place) => {
     setSelectedSchool(null);
@@ -321,7 +373,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const inputClass = "w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary";
 
-  const currentItem = editorMode === 'place' ? selectedPlace : selectedSchool;
+  const currentItem = editorMode === 'place' ? selectedPlace : editorMode === 'content' ? selectedContentItem : selectedSchool;
 
   return (
     <div className="fixed inset-0 z-[200] flex flex-col bg-background">
@@ -455,9 +507,11 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
             {/* Panel header */}
             <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30 flex-shrink-0">
               <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-sm">{editorMode === 'place' && selectedPlace ? categoryIcons[selectedPlace.category] : '🏫'}</span>
+                <span className="text-sm">
+                  {editorMode === 'place' && selectedPlace ? categoryIcons[selectedPlace.category] : editorMode === 'content' && selectedContentItem ? contentCategoryIcons[selectedContentItem.contentType] : '🏫'}
+                </span>
                 <span className="text-xs font-bold text-foreground truncate">
-                  {editorMode === 'place' ? (selectedPlace?.name || '새 장소') : (selectedSchool?.name || '')}
+                  {editorMode === 'place' ? (selectedPlace?.name || '새 장소') : editorMode === 'content' ? (selectedContentItem?.name || '') : (selectedSchool?.name || '')}
                 </span>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
@@ -465,11 +519,11 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                   <button onClick={() => { setIsEditing(true); setDetailsExpanded(true); }}
                     className="px-2 py-1 rounded text-[10px] font-bold bg-primary text-primary-foreground cursor-pointer hover:opacity-90">수정</button>
                 )}
-                {editorMode === 'place' && (
-                  <button onClick={handleDeletePlace}
+                {(editorMode === 'place' || editorMode === 'content') && (
+                  <button onClick={editorMode === 'place' ? handleDeletePlace : handleDeleteContent}
                     className="p-1 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                 )}
-                <button onClick={() => { setSelectedPlace(null); setSelectedSchool(null); setIsEditing(false); }}
+                <button onClick={() => { setSelectedPlace(null); setSelectedSchool(null); setSelectedContentItem(null); setIsEditing(false); }}
                   className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"><X size={14} /></button>
               </div>
             </div>
@@ -583,6 +637,73 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                     <div><label className="text-[10px] font-semibold text-foreground">웹사이트</label><input value={selectedSchool.website || ''} onChange={e => setSelectedSchool({ ...selectedSchool, website: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div className="flex gap-2 pt-1">
                       <button onClick={handleSaveSchool} disabled={!selectedSchool.name.trim()}
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">
+                        <Save size={12} /> 저장
+                      </button>
+                      <button onClick={() => setIsEditing(false)}
+                        className="px-3 py-2 rounded-lg bg-muted text-muted-foreground text-xs font-bold cursor-pointer hover:bg-muted/80">취소</button>
+                    </div>
+                  </>
+                )
+              )}
+
+              {editorMode === 'content' && selectedContentItem && (
+                !isEditing ? (
+                  <>
+                    <div>
+                      <p className="text-[10px] font-semibold text-muted-foreground">카테고리</p>
+                      <p className="text-xs text-foreground">{contentCategoryIcons[selectedContentItem.contentType]} {contentCategoryLabels[selectedContentItem.contentType]}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold text-muted-foreground">설명</p>
+                      <p className="text-xs text-foreground leading-relaxed">{selectedContentItem.description || '-'}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div><p className="text-[10px] font-semibold text-muted-foreground">위도</p><p className="text-xs text-foreground font-mono">{selectedContentItem.lat}</p></div>
+                      <div><p className="text-[10px] font-semibold text-muted-foreground">경도</p><p className="text-xs text-foreground font-mono">{selectedContentItem.lng}</p></div>
+                    </div>
+                    <button onClick={() => setDetailsExpanded(!detailsExpanded)}
+                      className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-foreground cursor-pointer py-1">
+                      {detailsExpanded ? <><ChevronUp size={12} /> 접기</> : <><ChevronDown size={12} /> 더보기</>}
+                    </button>
+                    {detailsExpanded && (
+                      <>
+                        {selectedContentItem.source && <div><p className="text-[10px] font-semibold text-muted-foreground">출처</p><p className="text-xs text-foreground">{selectedContentItem.source}</p></div>}
+                        {selectedContentItem.referenceUrl && <div><p className="text-[10px] font-semibold text-muted-foreground">참고 링크</p><a href={selectedContentItem.referenceUrl} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline break-all">{selectedContentItem.referenceUrl}</a></div>}
+                        {selectedContentItem.youtubeUrl && <div><p className="text-[10px] font-semibold text-muted-foreground">유튜브</p><a href={selectedContentItem.youtubeUrl} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline break-all">{selectedContentItem.youtubeUrl}</a></div>}
+                        {selectedContentItem.imageUrl && <img src={selectedContentItem.imageUrl} alt="" className="w-full h-24 object-cover rounded-lg" />}
+                        <div><p className="text-[10px] font-semibold text-muted-foreground">학년</p><p className="text-xs text-foreground">{selectedContentItem.grade === 'all' ? '전체' : `${selectedContentItem.grade}학년`}</p></div>
+                        <div><p className="text-[10px] font-semibold text-muted-foreground">ID</p><p className="text-[10px] text-muted-foreground font-mono">{selectedContentItem.id}</p></div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div><label className="text-[10px] font-semibold text-foreground">이름 *</label><input value={selectedContentItem.name} onChange={e => setSelectedContentItem({ ...selectedContentItem, name: e.target.value })} className={inputClass} /></div>
+                    <div><label className="text-[10px] font-semibold text-foreground">설명</label><textarea value={selectedContentItem.description} onChange={e => setSelectedContentItem({ ...selectedContentItem, description: e.target.value })} className={`${inputClass} resize-none`} rows={3} /></div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-foreground">콘텐츠 카테고리</label>
+                      <select value={selectedContentItem.contentType} onChange={e => setSelectedContentItem({ ...selectedContentItem, contentType: e.target.value as ContentCategory })} className={inputClass}>
+                        {(Object.entries(contentCategoryLabels) as [ContentCategory, string][]).filter(([k]) => k !== 'place').map(([k, v]) => (<option key={k} value={k}>{contentCategoryIcons[k]} {v}</option>))}
+                      </select>
+                    </div>
+                    <div><label className="text-[10px] font-semibold text-foreground">아이콘</label><input value={selectedContentItem.icon || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, icon: e.target.value })} className={inputClass} placeholder="이모지 입력" /></div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div><label className="text-[10px] font-semibold text-foreground">위도</label><input type="text" inputMode="decimal" value={selectedContentItem.lat} onChange={e => setSelectedContentItem({ ...selectedContentItem, lat: e.target.value as any })} className={inputClass} /></div>
+                      <div><label className="text-[10px] font-semibold text-foreground">경도</label><input type="text" inputMode="decimal" value={selectedContentItem.lng} onChange={e => setSelectedContentItem({ ...selectedContentItem, lng: e.target.value as any })} className={inputClass} /></div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-foreground">학년</label>
+                      <select value={String(selectedContentItem.grade || 'all')} onChange={e => setSelectedContentItem({ ...selectedContentItem, grade: e.target.value === 'all' ? 'all' : Number(e.target.value) as 3 | 4 })} className={inputClass}>
+                        <option value="all">전체</option><option value="3">3학년</option><option value="4">4학년</option>
+                      </select>
+                    </div>
+                    <div><label className="text-[10px] font-semibold text-foreground">출처</label><input value={selectedContentItem.source || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, source: e.target.value })} className={inputClass} /></div>
+                    <div><label className="text-[10px] font-semibold text-foreground">이미지 URL</label><input value={selectedContentItem.imageUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, imageUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
+                    <div><label className="text-[10px] font-semibold text-foreground">참고 링크</label><input value={selectedContentItem.referenceUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, referenceUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
+                    <div><label className="text-[10px] font-semibold text-foreground flex items-center gap-1"><Youtube size={10} className="text-destructive" /> 유튜브</label><input value={selectedContentItem.youtubeUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, youtubeUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
+                    <div className="flex gap-2 pt-1">
+                      <button onClick={handleSaveContent} disabled={!selectedContentItem.name.trim()}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">
                         <Save size={12} /> 저장
                       </button>
