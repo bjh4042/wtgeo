@@ -95,13 +95,6 @@ export function getEstimatedTime(distanceKm: number): string {
 export const places: Place[] = [
   // ===== 관광 명소 =====
   {
-    id: 't1', name: '바람의 언덕', category: 'tourism',
-    description: '거제 남부면 도장포마을에 위치한 아름다운 언덕으로, 탁 트인 바다 전망과 바람개비가 유명합니다.',
-    address: '경상남도 거제시 남부면 갈곶리 산14-47', lat: 34.729112, lng: 128.606212, grade: 'all',
-    origin: '바다에서 불어오는 바람이 유난히 강하게 부는 언덕이라 하여 "바람의 언덕"이라 불리게 되었습니다.',
-    referenceUrl: 'https://tour.geoje.go.kr',
-  },
-  {
     id: 't2', name: '외도 보타니아', category: 'tourism',
     description: '거제도 남쪽에 위치한 해상식물공원으로, 아열대 식물과 아름다운 정원이 조성되어 있습니다.',
     address: '경상남도 거제시 일운면 외도길 17', lat: 34.781234, lng: 128.701234, grade: 'all',
@@ -109,24 +102,10 @@ export const places: Place[] = [
     referenceUrl: 'https://www.oedobotania.com',
   },
   {
-    id: 't3', name: '해금강', category: 'tourism',
-    description: '거제도 남동쪽 바다에 솟아있는 바위섬으로, 기암절벽과 해식동굴이 장관을 이룹니다. 명승 제2호.',
-    address: '경상남도 거제시 남부면 갈곶리 산1', lat: 34.7327, lng: 128.6840, grade: 'all',
-    origin: '바다의 금강산이라는 뜻으로, 그 경치가 금강산에 비견될 만큼 아름다워 "해금강"이라 이름 붙었습니다.',
-    referenceUrl: 'https://tour.geoje.go.kr',
-  },
-  {
     id: 't4', name: '학동흑진주몽돌해변', category: 'tourism',
     description: '검은 몽돌(자갈)이 깔린 아름다운 해변으로, 파도가 몽돌을 굴리는 소리가 특별합니다.',
     address: '경상남도 거제시 동부면 학동리', lat: 34.785612, lng: 128.631234, grade: 'all',
     origin: '흑진주처럼 검고 윤기나는 몽돌이 해변에 깔려 있어 "흑진주몽돌해변"이라 불립니다.',
-    referenceUrl: 'https://tour.geoje.go.kr',
-  },
-  {
-    id: 't5', name: '신선대', category: 'tourism',
-    description: '신선이 놀았다는 전설이 있는 바위 전망대로, 탁 트인 남해 전경을 감상할 수 있습니다.',
-    address: '경상남도 거제시 남부면 갈곶리 산21-23', lat: 34.731234, lng: 128.604512, grade: 'all',
-    origin: '옛날 신선들이 이곳의 경치에 반해 내려와 놀았다는 전설에서 유래되었습니다.',
     referenceUrl: 'https://tour.geoje.go.kr',
   },
   {
@@ -248,27 +227,6 @@ export const places: Place[] = [
     description: '거제도의 선사시대부터 현대까지의 역사와 문화유산을 전시하는 박물관입니다.',
     address: '경상남도 거제시 거제대로 3791', lat: 34.8940, lng: 128.6862, grade: 'all',
     referenceUrl: 'https://tour.geoje.go.kr',
-  },
-  {
-    id: 'c4', name: '거제향교', category: 'culture',
-    description: '조선 태조 7년(1398)에 창건된 유교 교육기관으로, 거제 지역의 대표적인 전통 교육시설입니다.',
-    address: '경상남도 거제시 기성로7길 10', lat: 34.8525, lng: 128.5896, grade: 3,
-    origin: '조선시대 지방의 인재를 양성하기 위해 세운 국립 교육기관으로, 공자를 모시는 사당도 함께 있습니다.',
-    referenceUrl: 'https://www.heritage.go.kr',
-  },
-  {
-    id: 'c5', name: '거제 둔덕기성', category: 'culture',
-    description: '고려시대에 축성된 성곽으로, 사적 제509호로 지정되어 있습니다. 고려 의종이 유배되었던 곳입니다.',
-    address: '경상남도 거제시 둔덕면 거림리 산95', lat: 34.8682, lng: 128.4984, grade: 3,
-    origin: '고려 18대 왕 의종이 정변으로 폐위된 후 이곳에 유배되어 지내다 세상을 떠난 역사적 장소입니다.',
-    referenceUrl: 'https://www.heritage.go.kr',
-  },
-  {
-    id: 'c9', name: '거제 기성관', category: 'culture',
-    description: '조선시대 거제현의 관아 건물로, 관리들이 업무를 보던 곳입니다. 경상남도 유형문화재 제81호입니다.',
-    address: '경상남도 거제시 거제면 동상리 546', lat: 34.8511, lng: 128.5913, grade: 3,
-    origin: '거제(巨濟)의 옛 이름 "기성(岐城)"에서 따온 이름으로, 거제현의 중심 관아였습니다.',
-    referenceUrl: 'https://www.heritage.go.kr',
   },
   {
     id: 'c10', name: '칠천량해전공원', category: 'culture',
