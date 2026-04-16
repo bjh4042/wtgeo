@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Place, PlaceCategory, categoryLabels, categoryColors, categoryIcons, publicSubCategoryLabels, PublicSubCategory } from '@/data/places';
+import { MapContent, ContentCategory, contentCategoryLabels, contentCategoryColors, contentCategoryIcons } from '@/data/content';
 import { School } from '@/data/schools';
-import { getMergedPlaces, getMergedSchools, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
+import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
 import { places as defaultPlaces } from '@/data/places';
-import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap } from 'lucide-react';
+import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen } from 'lucide-react';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
