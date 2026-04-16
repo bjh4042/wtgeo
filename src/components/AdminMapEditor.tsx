@@ -219,7 +219,38 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         overlaysRef.current.push(overlay);
       });
     }
-  }, [isLoaded, filteredPlaces, allSchools, selectedPlace, selectedSchool, isEditing, editorMode, showSchools]);
+
+    // Content markers
+    if (showContent) {
+      filteredContent.forEach((item) => {
+        const position = new window.kakao.maps.LatLng(item.lat, item.lng);
+        const color = contentCategoryColors[item.contentType];
+        const catIcon = contentCategoryIcons[item.contentType];
+
+        const el = document.createElement('div');
+        el.innerHTML = `<div style="
+          background:${color};color:white;
+          padding:3px 8px;
+          border-radius:16px;font-size:10px;font-weight:600;
+          white-space:nowrap;cursor:pointer;
+          box-shadow:0 1px 4px rgba(0,0,0,0.2);
+          transform:translateX(-50%);
+          transition:all 0.2s ease;
+          opacity:0.85;
+        ">${item.icon || catIcon} ${item.name}</div>`;
+
+        const overlay = new window.kakao.maps.CustomOverlay({
+          position, content: el, yAnchor: 1.3,
+          zIndex: 1, map: mapInstance.current,
+        });
+        el.addEventListener('click', () => {
+          const pos = new window.kakao.maps.LatLng(item.lat, item.lng);
+          mapInstance.current.panTo(pos);
+        });
+        overlaysRef.current.push(overlay);
+      });
+    }
+  }, [isLoaded, filteredPlaces, filteredContent, allSchools, selectedPlace, selectedSchool, isEditing, editorMode, showSchools, showContent]);
 
   const handleSavePlace = useCallback(() => {
     if (!selectedPlace || !selectedPlace.name.trim()) return;
