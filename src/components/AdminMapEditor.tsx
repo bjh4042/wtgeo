@@ -312,6 +312,25 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     setRenderKey(n => n + 1);
   }, [selectedSchool]);
 
+  const handleSaveContent = useCallback(() => {
+    if (!selectedContentItem || !selectedContentItem.name.trim()) return;
+    const parsed = { ...selectedContentItem, lat: parseFloat(String(selectedContentItem.lat)) || 0, lng: parseFloat(String(selectedContentItem.lng)) || 0 };
+    const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+    const isDefault = allDefault.some(c => c.id === parsed.id);
+    if (isDefault) { saveContentEdit(parsed.id, parsed as any); } else { saveCustomContent(parsed as any); }
+    setIsEditing(false);
+    setRenderKey(n => n + 1);
+  }, [selectedContentItem]);
+
+  const handleDeleteContent = useCallback(() => {
+    if (!selectedContentItem) return;
+    if (!confirm(`"${selectedContentItem.name}" 콘텐츠를 삭제하시겠습니까?`)) return;
+    deleteContent(selectedContentItem.id);
+    setSelectedContentItem(null);
+    setIsEditing(false);
+    setRenderKey(n => n + 1);
+  }, [selectedContentItem]);
+
   const handleSearchSelectPlace = useCallback((place: Place) => {
     setSelectedSchool(null);
     setEditorMode('place');
