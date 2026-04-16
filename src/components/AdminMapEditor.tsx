@@ -507,9 +507,11 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
             {/* Panel header */}
             <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30 flex-shrink-0">
               <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-sm">{editorMode === 'place' && selectedPlace ? categoryIcons[selectedPlace.category] : '🏫'}</span>
+                <span className="text-sm">
+                  {editorMode === 'place' && selectedPlace ? categoryIcons[selectedPlace.category] : editorMode === 'content' && selectedContentItem ? contentCategoryIcons[selectedContentItem.contentType] : '🏫'}
+                </span>
                 <span className="text-xs font-bold text-foreground truncate">
-                  {editorMode === 'place' ? (selectedPlace?.name || '새 장소') : (selectedSchool?.name || '')}
+                  {editorMode === 'place' ? (selectedPlace?.name || '새 장소') : editorMode === 'content' ? (selectedContentItem?.name || '') : (selectedSchool?.name || '')}
                 </span>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
@@ -517,11 +519,11 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                   <button onClick={() => { setIsEditing(true); setDetailsExpanded(true); }}
                     className="px-2 py-1 rounded text-[10px] font-bold bg-primary text-primary-foreground cursor-pointer hover:opacity-90">수정</button>
                 )}
-                {editorMode === 'place' && (
-                  <button onClick={handleDeletePlace}
+                {(editorMode === 'place' || editorMode === 'content') && (
+                  <button onClick={editorMode === 'place' ? handleDeletePlace : handleDeleteContent}
                     className="p-1 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                 )}
-                <button onClick={() => { setSelectedPlace(null); setSelectedSchool(null); setIsEditing(false); }}
+                <button onClick={() => { setSelectedPlace(null); setSelectedSchool(null); setSelectedContentItem(null); setIsEditing(false); }}
                   className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"><X size={14} /></button>
               </div>
             </div>
