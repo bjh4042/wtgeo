@@ -66,6 +66,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<EditablePlace | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<EditableSchool | null>(null);
+  const [selectedContentItem, setSelectedContentItem] = useState<EditableContent | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [renderKey, setRenderKey] = useState(0);
