@@ -280,6 +280,37 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         el.addEventListener('click', () => onPlaceSelect(place));
         overlaysRef.current.push(overlay);
       });
+
+      // When education subcategory is active (or all subs), also render elementary schools as markers (grade 3 only)
+      const showSchools =
+        grade === 3 &&
+        activePlaceCategories?.includes('public') &&
+        (!activePublicSubCategories || activePublicSubCategories.includes('education'));
+      if (showSchools) {
+        const eduColor = publicSubCategoryColors.education;
+        const allSchools = getMergedSchools();
+        allSchools.forEach((s) => {
+          if (s.lat == null || s.lng == null) return;
+          if (s.name === school.name) return; // skip currently-selected school (already marked)
+          const position = new window.kakao.maps.LatLng(s.lat, s.lng);
+          const el = document.createElement('div');
+          el.innerHTML = `<div style="
+            background:${eduColor};color:white;
+            padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
+            white-space:nowrap;cursor:pointer;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);
+            transform:translateX(-50%);
+            transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+          ">🏫 ${s.name}</div>`;
+          const overlay = new window.kakao.maps.CustomOverlay({
+            position, content: el, yAnchor: 1.3, zIndex: 1, map: mapInstance.current,
+          });
+          el.addEventListener('click', () => {
+            mapInstance.current.panTo(position);
+          });
+          overlaysRef.current.push(overlay);
+        });
+      }
     }
 
     const contentCategories = activeCategories.filter(c => c !== 'place');
