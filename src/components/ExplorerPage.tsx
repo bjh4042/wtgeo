@@ -87,7 +87,6 @@ const ExplorerPage = () => {
   const handlePlaceSelect = useCallback((place: Place) => {
     setSelectedPlace(place);
     setSelectedContent(null);
-    setShowMobileSidebar(false);
     // For grade 4, reveal the place on map when selected from filter
     setGrade4VisibleIds(prev => {
       if (prev.has(place.id)) return prev;
@@ -100,7 +99,6 @@ const ExplorerPage = () => {
   const handleContentSelect = useCallback((content: MapContent) => {
     setSelectedContent(content);
     setSelectedPlace(null);
-    setShowMobileSidebar(false);
   }, []);
 
   const handleCategoryToggle = (cat: ContentCategory) => {
@@ -146,7 +144,6 @@ const ExplorerPage = () => {
     setSelectedPlace(null);
     setSelectedContent(null);
     setActiveCategories(['place']);
-    setShowMobileSidebar(false);
     setZoomIn(false);
     setIsZooming(false);
     setGrade4VisibleIds(new Set(GRADE4_DEFAULT_PLACE_IDS));
