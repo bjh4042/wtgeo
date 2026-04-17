@@ -42,7 +42,8 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
     const contents = getMergedContent()
       .filter(c => c.grade === grade || c.grade === 'all')
       .map(item => ({ kind: 'content' as const, item }));
-    return [...places, ...contents];
+    const schools = getMergedSchools().map(item => ({ kind: 'school' as const, item }));
+    return [...places, ...contents, ...schools];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grade, version]);
 
