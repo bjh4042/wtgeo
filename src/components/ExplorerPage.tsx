@@ -208,11 +208,17 @@ const ExplorerPage = () => {
                 </div>
                 {/* Action buttons */}
                 <div className="flex-shrink-0 flex items-center gap-0.5 sm:gap-1 pr-1 md:pr-2">
+                  {/* Search bar */}
+                  {selectedGrade && (
+                    <PlaceSearchBar
+                      grade={selectedGrade}
+                      onPlaceSelect={handlePlaceSelect}
+                      onContentSelect={handleContentSelect}
+                    />
+                  )}
                   {/* Favorites button */}
                   <button
                     onClick={() => setShowFavorites(true)}
-                    data-search-anchor
-                  >
                     className="relative flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent/20 text-accent-foreground hover:bg-accent/40 transition-colors"
                   >
                     <Star size={10} className="md:w-3 md:h-3 fill-accent text-accent" />
