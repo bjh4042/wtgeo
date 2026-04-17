@@ -361,6 +361,13 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
   }, [isLoaded, selectedContent]);
 
+  useEffect(() => {
+    if (!isLoaded || !mapInstance.current || !focusLocation) return;
+    const position = new window.kakao.maps.LatLng(focusLocation.lat, focusLocation.lng);
+    mapInstance.current.panTo(position);
+    if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
+  }, [isLoaded, focusLocation]);
+
   if (error === 'API_KEY_MISSING') {
     return (
       <div className="map-container w-full h-full flex flex-col items-center justify-center gap-4 p-8">
