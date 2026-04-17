@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Place, PlaceCategory, PublicSubCategory, categoryColors, categoryIcons, publicSubCategoryColors } from '@/data/places';
 import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcons } from '@/data/content';
-import { getMergedPlacesByGrade, getMergedContentByCategory } from '@/data/dataManager';
+import { getMergedPlacesByGrade, getMergedContentByCategory, getMergedSchools } from '@/data/dataManager';
 import { School } from '@/data/schools';
 import { MapPin, Plus, Minus, School as SchoolIcon } from 'lucide-react';
 
