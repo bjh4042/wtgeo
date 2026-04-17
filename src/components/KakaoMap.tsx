@@ -25,6 +25,7 @@ interface KakaoMapProps {
   onZoomComplete?: () => void;
   isZooming?: boolean;
   visiblePlaceIds?: Set<string> | null;
+  focusLocation?: { lat: number; lng: number; key: string } | null;
 }
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
@@ -45,7 +46,7 @@ function getZoomMessage(stageIndex: number, district: string): string {
   }
 }
 
-const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, activePublicSubCategories, zoomIn, onZoomComplete, isZooming, visiblePlaceIds }: KakaoMapProps) => {
+const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, activePublicSubCategories, zoomIn, onZoomComplete, isZooming, visiblePlaceIds, focusLocation }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
