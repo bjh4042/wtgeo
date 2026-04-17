@@ -157,7 +157,7 @@ const ExplorerPage = () => {
       )}
 
       <NoticePopup />
-      {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} />}
+      {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} grade={selectedGrade} />}
       {showSources && <SourcesPopup onClose={() => setShowSources(false)} />}
       {showGyeongnam && <Suspense fallback={<div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"><div className="text-white">로딩 중...</div></div>}><GyeongnamExplorer onClose={() => setShowGyeongnam(false)} /></Suspense>}
       {showRouteExplorer && selectedSchool && selectedGrade && (

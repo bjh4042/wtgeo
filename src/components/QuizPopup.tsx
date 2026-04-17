@@ -1,14 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { QuizQuestion, getRandomQuestions } from '@/data/quiz';
+import { getRandomGyeongnamQuestions } from '@/data/quizGyeongnam';
 
 interface QuizPopupProps {
   onClose: () => void;
+  grade?: 3 | 4 | null;
 }
 
 type QuizState = 'intro' | 'playing' | 'result';
 
-const QuizPopup = ({ onClose }: QuizPopupProps) => {
+const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
+  const isGrade4 = grade === 4;
+  const quizTitle = isGrade4 ? '🗺️ 경상남도 탐험 퀴즈' : '🎯 거제 탐험 퀴즈';
+  const quizIntro = isGrade4 ? '경상남도에 대해 얼마나 알고 있나요?' : '거제시에 대해 얼마나 알고 있나요?';
   const [state, setState] = useState<QuizState>('intro');
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQ, setCurrentQ] = useState(0);
@@ -23,7 +28,7 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
   }, []);
 
   const startQuiz = () => {
-    const randomQs = getRandomQuestions(10);
+    const randomQs = isGrade4 ? getRandomGyeongnamQuestions(10) : getRandomQuestions(10);
     setQuestions(randomQs);
     setAnswers(Array(10).fill(null));
     setCurrentQ(0);
@@ -89,11 +94,11 @@ const QuizPopup = ({ onClose }: QuizPopupProps) => {
         {state === 'intro' && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-foreground">🎯 거제 탐험 퀴즈</h3>
+              <h3 className="text-lg font-bold text-foreground">{quizTitle}</h3>
               <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
             </div>
             <div className="space-y-3 text-sm text-muted-foreground">
-              <p>거제시에 대해 얼마나 알고 있나요?</p>
+              <p>{quizIntro}</p>
               <p>📝 총 20문제 중 <strong className="text-foreground">랜덤 10문제</strong> 출제 (OX + 선다형)</p>
               <p>⏱️ 제한시간 <strong className="text-foreground">10분</strong></p>
               <div className="p-3 rounded-lg bg-muted/50 space-y-1">
