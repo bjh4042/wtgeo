@@ -114,7 +114,6 @@ const ExplorerPage = () => {
   const handlePlaceCategoryToggle = (cat: PlaceCategory) => {
     setActivePlaceCategories(prev => {
       if (prev.includes(cat)) {
-        if (prev.length === 1) return prev;
         return prev.filter(c => c !== cat);
       }
       return [...prev, cat];
