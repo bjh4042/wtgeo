@@ -1,6 +1,6 @@
 export type PlaceCategory = 'tourism' | 'nature' | 'culture' | 'public' | 'experience' | 'market';
 
-export type PublicSubCategory = 'government' | 'hospital' | 'fire' | 'police' | 'post' | 'health' | 'education' | 'district';
+export type PublicSubCategory = 'government' | 'hospital' | 'fire' | 'police' | 'post' | 'health' | 'education';
 
 export interface Place {
   id: string;
@@ -26,7 +26,6 @@ export const publicSubCategoryLabels: Record<PublicSubCategory, string> = {
   post: '📮 우체국',
   health: '🏥 보건소',
   education: '📚 교육',
-  district: '🏘️ 읍면동',
 };
 
 export const publicSubCategoryColors: Record<PublicSubCategory, string> = {
@@ -37,7 +36,6 @@ export const publicSubCategoryColors: Record<PublicSubCategory, string> = {
   post: '#EF6C00',
   health: '#2E7D32',
   education: '#6A1B9A',
-  district: '#00838F',
 };
 
 export const categoryLabels: Record<PlaceCategory, string> = {

@@ -15,7 +15,7 @@ interface CategoryTabsProps {
 
 const categories: ContentCategory[] = ['place', 'story', 'placename', 'heritage', 'pastpresent', 'nature'];
 const placeCategories: PlaceCategory[] = ['tourism', 'nature', 'culture', 'public', 'experience', 'market'];
-const publicSubCategories: PublicSubCategory[] = ['government', 'hospital', 'fire', 'police', 'post', 'health', 'education', 'district'];
+const publicSubCategories: PublicSubCategory[] = ['government', 'hospital', 'fire', 'police', 'post', 'health', 'education'];
 
 const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategories, onPlaceCategoryToggle, activePublicSubCategories, onPublicSubCategoryToggle }: CategoryTabsProps) => {
   const [showPlaceDropdown, setShowPlaceDropdown] = useState(false);
