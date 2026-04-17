@@ -52,8 +52,8 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBa
     const scored: { r: SearchResult; score: number }[] = [];
     for (const r of dataset) {
       const name = r.item.name.toLowerCase();
-      const desc = (r.item.description || '').toLowerCase();
-      const addr = r.kind === 'place' ? (r.item.address || '').toLowerCase() : '';
+      const desc = r.kind === 'school' ? '' : ((r.item as Place | MapContent).description || '').toLowerCase();
+      const addr = (r.kind === 'place' || r.kind === 'school') ? (r.item.address || '').toLowerCase() : '';
       let score = 0;
       if (name.startsWith(q)) score = 100;
       else if (name.includes(q)) score = 80;
@@ -78,7 +78,8 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBa
 
   const pick = (r: SearchResult) => {
     if (r.kind === 'place') onPlaceSelect(r.item);
-    else onContentSelect(r.item);
+    else if (r.kind === 'content') onContentSelect(r.item);
+    else if (r.kind === 'school') onSchoolSelect?.(r.item);
     setQuery('');
     setOpen(false);
   };
