@@ -19,7 +19,7 @@ type SearchResult =
 
 const MAX_RESULTS = 10;
 
-const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBarProps) => {
+const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect }: PlaceSearchBarProps) => {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
