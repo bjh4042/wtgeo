@@ -72,6 +72,7 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) {
+        inputRef.current?.blur();
         setOpen(false);
         if (!query) setExpanded(false);
       }
@@ -86,6 +87,7 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
     if (r.kind === 'place') onPlaceSelect(r.item);
     else if (r.kind === 'content') onContentSelect(r.item);
     else if (r.kind === 'school') onSchoolSelect?.(r.item);
+    inputRef.current?.blur();
     setQuery('');
     setOpen(false);
     setExpanded(false);
@@ -121,7 +123,7 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
       )}
       {/* Input (always visible on sm+, conditionally on mobile) */}
       <div className={`${expanded ? 'block' : 'hidden'} sm:block relative`}>
-        <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none md:w-3.5 md:h-3.5" />
+        <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none sm:w-3 sm:h-3 md:w-3.5 md:h-3.5" />
         <input
           ref={inputRef}
           type="text"
@@ -130,12 +132,12 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder="장소 검색..."
-          className="w-full pl-7 pr-7 py-1.5 rounded-full border bg-background text-foreground text-[11px] md:text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full pl-8 pr-8 py-2 sm:py-1.5 rounded-full border bg-background text-foreground text-base sm:text-[11px] md:text-xs focus:outline-none focus:ring-2 focus:ring-primary"
         />
         {(query || expanded) && (
           <button
             type="button"
-            onClick={() => { setQuery(''); setOpen(false); setExpanded(false); }}
+            onClick={() => { inputRef.current?.blur(); setQuery(''); setOpen(false); setExpanded(false); }}
             className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             aria-label="검색어 지우기"
           >
