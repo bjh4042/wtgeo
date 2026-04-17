@@ -145,29 +145,24 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
 
                           {showPublicSub && (
                             <div className="ml-3 pl-2 border-l-2 border-muted mb-1">
-                              {/* 공공기관 전체 */}
+                              {/* 공공기관 모두 선택/해제 */}
                               <button
                                 onClick={() => {
-                                  // Show only public category, all subcategories
-                                  placeCategories.forEach(p => {
-                                    if (p === 'public' && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                    if (p !== 'public' && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                  });
-                                  // Reset subcategory filter
-                                  if (activePublicSubCategories !== null) {
+                                  const current = activePublicSubCategories ?? [];
+                                  const allSelected = publicSubCategories.every(sub => current.includes(sub));
+                                  if (allSelected) {
+                                    // 전체 해제
+                                    publicSubCategories.forEach(sub => onPublicSubCategoryToggle(sub));
+                                  } else {
+                                    // 빠진 것만 추가
                                     publicSubCategories.forEach(sub => {
-                                      if (!activePublicSubCategories.includes(sub)) onPublicSubCategoryToggle(sub);
+                                      if (!current.includes(sub)) onPublicSubCategoryToggle(sub);
                                     });
                                   }
-                                  setShowPlaceDropdown(false);
-                                  setShowPublicSub(false);
                                 }}
-                                className="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"
-                                style={{
-                                  color: isActive ? pcColor : 'hsl(var(--muted-foreground))',
-                                }}
+                                className="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors text-muted-foreground"
                               >
-                                전체 공공기관
+                                {publicSubCategories.every(sub => (activePublicSubCategories ?? []).includes(sub)) ? '전체 해제' : '전체 선택'}
                               </button>
                               {publicSubCategories.map((sub) => {
                                 const subColor = publicSubCategoryColors[sub];
@@ -176,12 +171,8 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                                   <button
                                     key={sub}
                                     onClick={() => {
-                                      // Ensure only public category is active when selecting subcategory
-                                      placeCategories.forEach(p => {
-                                        if (p === 'public' && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                        if (p !== 'public' && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                      });
-                                      // Toggle this subcategory
+                                      // Ensure 'public' parent category is active so the filter applies
+                                      if (!activePlaceCategories.includes('public')) onPlaceCategoryToggle('public');
                                       onPublicSubCategoryToggle(sub);
                                     }}
                                     className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"
