@@ -121,12 +121,28 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBa
           ) : (
             <ul className="py-1">
               {results.map((r, idx) => {
-                const isPlace = r.kind === 'place';
-                const color = isPlace ? categoryColors[r.item.category] : contentCategoryColors[r.item.contentType];
-                const label = isPlace ? categoryLabels[r.item.category] : `${contentCategoryIcons[r.item.contentType]} ${contentCategoryLabels[r.item.contentType]}`;
-                const sub = isPlace ? r.item.address : (r.item.description?.slice(0, 40) || '');
+                let color: string;
+                let label: string;
+                let sub: string;
+                let key: string;
+                if (r.kind === 'place') {
+                  color = categoryColors[r.item.category];
+                  label = categoryLabels[r.item.category];
+                  sub = r.item.address || '';
+                  key = `place-${r.item.id}`;
+                } else if (r.kind === 'content') {
+                  color = contentCategoryColors[r.item.contentType];
+                  label = `${contentCategoryIcons[r.item.contentType]} ${contentCategoryLabels[r.item.contentType]}`;
+                  sub = r.item.description?.slice(0, 40) || '';
+                  key = `content-${r.item.id}`;
+                } else {
+                  color = '#6A1B9A';
+                  label = '🏫 초등학교';
+                  sub = r.item.address || '';
+                  key = `school-${r.item.name}`;
+                }
                 return (
-                  <li key={`${r.kind}-${r.item.id}`}>
+                  <li key={key}>
                     <button
                       type="button"
                       onMouseEnter={() => setHighlight(idx)}
