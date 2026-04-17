@@ -104,30 +104,21 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                   className="fixed bg-popover border rounded-xl shadow-lg p-1.5 min-w-[175px] animate-in fade-in-0 zoom-in-95 duration-150"
                   style={{ top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999 }}
                 >
-                  {/* 전체 */}
+                  {/* 전체 해제 */}
                   <button
                     onClick={() => {
-                      // Reset to all categories, no subcategory filter
+                      // Deselect all place categories
                       placeCategories.forEach(pc => {
-                        if (!activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
+                        if (activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
                       });
-                      // Clear subcategory filter by selecting all subs
-                      if (activePublicSubCategories !== null) {
-                        publicSubCategories.forEach(sub => {
-                          if (activePublicSubCategories && !activePublicSubCategories.includes(sub)) {
-                            onPublicSubCategoryToggle(sub);
-                          }
-                        });
-                      }
+                      // Deselect all public subcategories
+                      (activePublicSubCategories ?? []).forEach(sub => onPublicSubCategoryToggle(sub));
                       setShowPlaceDropdown(false);
                       setShowPublicSub(false);
                     }}
-                    className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-muted transition-colors"
-                    style={{
-                      color: allPlaceCatsActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
-                    }}
+                    className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-muted transition-colors text-muted-foreground"
                   >
-                    {allPlaceCatsActive ? '✓ ' : ''}전체 보기
+                    전체 해제
                   </button>
                   <div className="h-px bg-border my-1" />
 
