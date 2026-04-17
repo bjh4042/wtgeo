@@ -2,19 +2,22 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { Place, categoryLabels, categoryColors } from '@/data/places';
 import { MapContent, contentCategoryLabels, contentCategoryIcons, contentCategoryColors } from '@/data/content';
-import { getMergedPlacesByGrade, getMergedContent, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
+import { School } from '@/data/schools';
+import { getMergedPlacesByGrade, getMergedContent, getMergedSchools, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 
 interface PlaceSearchBarProps {
   grade: 3 | 4;
   onPlaceSelect: (place: Place) => void;
   onContentSelect: (content: MapContent) => void;
+  onSchoolSelect?: (school: School) => void;
 }
 
 type SearchResult =
   | { kind: 'place'; item: Place }
-  | { kind: 'content'; item: MapContent };
+  | { kind: 'content'; item: MapContent }
+  | { kind: 'school'; item: School };
 
-const MAX_RESULTS = 8;
+const MAX_RESULTS = 10;
 
 const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBarProps) => {
   const [query, setQuery] = useState('');
