@@ -24,7 +24,9 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const [version, setVersion] = useState(0);
+  const [expanded, setExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Refresh when data updates
   useEffect(() => {
@@ -69,11 +71,14 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
   // Click outside to close
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+        if (!query) setExpanded(false);
+      }
     };
     document.addEventListener('mousedown', onDocClick);
     return () => document.removeEventListener('mousedown', onDocClick);
-  }, []);
+  }, [query]);
 
   useEffect(() => { setHighlight(0); }, [query]);
 
@@ -83,6 +88,13 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
     else if (r.kind === 'school') onSchoolSelect?.(r.item);
     setQuery('');
     setOpen(false);
+    setExpanded(false);
+  };
+
+  const handleExpand = () => {
+    setExpanded(true);
+    setOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -93,28 +105,44 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
     else if (e.key === 'Escape') { setOpen(false); }
   };
 
+  // On mobile (sm:hidden breakpoint), show icon-only button until expanded
   return (
-    <div ref={containerRef} className="relative w-40 sm:w-56 md:w-64">
-      <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none md:w-3.5 md:h-3.5" />
-      <input
-        type="text"
-        value={query}
-        onChange={e => { setQuery(e.target.value); setOpen(true); }}
-        onFocus={() => setOpen(true)}
-        onKeyDown={onKeyDown}
-        placeholder="장소 검색..."
-        className="w-full pl-7 pr-7 py-1.5 rounded-full border bg-background text-foreground text-[11px] md:text-xs focus:outline-none focus:ring-2 focus:ring-primary"
-      />
-      {query && (
+    <div ref={containerRef} className={`relative ${expanded ? 'w-44' : 'w-8'} sm:w-56 md:w-64 transition-all duration-200`}>
+      {/* Mobile collapsed: icon button only */}
+      {!expanded && (
         <button
           type="button"
-          onClick={() => { setQuery(''); setOpen(false); }}
-          className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          aria-label="검색어 지우기"
+          onClick={handleExpand}
+          className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full border bg-background hover:bg-accent/20 transition-colors"
+          aria-label="장소 검색 열기"
         >
-          <X size={12} />
+          <Search size={14} className="text-foreground" />
         </button>
       )}
+      {/* Input (always visible on sm+, conditionally on mobile) */}
+      <div className={`${expanded ? 'block' : 'hidden'} sm:block relative`}>
+        <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none md:w-3.5 md:h-3.5" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={onKeyDown}
+          placeholder="장소 검색..."
+          className="w-full pl-7 pr-7 py-1.5 rounded-full border bg-background text-foreground text-[11px] md:text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+        {(query || expanded) && (
+          <button
+            type="button"
+            onClick={() => { setQuery(''); setOpen(false); setExpanded(false); }}
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            aria-label="검색어 지우기"
+          >
+            <X size={12} />
+          </button>
+        )}
+      </div>
 
       {open && query.trim() && (
         <div className="absolute right-0 mt-1 w-72 sm:w-80 max-h-80 overflow-auto rounded-lg border bg-popover text-popover-foreground shadow-xl z-50">
