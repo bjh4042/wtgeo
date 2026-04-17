@@ -242,11 +242,12 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       let places = activePlaceCategories
         ? allPlaces.filter(p => activePlaceCategories.includes(p.category))
         : allPlaces;
-      // Filter public places by subcategory if active
-      if (activePublicSubCategories && activePublicSubCategories.length > 0) {
+      // Filter public places by subcategory: null = show all public, [] = show none, otherwise = show only selected subs
+      if (activePublicSubCategories !== undefined && activePublicSubCategories !== null) {
+        const subs = activePublicSubCategories;
         places = places.filter(p => {
           if (p.category === 'public') {
-            return p.subCategory ? activePublicSubCategories.includes(p.subCategory) : false;
+            return p.subCategory ? subs.includes(p.subCategory) : false;
           }
           return true;
         });
