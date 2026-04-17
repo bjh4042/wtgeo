@@ -31,7 +31,7 @@ export interface SiteInfo {
   devEmail: string;
 }
 
-type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'info' | 'stats' | 'reports';
+type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'quiz' | 'info' | 'stats' | 'reports';
 
 interface ErrorReport {
   id: string;
@@ -44,6 +44,7 @@ interface ErrorReport {
 }
 
 import AdminMapEditor from './AdminMapEditor';
+import QuizAdminTab from './QuizAdminTab';
 
 interface EditablePlace {
   id: string;
@@ -333,6 +334,7 @@ const AdminPanel = () => {
     { key: 'content', label: '📖 콘텐츠' },
     { key: 'schools', label: '🏫 학교' },
     { key: 'gyeongnam', label: '🗺️ 경남' },
+    { key: 'quiz', label: '🎯 퀴즈' },
     { key: 'info', label: 'ℹ️ 정보' },
     { key: 'stats', label: '📊 통계' },
   ];
@@ -954,6 +956,11 @@ const AdminPanel = () => {
               <Save size={14} /> 저장
             </button>
           </div>
+        )}
+
+        {/* Quiz Tab */}
+        {activeTab === 'quiz' && (
+          <QuizAdminTab />
         )}
 
         {/* Stats Tab */}

@@ -320,6 +320,45 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_questions: {
+        Row: {
+          answer: number
+          created_at: string
+          explanation: string
+          grade: string
+          id: string
+          options: Json
+          question: string
+          sort_order: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: number
+          created_at?: string
+          explanation?: string
+          grade: string
+          id?: string
+          options?: Json
+          question: string
+          sort_order?: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: number
+          created_at?: string
+          explanation?: string
+          grade?: string
+          id?: string
+          options?: Json
+          question?: string
+          sort_order?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       school_edits: {
         Row: {
           address: string | null
