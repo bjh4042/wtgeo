@@ -263,9 +263,9 @@ const ExplorerPage = () => {
           )}
 
           <div className="flex-1 flex overflow-hidden relative">
-            {/* Desktop Sidebar: hidden during zoom */}
+            {/* Desktop Sidebar: minimal — only home + grade badge */}
             {!isZooming && (
-              <aside className="hidden md:flex w-72 lg:w-80 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
+              <aside className="hidden md:flex w-44 lg:w-52 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
                 <div className="p-3 lg:p-4 border-b flex items-center justify-between">
                   <button className="back-btn" onClick={handleReset}>
                     <Home size={16} /> 처음으로
@@ -276,24 +276,15 @@ const ExplorerPage = () => {
                     {selectedGrade}학년
                   </span>
                 </div>
-                <div className="flex-1 overflow-auto p-3 lg:p-4">
-                  {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
+                <div className="flex-1 overflow-auto p-3 lg:p-4 text-xs text-muted-foreground leading-relaxed">
+                  상단 검색창에서 장소나 콘텐츠를 빠르게 찾아보세요.
                 </div>
               </aside>
             )}
 
-            {/* Mobile bottom bar: hidden during zoom */}
+            {/* Mobile bottom bar: home + grade badge only */}
             {!isZooming && (
               <div className="md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col">
-                {showMobileSidebar && (
-                  <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[50vh] overflow-auto p-3 animate-slide-up">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-bold text-foreground">장소 목록</span>
-                      <button onClick={() => setShowMobileSidebar(false)} className="text-muted-foreground cursor-pointer"><X size={18} /></button>
-                    </div>
-                    {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
-                  </div>
-                )}
                 <div className="bg-card border-t px-2 sm:px-3 py-1.5 flex items-center justify-between gap-1 sm:gap-2 safe-bottom">
                   <button className="back-btn text-xs" onClick={handleReset}>
                     <Home size={14} /> <span className="hidden xs:inline">처음으로</span><span className="xs:hidden">홈</span>
@@ -303,9 +294,6 @@ const ExplorerPage = () => {
                   >
                     {selectedGrade}학년
                   </span>
-                  <button className="flex items-center gap-1 text-xs font-medium cursor-pointer text-primary" onClick={() => setShowMobileSidebar(!showMobileSidebar)}>
-                    <List size={16} /> 장소
-                  </button>
                 </div>
               </div>
             )}
