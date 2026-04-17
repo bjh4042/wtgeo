@@ -351,22 +351,19 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedPlace) return;
     const position = new window.kakao.maps.LatLng(selectedPlace.lat, selectedPlace.lng);
-    mapInstance.current.setCenter(position);
-    if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
+    mapInstance.current.panTo(position);
   }, [isLoaded, selectedPlace]);
 
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !selectedContent) return;
     const position = new window.kakao.maps.LatLng(selectedContent.lat, selectedContent.lng);
-    mapInstance.current.setCenter(position);
-    if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
+    mapInstance.current.panTo(position);
   }, [isLoaded, selectedContent]);
 
   useEffect(() => {
     if (!isLoaded || !mapInstance.current || !focusLocation) return;
     const position = new window.kakao.maps.LatLng(focusLocation.lat, focusLocation.lng);
     mapInstance.current.panTo(position);
-    if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
   }, [isLoaded, focusLocation]);
 
   if (error === 'API_KEY_MISSING') {
