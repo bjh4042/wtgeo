@@ -7,7 +7,7 @@ import ConsonantFilter from '@/components/ConsonantFilter';
 import SchoolSelector from '@/components/SchoolSelector';
 import GradeSelector from '@/components/GradeSelector';
 import KakaoMap from '@/components/KakaoMap';
-import PlaceFilter from '@/components/PlaceFilter';
+
 import PlaceCard from '@/components/PlaceCard';
 import ContentCard from '@/components/ContentCard';
 import CategoryTabs from '@/components/CategoryTabs';
@@ -19,10 +19,11 @@ const GyeongnamExplorer = lazy(() => import('@/components/GyeongnamExplorer'));
 import RouteExplorer from '@/components/RouteExplorer';
 import PlaceNameOrigins from '@/components/PlaceNameOrigins';
 import FavoriteCourse from '@/components/FavoriteCourse';
+import PlaceSearchBar from '@/components/PlaceSearchBar';
 import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, List, X, Users, Map, Route, MapPin, Star } from 'lucide-react';
+import { Home, Users, Map, Route, MapPin, Star } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -38,7 +39,7 @@ const ExplorerPage = () => {
   const [activeCategories, setActiveCategories] = useState<ContentCategory[]>(['place']);
   const [activePlaceCategories, setActivePlaceCategories] = useState<PlaceCategory[]>(['tourism', 'nature', 'culture', 'public', 'experience', 'market']);
   const [activePublicSubCategories, setActivePublicSubCategories] = useState<PublicSubCategory[] | null>(null);
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  
   const [zoomIn, setZoomIn] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
   const [visitorCount, setVisitorCount] = useState(0);
@@ -86,7 +87,6 @@ const ExplorerPage = () => {
   const handlePlaceSelect = useCallback((place: Place) => {
     setSelectedPlace(place);
     setSelectedContent(null);
-    setShowMobileSidebar(false);
     // For grade 4, reveal the place on map when selected from filter
     setGrade4VisibleIds(prev => {
       if (prev.has(place.id)) return prev;
@@ -99,7 +99,6 @@ const ExplorerPage = () => {
   const handleContentSelect = useCallback((content: MapContent) => {
     setSelectedContent(content);
     setSelectedPlace(null);
-    setShowMobileSidebar(false);
   }, []);
 
   const handleCategoryToggle = (cat: ContentCategory) => {
@@ -145,7 +144,6 @@ const ExplorerPage = () => {
     setSelectedPlace(null);
     setSelectedContent(null);
     setActiveCategories(['place']);
-    setShowMobileSidebar(false);
     setZoomIn(false);
     setIsZooming(false);
     setGrade4VisibleIds(new Set(GRADE4_DEFAULT_PLACE_IDS));
@@ -207,6 +205,14 @@ const ExplorerPage = () => {
                 </div>
                 {/* Action buttons */}
                 <div className="flex-shrink-0 flex items-center gap-0.5 sm:gap-1 pr-1 md:pr-2">
+                  {/* Search bar */}
+                  {selectedGrade && (
+                    <PlaceSearchBar
+                      grade={selectedGrade}
+                      onPlaceSelect={handlePlaceSelect}
+                      onContentSelect={handleContentSelect}
+                    />
+                  )}
                   {/* Favorites button */}
                   <button
                     onClick={() => setShowFavorites(true)}
@@ -254,9 +260,9 @@ const ExplorerPage = () => {
           )}
 
           <div className="flex-1 flex overflow-hidden relative">
-            {/* Desktop Sidebar: hidden during zoom */}
+            {/* Desktop Sidebar: minimal — only home + grade badge */}
             {!isZooming && (
-              <aside className="hidden md:flex w-72 lg:w-80 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
+              <aside className="hidden md:flex w-44 lg:w-52 border-r bg-card flex-col overflow-hidden z-10 shadow-lg">
                 <div className="p-3 lg:p-4 border-b flex items-center justify-between">
                   <button className="back-btn" onClick={handleReset}>
                     <Home size={16} /> 처음으로
@@ -267,24 +273,15 @@ const ExplorerPage = () => {
                     {selectedGrade}학년
                   </span>
                 </div>
-                <div className="flex-1 overflow-auto p-3 lg:p-4">
-                  {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
+                <div className="flex-1 overflow-auto p-3 lg:p-4 text-xs text-muted-foreground leading-relaxed">
+                  상단 검색창에서 장소나 콘텐츠를 빠르게 찾아보세요.
                 </div>
               </aside>
             )}
 
-            {/* Mobile bottom bar: hidden during zoom */}
+            {/* Mobile bottom bar: home + grade badge only */}
             {!isZooming && (
               <div className="md:hidden absolute bottom-0 left-0 right-0 z-30 flex flex-col">
-                {showMobileSidebar && (
-                  <div className="bg-card border-t rounded-t-2xl shadow-2xl max-h-[50vh] overflow-auto p-3 animate-slide-up">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-bold text-foreground">장소 목록</span>
-                      <button onClick={() => setShowMobileSidebar(false)} className="text-muted-foreground cursor-pointer"><X size={18} /></button>
-                    </div>
-                    {selectedGrade && <PlaceFilter grade={selectedGrade} onPlaceSelect={handlePlaceSelect} />}
-                  </div>
-                )}
                 <div className="bg-card border-t px-2 sm:px-3 py-1.5 flex items-center justify-between gap-1 sm:gap-2 safe-bottom">
                   <button className="back-btn text-xs" onClick={handleReset}>
                     <Home size={14} /> <span className="hidden xs:inline">처음으로</span><span className="xs:hidden">홈</span>
@@ -294,9 +291,6 @@ const ExplorerPage = () => {
                   >
                     {selectedGrade}학년
                   </span>
-                  <button className="flex items-center gap-1 text-xs font-medium cursor-pointer text-primary" onClick={() => setShowMobileSidebar(!showMobileSidebar)}>
-                    <List size={16} /> 장소
-                  </button>
                 </div>
               </div>
             )}
