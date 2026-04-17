@@ -7,7 +7,7 @@ import ConsonantFilter from '@/components/ConsonantFilter';
 import SchoolSelector from '@/components/SchoolSelector';
 import GradeSelector from '@/components/GradeSelector';
 import KakaoMap from '@/components/KakaoMap';
-import PlaceFilter from '@/components/PlaceFilter';
+
 import PlaceCard from '@/components/PlaceCard';
 import ContentCard from '@/components/ContentCard';
 import CategoryTabs from '@/components/CategoryTabs';
@@ -23,7 +23,7 @@ import PlaceSearchBar from '@/components/PlaceSearchBar';
 import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, List, X, Users, Map, Route, MapPin, Star } from 'lucide-react';
+import { Home, Users, Map, Route, MapPin, Star } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -39,7 +39,7 @@ const ExplorerPage = () => {
   const [activeCategories, setActiveCategories] = useState<ContentCategory[]>(['place']);
   const [activePlaceCategories, setActivePlaceCategories] = useState<PlaceCategory[]>(['tourism', 'nature', 'culture', 'public', 'experience', 'market']);
   const [activePublicSubCategories, setActivePublicSubCategories] = useState<PublicSubCategory[] | null>(null);
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  
   const [zoomIn, setZoomIn] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
   const [visitorCount, setVisitorCount] = useState(0);
