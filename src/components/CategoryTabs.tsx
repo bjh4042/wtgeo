@@ -104,30 +104,21 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                   className="fixed bg-popover border rounded-xl shadow-lg p-1.5 min-w-[175px] animate-in fade-in-0 zoom-in-95 duration-150"
                   style={{ top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999 }}
                 >
-                  {/* 전체 */}
+                  {/* 전체 해제 */}
                   <button
                     onClick={() => {
-                      // Reset to all categories, no subcategory filter
+                      // Deselect all place categories
                       placeCategories.forEach(pc => {
-                        if (!activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
+                        if (activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
                       });
-                      // Clear subcategory filter by selecting all subs
-                      if (activePublicSubCategories !== null) {
-                        publicSubCategories.forEach(sub => {
-                          if (activePublicSubCategories && !activePublicSubCategories.includes(sub)) {
-                            onPublicSubCategoryToggle(sub);
-                          }
-                        });
-                      }
+                      // Deselect all public subcategories
+                      (activePublicSubCategories ?? []).forEach(sub => onPublicSubCategoryToggle(sub));
                       setShowPlaceDropdown(false);
                       setShowPublicSub(false);
                     }}
-                    className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-muted transition-colors"
-                    style={{
-                      color: allPlaceCatsActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
-                    }}
+                    className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-muted transition-colors text-muted-foreground"
                   >
-                    {allPlaceCatsActive ? '✓ ' : ''}전체 보기
+                    전체 해제
                   </button>
                   <div className="h-px bg-border my-1" />
 
@@ -154,29 +145,24 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
 
                           {showPublicSub && (
                             <div className="ml-3 pl-2 border-l-2 border-muted mb-1">
-                              {/* 공공기관 전체 */}
+                              {/* 공공기관 모두 선택/해제 */}
                               <button
                                 onClick={() => {
-                                  // Show only public category, all subcategories
-                                  placeCategories.forEach(p => {
-                                    if (p === 'public' && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                    if (p !== 'public' && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                  });
-                                  // Reset subcategory filter
-                                  if (activePublicSubCategories !== null) {
+                                  const current = activePublicSubCategories ?? [];
+                                  const allSelected = publicSubCategories.every(sub => current.includes(sub));
+                                  if (allSelected) {
+                                    // 전체 해제
+                                    publicSubCategories.forEach(sub => onPublicSubCategoryToggle(sub));
+                                  } else {
+                                    // 빠진 것만 추가
                                     publicSubCategories.forEach(sub => {
-                                      if (!activePublicSubCategories.includes(sub)) onPublicSubCategoryToggle(sub);
+                                      if (!current.includes(sub)) onPublicSubCategoryToggle(sub);
                                     });
                                   }
-                                  setShowPlaceDropdown(false);
-                                  setShowPublicSub(false);
                                 }}
-                                className="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"
-                                style={{
-                                  color: isActive ? pcColor : 'hsl(var(--muted-foreground))',
-                                }}
+                                className="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors text-muted-foreground"
                               >
-                                전체 공공기관
+                                {publicSubCategories.every(sub => (activePublicSubCategories ?? []).includes(sub)) ? '전체 해제' : '전체 선택'}
                               </button>
                               {publicSubCategories.map((sub) => {
                                 const subColor = publicSubCategoryColors[sub];
@@ -185,12 +171,8 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                                   <button
                                     key={sub}
                                     onClick={() => {
-                                      // Ensure only public category is active when selecting subcategory
-                                      placeCategories.forEach(p => {
-                                        if (p === 'public' && !activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                        if (p !== 'public' && activePlaceCategories.includes(p)) onPlaceCategoryToggle(p);
-                                      });
-                                      // Toggle this subcategory
+                                      // Ensure 'public' parent category is active so the filter applies
+                                      if (!activePlaceCategories.includes('public')) onPlaceCategoryToggle('public');
                                       onPublicSubCategoryToggle(sub);
                                     }}
                                     className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-medium hover:bg-muted transition-colors"

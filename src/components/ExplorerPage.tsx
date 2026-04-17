@@ -36,9 +36,9 @@ const ExplorerPage = () => {
   const [selectedGrade, setSelectedGrade] = useState<3 | 4 | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedContent, setSelectedContent] = useState<MapContent | null>(null);
-  const [activeCategories, setActiveCategories] = useState<ContentCategory[]>(['place']);
-  const [activePlaceCategories, setActivePlaceCategories] = useState<PlaceCategory[]>(['tourism', 'nature', 'culture', 'public', 'experience', 'market']);
-  const [activePublicSubCategories, setActivePublicSubCategories] = useState<PublicSubCategory[] | null>(null);
+  const [activeCategories, setActiveCategories] = useState<ContentCategory[]>([]);
+  const [activePlaceCategories, setActivePlaceCategories] = useState<PlaceCategory[]>([]);
+  const [activePublicSubCategories, setActivePublicSubCategories] = useState<PublicSubCategory[] | null>([]);
   
   const [zoomIn, setZoomIn] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
@@ -105,7 +105,6 @@ const ExplorerPage = () => {
   const handleCategoryToggle = (cat: ContentCategory) => {
     setActiveCategories(prev => {
       if (prev.includes(cat)) {
-        if (prev.length === 1) return prev;
         return prev.filter(c => c !== cat);
       }
       return [...prev, cat];
@@ -123,16 +122,11 @@ const ExplorerPage = () => {
 
   const handlePublicSubCategoryToggle = (sub: PublicSubCategory) => {
     setActivePublicSubCategories(prev => {
-      if (prev === null) {
-        // First time selecting a subcategory - set only this one
-        return [sub];
+      const current = prev ?? [];
+      if (current.includes(sub)) {
+        return current.filter(s => s !== sub);
       }
-      if (prev.includes(sub)) {
-        const next = prev.filter(s => s !== sub);
-        // If none left, reset to null (show all)
-        return next.length === 0 ? null : next;
-      }
-      return [...prev, sub];
+      return [...current, sub];
     });
   };
 
@@ -143,7 +137,9 @@ const ExplorerPage = () => {
     setSelectedGrade(null);
     setSelectedPlace(null);
     setSelectedContent(null);
-    setActiveCategories(['place']);
+    setActiveCategories([]);
+    setActivePlaceCategories([]);
+    setActivePublicSubCategories([]);
     setZoomIn(false);
     setIsZooming(false);
     setGrade4VisibleIds(new Set(GRADE4_DEFAULT_PLACE_IDS));
