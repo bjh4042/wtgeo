@@ -2,21 +2,24 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { Place, categoryLabels, categoryColors } from '@/data/places';
 import { MapContent, contentCategoryLabels, contentCategoryIcons, contentCategoryColors } from '@/data/content';
-import { getMergedPlacesByGrade, getMergedContent, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
+import { School } from '@/data/schools';
+import { getMergedPlacesByGrade, getMergedContent, getMergedSchools, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT } from '@/data/dataManager';
 
 interface PlaceSearchBarProps {
   grade: 3 | 4;
   onPlaceSelect: (place: Place) => void;
   onContentSelect: (content: MapContent) => void;
+  onSchoolSelect?: (school: School) => void;
 }
 
 type SearchResult =
   | { kind: 'place'; item: Place }
-  | { kind: 'content'; item: MapContent };
+  | { kind: 'content'; item: MapContent }
+  | { kind: 'school'; item: School };
 
-const MAX_RESULTS = 8;
+const MAX_RESULTS = 10;
 
-const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBarProps) => {
+const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect }: PlaceSearchBarProps) => {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
@@ -49,8 +52,8 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBa
     const scored: { r: SearchResult; score: number }[] = [];
     for (const r of dataset) {
       const name = r.item.name.toLowerCase();
-      const desc = (r.item.description || '').toLowerCase();
-      const addr = r.kind === 'place' ? (r.item.address || '').toLowerCase() : '';
+      const desc = r.kind === 'school' ? '' : ((r.item as Place | MapContent).description || '').toLowerCase();
+      const addr = (r.kind === 'place' || r.kind === 'school') ? (r.item.address || '').toLowerCase() : '';
       let score = 0;
       if (name.startsWith(q)) score = 100;
       else if (name.includes(q)) score = 80;
@@ -75,7 +78,8 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBa
 
   const pick = (r: SearchResult) => {
     if (r.kind === 'place') onPlaceSelect(r.item);
-    else onContentSelect(r.item);
+    else if (r.kind === 'content') onContentSelect(r.item);
+    else if (r.kind === 'school') onSchoolSelect?.(r.item);
     setQuery('');
     setOpen(false);
   };
@@ -118,12 +122,28 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect }: PlaceSearchBa
           ) : (
             <ul className="py-1">
               {results.map((r, idx) => {
-                const isPlace = r.kind === 'place';
-                const color = isPlace ? categoryColors[r.item.category] : contentCategoryColors[r.item.contentType];
-                const label = isPlace ? categoryLabels[r.item.category] : `${contentCategoryIcons[r.item.contentType]} ${contentCategoryLabels[r.item.contentType]}`;
-                const sub = isPlace ? r.item.address : (r.item.description?.slice(0, 40) || '');
+                let color: string;
+                let label: string;
+                let sub: string;
+                let key: string;
+                if (r.kind === 'place') {
+                  color = categoryColors[r.item.category];
+                  label = categoryLabels[r.item.category];
+                  sub = r.item.address || '';
+                  key = `place-${r.item.id}`;
+                } else if (r.kind === 'content') {
+                  color = contentCategoryColors[r.item.contentType];
+                  label = `${contentCategoryIcons[r.item.contentType]} ${contentCategoryLabels[r.item.contentType]}`;
+                  sub = r.item.description?.slice(0, 40) || '';
+                  key = `content-${r.item.id}`;
+                } else {
+                  color = '#6A1B9A';
+                  label = '🏫 초등학교';
+                  sub = r.item.address || '';
+                  key = `school-${r.item.name}`;
+                }
                 return (
-                  <li key={`${r.kind}-${r.item.id}`}>
+                  <li key={key}>
                     <button
                       type="button"
                       onMouseEnter={() => setHighlight(idx)}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Place, PlaceCategory, PublicSubCategory, categoryColors, categoryIcons, publicSubCategoryColors } from '@/data/places';
 import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcons } from '@/data/content';
-import { getMergedPlacesByGrade, getMergedContentByCategory } from '@/data/dataManager';
+import { getMergedPlacesByGrade, getMergedContentByCategory, getMergedSchools } from '@/data/dataManager';
 import { School } from '@/data/schools';
 import { MapPin, Plus, Minus, School as SchoolIcon } from 'lucide-react';
 
@@ -25,6 +25,7 @@ interface KakaoMapProps {
   onZoomComplete?: () => void;
   isZooming?: boolean;
   visiblePlaceIds?: Set<string> | null;
+  focusLocation?: { lat: number; lng: number; key: string } | null;
 }
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
@@ -45,7 +46,7 @@ function getZoomMessage(stageIndex: number, district: string): string {
   }
 }
 
-const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, activePublicSubCategories, zoomIn, onZoomComplete, isZooming, visiblePlaceIds }: KakaoMapProps) => {
+const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent, onContentSelect, activeCategories, activePlaceCategories, activePublicSubCategories, zoomIn, onZoomComplete, isZooming, visiblePlaceIds, focusLocation }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
@@ -280,6 +281,37 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         el.addEventListener('click', () => onPlaceSelect(place));
         overlaysRef.current.push(overlay);
       });
+
+      // When education subcategory is active (or all subs), also render elementary schools as markers (grade 3 only)
+      const showSchools =
+        grade === 3 &&
+        activePlaceCategories?.includes('public') &&
+        (!activePublicSubCategories || activePublicSubCategories.includes('education'));
+      if (showSchools) {
+        const eduColor = publicSubCategoryColors.education;
+        const allSchools = getMergedSchools();
+        allSchools.forEach((s) => {
+          if (s.lat == null || s.lng == null) return;
+          if (s.name === school.name) return; // skip currently-selected school (already marked)
+          const position = new window.kakao.maps.LatLng(s.lat, s.lng);
+          const el = document.createElement('div');
+          el.innerHTML = `<div style="
+            background:${eduColor};color:white;
+            padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
+            white-space:nowrap;cursor:pointer;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);
+            transform:translateX(-50%);
+            transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+          ">🏫 ${s.name}</div>`;
+          const overlay = new window.kakao.maps.CustomOverlay({
+            position, content: el, yAnchor: 1.3, zIndex: 1, map: mapInstance.current,
+          });
+          el.addEventListener('click', () => {
+            mapInstance.current.panTo(position);
+          });
+          overlaysRef.current.push(overlay);
+        });
+      }
     }
 
     const contentCategories = activeCategories.filter(c => c !== 'place');
@@ -328,6 +360,13 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
     mapInstance.current.setCenter(position);
     if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
   }, [isLoaded, selectedContent]);
+
+  useEffect(() => {
+    if (!isLoaded || !mapInstance.current || !focusLocation) return;
+    const position = new window.kakao.maps.LatLng(focusLocation.lat, focusLocation.lng);
+    mapInstance.current.panTo(position);
+    if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
+  }, [isLoaded, focusLocation]);
 
   if (error === 'API_KEY_MISSING') {
     return (

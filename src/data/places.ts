@@ -1,6 +1,6 @@
 export type PlaceCategory = 'tourism' | 'nature' | 'culture' | 'public' | 'experience' | 'market';
 
-export type PublicSubCategory = 'government' | 'hospital' | 'fire' | 'police' | 'post' | 'health' | 'education' | 'district';
+export type PublicSubCategory = 'government' | 'hospital' | 'fire' | 'police' | 'post' | 'health' | 'education';
 
 export interface Place {
   id: string;
@@ -26,7 +26,6 @@ export const publicSubCategoryLabels: Record<PublicSubCategory, string> = {
   post: '📮 우체국',
   health: '🏥 보건소',
   education: '📚 교육',
-  district: '🏘️ 읍면동',
 };
 
 export const publicSubCategoryColors: Record<PublicSubCategory, string> = {
@@ -37,7 +36,6 @@ export const publicSubCategoryColors: Record<PublicSubCategory, string> = {
   post: '#EF6C00',
   health: '#2E7D32',
   education: '#6A1B9A',
-  district: '#00838F',
 };
 
 export const categoryLabels: Record<PlaceCategory, string> = {
@@ -351,94 +349,94 @@ export const places: Place[] = [
 
   // ===== 면사무소 =====
   {
-    id: 'p-geojemyeon', name: '거제면사무소', category: 'public', subCategory: 'district',
+    id: 'p-geojemyeon', name: '거제면사무소', category: 'public', subCategory: 'government',
     description: '거제면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 거제면 서상길 1', lat: 34.851002, lng: 128.590419, grade: 3,
   },
   {
-    id: 'p-dundeokmyeon', name: '둔덕면사무소', category: 'public', subCategory: 'district',
+    id: 'p-dundeokmyeon', name: '둔덕면사무소', category: 'public', subCategory: 'government',
     description: '둔덕면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 둔덕면 거제남서로 4620', lat: 34.836811, lng: 128.504904, grade: 3,
   },
   {
-    id: 'p-sadeungmyeon', name: '사등면사무소', category: 'public', subCategory: 'district',
+    id: 'p-sadeungmyeon', name: '사등면사무소', category: 'public', subCategory: 'government',
     description: '사등면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 사등면 성포로 104', lat: 34.918916, lng: 128.522252, grade: 3,
   },
   {
-    id: 'p-yeonchomyeon', name: '연초면사무소', category: 'public', subCategory: 'district',
+    id: 'p-yeonchomyeon', name: '연초면사무소', category: 'public', subCategory: 'government',
     description: '연초면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 연초면 죽토로 11', lat: 34.914594, lng: 128.656526, grade: 3,
   },
   {
-    id: 'p-hacheongmyeon', name: '하청면사무소', category: 'public', subCategory: 'district',
+    id: 'p-hacheongmyeon', name: '하청면사무소', category: 'public', subCategory: 'government',
     description: '하청면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 하청면 하청로 1', lat: 34.955334, lng: 128.655160, grade: 3,
   },
   {
-    id: 'p-jangmokmyeon', name: '장목면사무소', category: 'public', subCategory: 'district',
+    id: 'p-jangmokmyeon', name: '장목면사무소', category: 'public', subCategory: 'government',
     description: '장목면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 장목면 장동1길 46-1', lat: 34.986529, lng: 128.682296, grade: 3,
   },
   {
-    id: 'p-ilunmyeon', name: '일운면사무소', category: 'public', subCategory: 'district',
+    id: 'p-ilunmyeon', name: '일운면사무소', category: 'public', subCategory: 'government',
     description: '일운면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 일운면 지세포4길 7', lat: 34.829566, lng: 128.703417, grade: 3,
   },
   {
-    id: 'p-dongbumyeon', name: '동부면사무소', category: 'public', subCategory: 'district',
+    id: 'p-dongbumyeon', name: '동부면사무소', category: 'public', subCategory: 'government',
     description: '동부면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 동부면 동부로 16', lat: 34.821607, lng: 128.608114, grade: 3,
   },
   {
-    id: 'p-nambumyeon', name: '남부면사무소', category: 'public', subCategory: 'district',
+    id: 'p-nambumyeon', name: '남부면사무소', category: 'public', subCategory: 'government',
     description: '남부면 지역 주민의 행정 업무를 담당하는 면사무소입니다.',
     address: '경상남도 거제시 남부면 남부해안로 30', lat: 34.732306, lng: 128.610124, grade: 3,
   },
 
   // ===== 동주민센터 =====
   {
-    id: 'p-gohyeon', name: '고현동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-gohyeon', name: '고현동주민센터', category: 'public', subCategory: 'government',
     description: '고현동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 거제중앙로13길 24 (고현동)', lat: 34.880554, lng: 128.620768, grade: 3,
   },
   {
-    id: 'p-sangmun', name: '상문동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-sangmun', name: '상문동주민센터', category: 'public', subCategory: 'government',
     description: '상문동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 거제중앙로 1567 (상문동)', lat: 34.867191, lng: 128.639208, grade: 3,
   },
   {
-    id: 'p-okpo1', name: '옥포1동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-okpo1', name: '옥포1동주민센터', category: 'public', subCategory: 'government',
     description: '옥포1동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 옥포로 120 (옥포동)', lat: 34.890041, lng: 128.694078, grade: 3,
   },
   {
-    id: 'p-okpo2', name: '옥포2동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-okpo2', name: '옥포2동주민센터', category: 'public', subCategory: 'government',
     description: '옥포2동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 진목로 3 (옥포동)', lat: 34.8960, lng: 128.6860, grade: 3,
   },
   {
-    id: 'p-jangseungpo', name: '장승포동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-jangseungpo', name: '장승포동주민센터', category: 'public', subCategory: 'government',
     description: '장승포동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 장승포로 38 (장승포동)', lat: 34.8678, lng: 128.7289, grade: 3,
   },
   {
-    id: 'p-neungpo', name: '능포동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-neungpo', name: '능포동주민센터', category: 'public', subCategory: 'government',
     description: '능포동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 능포로 53 (능포동)', lat: 34.8804, lng: 128.7384, grade: 3,
   },
   {
-    id: 'p-aju', name: '아주동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-aju', name: '아주동주민센터', category: 'public', subCategory: 'government',
     description: '아주동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 아주로 30 (아주동)', lat: 34.8686, lng: 128.6838, grade: 3,
   },
   {
-    id: 'p-jangpyeong', name: '장평동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-jangpyeong', name: '장평동주민센터', category: 'public', subCategory: 'government',
     description: '장평동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 장평3로 10 (장평동)', lat: 34.8890, lng: 128.6090, grade: 3,
   },
   {
-    id: 'p-suyang', name: '수양동주민센터', category: 'public', subCategory: 'district',
+    id: 'p-suyang', name: '수양동주민센터', category: 'public', subCategory: 'government',
     description: '수양동 주민의 행정 민원 업무를 처리하는 동주민센터입니다.',
     address: '경상남도 거제시 수양로 506 (수양동)', lat: 34.8720, lng: 128.6180, grade: 3,
   },

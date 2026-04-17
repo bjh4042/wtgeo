@@ -21,7 +21,7 @@ const subCategoryMap: Record<string, PublicSubCategory> = {
   '우체국': 'post',
   '보건소': 'health', '보건': 'health',
   '교육': 'education', '박물관': 'education',
-  '읍면동': 'district',
+  '읍면동': 'government',
 };
 
 const gradeMap: Record<string, 3 | 4 | 'all'> = {

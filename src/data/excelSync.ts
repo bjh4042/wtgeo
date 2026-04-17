@@ -17,7 +17,7 @@ const subCategoryMap: Record<string, PublicSubCategory> = {
   '병원': 'hospital', '소방': 'fire', '소방서': 'fire',
   '경찰': 'police', '경찰서': 'police', '우체국': 'post',
   '보건소': 'health', '보건': 'health', '교육': 'education', '박물관': 'education',
-  '읍면동': 'district',
+  '읍면동': 'government',
 };
 const reverseSubCategoryMap: Record<string, string> = {};
 Object.entries(subCategoryMap).forEach(([k, v]) => { if (!reverseSubCategoryMap[v]) reverseSubCategoryMap[v] = k; });

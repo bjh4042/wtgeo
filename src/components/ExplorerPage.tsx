@@ -50,6 +50,7 @@ const ExplorerPage = () => {
   const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [grade4VisibleIds, setGrade4VisibleIds] = useState<Set<string>>(new Set(GRADE4_DEFAULT_PLACE_IDS));
+  const [focusLocation, setFocusLocation] = useState<{ lat: number; lng: number; key: string } | null>(null);
 
   const { favorites, isFavorite, toggleFavorite, removeFavorite, clearAll, reorder, courseName, setCourseName } = useFavorites();
 
@@ -114,7 +115,6 @@ const ExplorerPage = () => {
   const handlePlaceCategoryToggle = (cat: PlaceCategory) => {
     setActivePlaceCategories(prev => {
       if (prev.includes(cat)) {
-        if (prev.length === 1) return prev;
         return prev.filter(c => c !== cat);
       }
       return [...prev, cat];
@@ -211,6 +211,7 @@ const ExplorerPage = () => {
                       grade={selectedGrade}
                       onPlaceSelect={handlePlaceSelect}
                       onContentSelect={handleContentSelect}
+                      onSchoolSelect={(s) => setFocusLocation({ lat: s.lat, lng: s.lng, key: `${s.name}-${Date.now()}` })}
                     />
                   )}
                   {/* Favorites button */}
@@ -312,6 +313,7 @@ const ExplorerPage = () => {
                   onZoomComplete={handleZoomComplete}
                   isZooming={isZooming}
                   visiblePlaceIds={selectedGrade === 4 ? grade4VisibleIds : null}
+                  focusLocation={focusLocation}
                 />
               )}
 
