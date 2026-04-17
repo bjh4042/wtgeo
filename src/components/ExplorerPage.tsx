@@ -19,6 +19,7 @@ const GyeongnamExplorer = lazy(() => import('@/components/GyeongnamExplorer'));
 import RouteExplorer from '@/components/RouteExplorer';
 import PlaceNameOrigins from '@/components/PlaceNameOrigins';
 import FavoriteCourse from '@/components/FavoriteCourse';
+import PlaceSearchBar from '@/components/PlaceSearchBar';
 import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
@@ -210,6 +211,8 @@ const ExplorerPage = () => {
                   {/* Favorites button */}
                   <button
                     onClick={() => setShowFavorites(true)}
+                    data-search-anchor
+                  >
                     className="relative flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent/20 text-accent-foreground hover:bg-accent/40 transition-colors"
                   >
                     <Star size={10} className="md:w-3 md:h-3 fill-accent text-accent" />
