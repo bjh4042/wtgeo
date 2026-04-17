@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { QuizQuestion, getRandomQuestions } from '@/data/quiz';
-import { getRandomGyeongnamQuestions } from '@/data/quizGyeongnam';
+import { QuizQuestion } from '@/data/quiz';
+import { fetchRandomQuestionsByGrade } from '@/data/quizManager';
 
 interface QuizPopupProps {
   onClose: () => void;
@@ -27,10 +27,15 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
 
-  const startQuiz = () => {
-    const randomQs = isGrade4 ? getRandomGyeongnamQuestions(10) : getRandomQuestions(10);
+  const startQuiz = async () => {
+    const gradeKey: '3' | '4' = isGrade4 ? '4' : '3';
+    const randomQs = await fetchRandomQuestionsByGrade(gradeKey, 10);
+    if (randomQs.length === 0) {
+      alert('등록된 문제가 없습니다. 관리자에게 문의하세요.');
+      return;
+    }
     setQuestions(randomQs);
-    setAnswers(Array(10).fill(null));
+    setAnswers(Array(randomQs.length).fill(null));
     setCurrentQ(0);
     setElapsed(0);
     setScore(0);
