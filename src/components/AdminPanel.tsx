@@ -608,9 +608,19 @@ const AdminPanel = () => {
             </div>
             <div>
               <label className="text-[10px] font-semibold text-foreground">사진</label>
+              <input
+                type="url"
+                value={editingContent.imageUrl?.startsWith('data:') ? '' : (editingContent.imageUrl || '')}
+                onChange={e => setEditingContent({ ...editingContent, imageUrl: e.target.value })}
+                placeholder="이미지 웹 링크 (https://...)"
+                className={inputClass}
+              />
               <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'content')}
                 className="w-full mt-1 text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:font-medium file:cursor-pointer" />
               {editingContent.imageUrl && <img src={editingContent.imageUrl} alt="" className="w-full h-20 object-cover rounded-lg mt-1" />}
+              {editingContent.imageUrl && (
+                <button type="button" onClick={() => setEditingContent({ ...editingContent, imageUrl: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">사진 제거</button>
+              )}
             </div>
             <button onClick={handleSaveContent} disabled={!editingContent.name.trim()}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer disabled:opacity-50">
