@@ -409,7 +409,8 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
         </button>
       )}
 
-      {/* Zoom controls - hidden during zoom */}
+      {/* Compass (4학년 전용) - hidden during zoom */}
+      {!isZooming && grade === 4 && <Compass />}
       {!isZooming && (
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-20">
           <button
