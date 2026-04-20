@@ -4,6 +4,7 @@ import { MapContent, ContentCategory, contentCategoryColors, contentCategoryIcon
 import { getMergedPlacesByGrade, getMergedContentByCategory, getMergedSchools } from '@/data/dataManager';
 import { School } from '@/data/schools';
 import { MapPin, Plus, Minus, School as SchoolIcon } from 'lucide-react';
+import Compass from '@/components/Compass';
 
 declare global {
   interface Window {
