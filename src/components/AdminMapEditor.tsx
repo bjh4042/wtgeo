@@ -322,6 +322,22 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     setRenderKey(n => n + 1);
   }, [selectedContentItem]);
 
+  const handleImageFileToPlace = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file || !selectedPlace) return;
+    const reader = new FileReader();
+    reader.onload = () => setSelectedPlace(p => p ? { ...p, imageUrl: reader.result as string } : p);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }, [selectedPlace]);
+
+  const handleImageFileToContent = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file || !selectedContentItem) return;
+    const reader = new FileReader();
+    reader.onload = () => setSelectedContentItem(c => c ? { ...c, imageUrl: reader.result as string } : c);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }, [selectedContentItem]);
+
   const handleDeleteContent = useCallback(() => {
     if (!selectedContentItem) return;
     if (!confirm(`"${selectedContentItem.name}" 콘텐츠를 삭제하시겠습니까?`)) return;
@@ -599,6 +615,22 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                     <div><label className="text-[10px] font-semibold text-foreground">유래</label><textarea value={selectedPlace.origin || ''} onChange={e => setSelectedPlace({ ...selectedPlace, origin: e.target.value })} className={`${inputClass} resize-none`} rows={2} /></div>
                     <div><label className="text-[10px] font-semibold text-foreground">참고 링크</label><input value={selectedPlace.referenceUrl || ''} onChange={e => setSelectedPlace({ ...selectedPlace, referenceUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div><label className="text-[10px] font-semibold text-foreground flex items-center gap-1"><Youtube size={10} className="text-destructive" /> 유튜브</label><input value={selectedPlace.youtubeUrl || ''} onChange={e => setSelectedPlace({ ...selectedPlace, youtubeUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-foreground">사진</label>
+                      <input
+                        type="url"
+                        value={selectedPlace.imageUrl?.startsWith('data:') ? '' : (selectedPlace.imageUrl || '')}
+                        onChange={e => setSelectedPlace({ ...selectedPlace, imageUrl: e.target.value })}
+                        placeholder="이미지 웹 링크 (https://...)"
+                        className={inputClass}
+                      />
+                      <input type="file" accept="image/*" onChange={handleImageFileToPlace}
+                        className="w-full mt-1 text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:font-medium file:cursor-pointer" />
+                      {selectedPlace.imageUrl && <img src={selectedPlace.imageUrl} alt="" className="w-full h-20 object-cover rounded-lg mt-1" />}
+                      {selectedPlace.imageUrl && (
+                        <button type="button" onClick={() => setSelectedPlace({ ...selectedPlace, imageUrl: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">사진 제거</button>
+                      )}
+                    </div>
                     <div className="flex gap-2 pt-1">
                       <button onClick={handleSavePlace} disabled={!selectedPlace.name.trim()}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">
@@ -699,7 +731,22 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                       </select>
                     </div>
                     <div><label className="text-[10px] font-semibold text-foreground">출처</label><input value={selectedContentItem.source || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, source: e.target.value })} className={inputClass} /></div>
-                    <div><label className="text-[10px] font-semibold text-foreground">이미지 URL</label><input value={selectedContentItem.imageUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, imageUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-foreground">사진</label>
+                      <input
+                        type="url"
+                        value={selectedContentItem.imageUrl?.startsWith('data:') ? '' : (selectedContentItem.imageUrl || '')}
+                        onChange={e => setSelectedContentItem({ ...selectedContentItem, imageUrl: e.target.value })}
+                        placeholder="이미지 웹 링크 (https://...)"
+                        className={inputClass}
+                      />
+                      <input type="file" accept="image/*" onChange={handleImageFileToContent}
+                        className="w-full mt-1 text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:font-medium file:cursor-pointer" />
+                      {selectedContentItem.imageUrl && <img src={selectedContentItem.imageUrl} alt="" className="w-full h-20 object-cover rounded-lg mt-1" />}
+                      {selectedContentItem.imageUrl && (
+                        <button type="button" onClick={() => setSelectedContentItem({ ...selectedContentItem, imageUrl: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">사진 제거</button>
+                      )}
+                    </div>
                     <div><label className="text-[10px] font-semibold text-foreground">참고 링크</label><input value={selectedContentItem.referenceUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, referenceUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div><label className="text-[10px] font-semibold text-foreground flex items-center gap-1"><Youtube size={10} className="text-destructive" /> 유튜브</label><input value={selectedContentItem.youtubeUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, youtubeUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div className="flex gap-2 pt-1">
