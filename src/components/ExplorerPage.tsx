@@ -88,7 +88,7 @@ const ExplorerPage = () => {
     setSelectedContent(null);
     // For grade 4, reveal the place on map when selected from filter
     setGrade4VisibleIds(prev => {
-      if (prev.has(place.id)) return prev;
+      if (prev === null || prev.has(place.id)) return prev;
       const next = new Set(prev ?? []);
       next.add(place.id);
       return next;
