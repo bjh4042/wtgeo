@@ -10,7 +10,6 @@ const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
 const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
   const [selectedCity, setSelectedCity] = useState<GyeongnamCity | null>(null);
-  const [showMap, setShowMap] = useState(false);
   const [cities, setCities] = useState<GyeongnamCity[]>(getGyeongnamCities());
   const [loaded, setLoaded] = useState(isGyeongnamEditsLoaded());
   const mapRef = useRef<HTMLDivElement>(null);
@@ -30,9 +29,9 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     return () => window.removeEventListener(GYEONGNAM_UPDATED_EVENT, handleUpdate);
   }, [loaded]);
 
-  // Initialize map when showing a city
+  // Initialize map when selecting a city
   useEffect(() => {
-    if (!showMap || !selectedCity || !mapRef.current) return;
+    if (!selectedCity || !mapRef.current) return;
     if (!window.kakao?.maps) return;
 
     const currentCity = cities.find(city => city.id === selectedCity.id) ?? selectedCity;
@@ -96,7 +95,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     info.open(map, marker);
 
     return () => { mapInstanceRef.current = null; };
-  }, [showMap, selectedCity, cities]);
+  }, [selectedCity, cities]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
@@ -107,7 +106,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
         {/* Header */}
         <div className="p-3 md:p-4 border-b flex items-center justify-between bg-primary/10 sticky top-0 z-10">
           {selectedCity ? (
-            <button onClick={() => { setSelectedCity(null); setShowMap(false); }} className="flex items-center gap-1 text-sm font-bold text-primary cursor-pointer">
+            <button onClick={() => setSelectedCity(null)} className="flex items-center gap-1 text-sm font-bold text-primary cursor-pointer">
               <ArrowLeft size={16} /> 시·군 목록
             </button>
           ) : (
@@ -203,17 +202,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 </div>
               </div>
 
-              {/* Map toggle */}
-              <button
-                onClick={() => setShowMap(!showMap)}
-                className="w-full py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {showMap ? '지도 닫기' : '📍 행정구역 지도 보기'}
-              </button>
-
-              {showMap && (
-                <div ref={mapRef} className="w-full h-48 md:h-64 rounded-xl border overflow-hidden" />
-              )}
+              <div ref={mapRef} className="w-full h-48 md:h-64 rounded-xl border overflow-hidden" />
             </div>
           </div>
         )}
