@@ -36,7 +36,10 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
 
     const currentCity = cities.find(city => city.id === selectedCity.id) ?? selectedCity;
     const center = new window.kakao.maps.LatLng(currentCity.lat, currentCity.lng);
-    const zoomLevel = currentCity.id === 'gyeongnam' ? 11 : 9;
+    const isMobileMap = window.innerWidth < 768;
+    const zoomLevel = currentCity.id === 'gyeongnam'
+      ? (isMobileMap ? 12 : 11)
+      : (isMobileMap ? 10 : 8);
     const map = new window.kakao.maps.Map(mapRef.current, { center, level: zoomLevel });
     mapInstanceRef.current = map;
 
@@ -202,7 +205,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 </div>
               </div>
 
-              <div ref={mapRef} className="w-full h-48 md:h-64 rounded-xl border overflow-hidden" />
+              <div ref={mapRef} className="w-full h-64 md:h-80 lg:h-96 rounded-xl border overflow-hidden" />
             </div>
           </div>
         )}
