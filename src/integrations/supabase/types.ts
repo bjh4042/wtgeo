@@ -27,6 +27,8 @@ export type Database = {
           lat: number | null
           lng: number | null
           name: string | null
+          old_image_caption: string | null
+          old_image_url: string | null
           reference_url: string | null
           source: string | null
           updated_at: string
@@ -44,6 +46,8 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           name?: string | null
+          old_image_caption?: string | null
+          old_image_url?: string | null
           reference_url?: string | null
           source?: string | null
           updated_at?: string
@@ -61,6 +65,8 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           name?: string | null
+          old_image_caption?: string | null
+          old_image_url?: string | null
           reference_url?: string | null
           source?: string | null
           updated_at?: string
@@ -81,6 +87,8 @@ export type Database = {
           lat: number
           lng: number
           name: string
+          old_image_caption: string | null
+          old_image_url: string | null
           reference_url: string | null
           source: string | null
           youtube_url: string | null
@@ -97,6 +105,8 @@ export type Database = {
           lat: number
           lng: number
           name: string
+          old_image_caption?: string | null
+          old_image_url?: string | null
           reference_url?: string | null
           source?: string | null
           youtube_url?: string | null
@@ -113,6 +123,8 @@ export type Database = {
           lat?: number
           lng?: number
           name?: string
+          old_image_caption?: string | null
+          old_image_url?: string | null
           reference_url?: string | null
           source?: string | null
           youtube_url?: string | null
