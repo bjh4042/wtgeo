@@ -35,17 +35,18 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     if (!showMap || !selectedCity || !mapRef.current) return;
     if (!window.kakao?.maps) return;
 
-    const center = new window.kakao.maps.LatLng(selectedCity.lat, selectedCity.lng);
-    const zoomLevel = selectedCity.id === 'gyeongnam' ? 11 : 9;
+    const currentCity = cities.find(city => city.id === selectedCity.id) ?? selectedCity;
+    const center = new window.kakao.maps.LatLng(currentCity.lat, currentCity.lng);
+    const zoomLevel = currentCity.id === 'gyeongnam' ? 11 : 9;
     const map = new window.kakao.maps.Map(mapRef.current, { center, level: zoomLevel });
     mapInstanceRef.current = map;
 
     // Draw boundary polygons
     // For 경상남도 (province), draw all city boundaries
-    const isProvince = selectedCity.id === 'gyeongnam';
+    const isProvince = currentCity.id === 'gyeongnam';
     const citiesToDraw = isProvince
       ? cities.filter(c => c.id !== 'gyeongnam' && c.boundary && c.boundary.length > 0)
-      : (selectedCity.boundary && selectedCity.boundary.length > 0 ? [selectedCity] : []);
+      : (currentCity.boundary && currentCity.boundary.length > 0 ? [currentCity] : []);
 
     const colors = ['#FF6B35', '#4A90D9', '#50C878', '#E74C3C', '#9B59B6', '#F39C12', '#1ABC9C', '#E91E63',
       '#00BCD4', '#FF5722', '#795548', '#607D8B', '#8BC34A', '#FF9800', '#3F51B5', '#009688', '#CDDC39', '#673AB7'];
@@ -90,12 +91,12 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     // City center marker
     const marker = new window.kakao.maps.Marker({ position: center, map });
     const info = new window.kakao.maps.InfoWindow({
-      content: `<div style="padding:6px 10px;font-size:12px;font-weight:bold;white-space:nowrap;">${selectedCity.mascotEmoji} ${selectedCity.name}</div>`,
+      content: `<div style="padding:6px 10px;font-size:12px;font-weight:bold;white-space:nowrap;">${currentCity.mascotEmoji} ${currentCity.name}</div>`,
     });
     info.open(map, marker);
 
     return () => { mapInstanceRef.current = null; };
-  }, [showMap, selectedCity]);
+  }, [showMap, selectedCity, cities]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
