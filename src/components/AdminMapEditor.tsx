@@ -338,6 +338,14 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     e.target.value = '';
   }, [selectedContentItem]);
 
+  const handleOldImageFileToContent = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file || !selectedContentItem) return;
+    const reader = new FileReader();
+    reader.onload = () => setSelectedContentItem(c => c ? { ...c, oldImageUrl: reader.result as string } : c);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }, [selectedContentItem]);
+
   const handleDeleteContent = useCallback(() => {
     if (!selectedContentItem) return;
     if (!confirm(`"${selectedContentItem.name}" 콘텐츠를 삭제하시겠습니까?`)) return;

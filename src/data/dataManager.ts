@@ -318,7 +318,7 @@ export async function saveCustomContent(content: MapContent): Promise<void> {
   else customContentCache.push(content);
   localStorage.setItem('geoje-custom-content', JSON.stringify(customContentCache));
   try {
-    await supabase.from('custom_content').upsert({
+    const row: any = {
       content_id: content.id,
       name: content.name,
       description: content.description,
@@ -333,7 +333,8 @@ export async function saveCustomContent(content: MapContent): Promise<void> {
       reference_url: content.referenceUrl || null,
       youtube_url: content.youtubeUrl || null,
       grade: String(content.grade || 'all'),
-    }, { onConflict: 'content_id' });
+    };
+    await supabase.from('custom_content').upsert(row, { onConflict: 'content_id' });
   } catch (e) { console.error('Failed to save custom content:', e); }
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
 }
