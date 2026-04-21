@@ -85,6 +85,8 @@ export async function loadAllDataFromCloud(): Promise<void> {
         if (row.content_type) edit.contentType = row.content_type;
         if (row.icon) edit.icon = row.icon;
         if (row.image_url) edit.imageUrl = row.image_url;
+        if (row.old_image_url) edit.oldImageUrl = row.old_image_url;
+        if (row.old_image_caption) edit.oldImageCaption = row.old_image_caption;
         if (row.source) edit.source = row.source;
         if (row.reference_url) edit.referenceUrl = row.reference_url;
         if (row.youtube_url) edit.youtubeUrl = row.youtube_url;
@@ -105,6 +107,8 @@ export async function loadAllDataFromCloud(): Promise<void> {
         contentType: row.content_type as ContentCategory,
         icon: row.icon || '📍',
         imageUrl: row.image_url || undefined,
+        oldImageUrl: row.old_image_url || undefined,
+        oldImageCaption: row.old_image_caption || undefined,
         source: row.source || undefined,
         referenceUrl: row.reference_url || undefined,
         youtubeUrl: row.youtube_url || undefined,
@@ -297,6 +301,8 @@ export async function saveContentEdit(contentId: string, edit: Partial<MapConten
     if (merged.contentType) row.content_type = merged.contentType;
     if (merged.icon) row.icon = merged.icon;
     if (merged.imageUrl) row.image_url = merged.imageUrl;
+    if (merged.oldImageUrl) row.old_image_url = merged.oldImageUrl;
+    if (merged.oldImageCaption) row.old_image_caption = merged.oldImageCaption;
     if (merged.source) row.source = merged.source;
     if (merged.referenceUrl) row.reference_url = merged.referenceUrl;
     if (merged.youtubeUrl) row.youtube_url = merged.youtubeUrl;
@@ -321,6 +327,8 @@ export async function saveCustomContent(content: MapContent): Promise<void> {
       content_type: content.contentType,
       icon: content.icon || '📍',
       image_url: content.imageUrl || null,
+      old_image_url: content.oldImageUrl || null,
+      old_image_caption: content.oldImageCaption || null,
       source: content.source || null,
       reference_url: content.referenceUrl || null,
       youtube_url: content.youtubeUrl || null,
