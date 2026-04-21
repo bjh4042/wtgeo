@@ -202,17 +202,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 </div>
               </div>
 
-              {/* Map toggle */}
-              <button
-                onClick={() => setShowMap(!showMap)}
-                className="w-full py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {showMap ? '지도 닫기' : '📍 행정구역 지도 보기'}
-              </button>
-
-              {showMap && (
-                <div ref={mapRef} className="w-full h-48 md:h-64 rounded-xl border overflow-hidden" />
-              )}
+              <div ref={mapRef} className="w-full h-48 md:h-64 rounded-xl border overflow-hidden" />
             </div>
           </div>
         )}
