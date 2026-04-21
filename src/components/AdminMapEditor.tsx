@@ -338,6 +338,14 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     e.target.value = '';
   }, [selectedContentItem]);
 
+  const handleOldImageFileToContent = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file || !selectedContentItem) return;
+    const reader = new FileReader();
+    reader.onload = () => setSelectedContentItem(c => c ? { ...c, oldImageUrl: reader.result as string } : c);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }, [selectedContentItem]);
+
   const handleDeleteContent = useCallback(() => {
     if (!selectedContentItem) return;
     if (!confirm(`"${selectedContentItem.name}" 콘텐츠를 삭제하시겠습니까?`)) return;
@@ -704,6 +712,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                         {selectedContentItem.referenceUrl && <div><p className="text-[10px] font-semibold text-muted-foreground">참고 링크</p><a href={selectedContentItem.referenceUrl} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline break-all">{selectedContentItem.referenceUrl}</a></div>}
                         {selectedContentItem.youtubeUrl && <div><p className="text-[10px] font-semibold text-muted-foreground">유튜브</p><a href={selectedContentItem.youtubeUrl} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline break-all">{selectedContentItem.youtubeUrl}</a></div>}
                         {selectedContentItem.imageUrl && <img src={selectedContentItem.imageUrl} alt="" className="w-full h-24 object-cover rounded-lg" />}
+                        {selectedContentItem.contentType === 'pastpresent' && selectedContentItem.oldImageUrl && <div><p className="text-[10px] font-semibold text-muted-foreground">옛날 사진</p><img src={selectedContentItem.oldImageUrl} alt={selectedContentItem.oldImageCaption || ''} className="w-full h-24 object-cover rounded-lg" />{selectedContentItem.oldImageCaption && <p className="text-[10px] text-muted-foreground mt-1">{selectedContentItem.oldImageCaption}</p>}</div>}
                         <div><p className="text-[10px] font-semibold text-muted-foreground">학년</p><p className="text-xs text-foreground">{selectedContentItem.grade === 'all' ? '전체' : `${selectedContentItem.grade}학년`}</p></div>
                         <div><p className="text-[10px] font-semibold text-muted-foreground">ID</p><p className="text-[10px] text-muted-foreground font-mono">{selectedContentItem.id}</p></div>
                       </>
@@ -747,6 +756,16 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                         <button type="button" onClick={() => setSelectedContentItem({ ...selectedContentItem, imageUrl: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">사진 제거</button>
                       )}
                     </div>
+                    {selectedContentItem.contentType === 'pastpresent' && (
+                      <div>
+                        <label className="text-[10px] font-semibold text-foreground">옛날 사진</label>
+                        <input type="url" value={selectedContentItem.oldImageUrl?.startsWith('data:') ? '' : (selectedContentItem.oldImageUrl || '')} onChange={e => setSelectedContentItem({ ...selectedContentItem, oldImageUrl: e.target.value })} placeholder="옛날 사진 웹 링크 (https://...)" className={inputClass} />
+                        <input type="file" accept="image/*" onChange={handleOldImageFileToContent} className="w-full mt-1 text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:font-medium file:cursor-pointer" />
+                        <input value={selectedContentItem.oldImageCaption || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, oldImageCaption: e.target.value })} placeholder="옛날 사진 설명" className={inputClass} />
+                        {selectedContentItem.oldImageUrl && <img src={selectedContentItem.oldImageUrl} alt="" className="w-full h-20 object-cover rounded-lg mt-1" />}
+                        {selectedContentItem.oldImageUrl && <button type="button" onClick={() => setSelectedContentItem({ ...selectedContentItem, oldImageUrl: '', oldImageCaption: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">옛날 사진 제거</button>}
+                      </div>
+                    )}
                     <div><label className="text-[10px] font-semibold text-foreground">참고 링크</label><input value={selectedContentItem.referenceUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, referenceUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div><label className="text-[10px] font-semibold text-foreground flex items-center gap-1"><Youtube size={10} className="text-destructive" /> 유튜브</label><input value={selectedContentItem.youtubeUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, youtubeUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div className="flex gap-2 pt-1">
