@@ -69,6 +69,8 @@ interface EditableContent {
   contentType: ContentCategory;
   icon: string;
   imageUrl?: string;
+  oldImageUrl?: string;
+  oldImageCaption?: string;
   source?: string;
   referenceUrl?: string;
   youtubeUrl?: string;
@@ -248,6 +250,14 @@ const AdminPanel = () => {
         setEditingContent({ ...editingContent, imageUrl: reader.result as string });
       }
     };
+    reader.readAsDataURL(file);
+  };
+
+  const handleOldImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingContent) return;
+    const reader = new FileReader();
+    reader.onload = () => setEditingContent({ ...editingContent, oldImageUrl: reader.result as string });
     reader.readAsDataURL(file);
   };
 
