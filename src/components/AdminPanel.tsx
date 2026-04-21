@@ -559,7 +559,7 @@ const AdminPanel = () => {
                     <p className="text-[10px] text-muted-foreground">{contentCategoryLabels[c.contentType] || c.contentType}</p>
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
-                    <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, source: c.source, referenceUrl: c.referenceUrl, youtubeUrl: c.youtubeUrl })}
+                    <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, oldImageUrl: c.oldImageUrl, oldImageCaption: c.oldImageCaption, source: c.source, referenceUrl: c.referenceUrl, youtubeUrl: c.youtubeUrl })}
                       className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
                     <button onClick={() => { if (confirm(`"${c.name}" 콘텐츠를 삭제하시겠습니까?`)) { handleDeleteContent(c.id); } }}
                       className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
@@ -632,6 +632,16 @@ const AdminPanel = () => {
                 <button type="button" onClick={() => setEditingContent({ ...editingContent, imageUrl: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">사진 제거</button>
               )}
             </div>
+            {editingContent.contentType === 'pastpresent' && (
+              <div>
+                <label className="text-[10px] font-semibold text-foreground">옛날 사진</label>
+                <input type="url" value={editingContent.oldImageUrl?.startsWith('data:') ? '' : (editingContent.oldImageUrl || '')} onChange={e => setEditingContent({ ...editingContent, oldImageUrl: e.target.value })} placeholder="옛날 사진 웹 링크 (https://...)" className={inputClass} />
+                <input type="file" accept="image/*" onChange={handleOldImageUpload} className="w-full mt-1 text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:font-medium file:cursor-pointer" />
+                <input value={editingContent.oldImageCaption || ''} onChange={e => setEditingContent({ ...editingContent, oldImageCaption: e.target.value })} placeholder="옛날 사진 설명" className={inputClass} />
+                {editingContent.oldImageUrl && <img src={editingContent.oldImageUrl} alt="" className="w-full h-20 object-cover rounded-lg mt-1" />}
+                {editingContent.oldImageUrl && <button type="button" onClick={() => setEditingContent({ ...editingContent, oldImageUrl: '', oldImageCaption: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">옛날 사진 제거</button>}
+              </div>
+            )}
             <button onClick={handleSaveContent} disabled={!editingContent.name.trim()}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer disabled:opacity-50">
               <Save size={14} /> 저장
