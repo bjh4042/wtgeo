@@ -22,6 +22,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
 
+  // Distinct colors per route segment
+  const segmentColors = ['#FF6B35', '#3B82F6', '#22C55E', '#A855F7', '#EAB308', '#EC4899', '#06B6D4', '#F97316', '#8B5CF6', '#10B981'];
+
   const allPlaces = useMemo(() => getMergedPlacesByGrade(grade), [grade]);
 
   const filteredPlaces = useMemo(() => {
