@@ -14,6 +14,7 @@ import {
   getVisitorCount, loadAllDataFromCloud,
 } from '@/data/dataManager';
 import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent, parseExcelToGyeongnam, exportGyeongnamToExcel } from '@/data/excelSync';
+import { uploadImageToStorage } from '@/lib/uploadImage';
 
 const ADMIN_PASSWORD = '4042';
 
@@ -239,34 +240,50 @@ const AdminPanel = () => {
     forceUpdate(n => n + 1);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'place' | 'content') => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'place' | 'content') => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
+    try {
+      const url = await uploadImageToStorage(file, type === 'place' ? 'places' : 'content');
       if (type === 'place' && editingPlace) {
-        setEditingPlace({ ...editingPlace, imageUrl: reader.result as string });
+        setEditingPlace({ ...editingPlace, imageUrl: url });
       } else if (type === 'content' && editingContent) {
-        setEditingContent({ ...editingContent, imageUrl: reader.result as string });
+        setEditingContent({ ...editingContent, imageUrl: url });
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error(err);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      e.target.value = '';
+    }
   };
 
-  const handleOldImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOldImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !editingContent) return;
-    const reader = new FileReader();
-    reader.onload = () => setEditingContent({ ...editingContent, oldImageUrl: reader.result as string });
-    reader.readAsDataURL(file);
+    try {
+      const url = await uploadImageToStorage(file, 'content-old');
+      setEditingContent({ ...editingContent, oldImageUrl: url });
+    } catch (err) {
+      console.error(err);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      e.target.value = '';
+    }
   };
 
-  const handleCityImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'mascotImageUrl' | 'logoUrl') => {
+  const handleCityImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'mascotImageUrl' | 'logoUrl') => {
     const file = e.target.files?.[0];
     if (!file || !editingCity) return;
-    const reader = new FileReader();
-    reader.onload = () => setEditingCity({ ...editingCity, [field]: reader.result as string });
-    reader.readAsDataURL(file);
+    try {
+      const url = await uploadImageToStorage(file, field === 'logoUrl' ? 'city-logos' : 'city-mascots');
+      setEditingCity({ ...editingCity, [field]: url });
+    } catch (err) {
+      console.error(err);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      e.target.value = '';
+    }
   };
 
   const handleSaveSiteInfo = () => {
