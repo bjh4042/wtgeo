@@ -6,6 +6,7 @@ import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, sav
 import { stories, placenames, heritages, pastPresent, natureContent } from '@/data/content';
 import { places as defaultPlaces } from '@/data/places';
 import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen } from 'lucide-react';
+import { uploadImageToStorage } from '@/lib/uploadImage';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
@@ -322,28 +323,43 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     setRenderKey(n => n + 1);
   }, [selectedContentItem]);
 
-  const handleImageFileToPlace = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileToPlace = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file || !selectedPlace) return;
-    const reader = new FileReader();
-    reader.onload = () => setSelectedPlace(p => p ? { ...p, imageUrl: reader.result as string } : p);
-    reader.readAsDataURL(file);
-    e.target.value = '';
+    try {
+      const url = await uploadImageToStorage(file, 'places');
+      setSelectedPlace(p => p ? { ...p, imageUrl: url } : p);
+    } catch (err) {
+      console.error(err);
+      alert('이미지 업로드에 실패했습니다.');
+    } finally {
+      e.target.value = '';
+    }
   }, [selectedPlace]);
 
-  const handleImageFileToContent = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileToContent = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file || !selectedContentItem) return;
-    const reader = new FileReader();
-    reader.onload = () => setSelectedContentItem(c => c ? { ...c, imageUrl: reader.result as string } : c);
-    reader.readAsDataURL(file);
-    e.target.value = '';
+    try {
+      const url = await uploadImageToStorage(file, 'content');
+      setSelectedContentItem(c => c ? { ...c, imageUrl: url } : c);
+    } catch (err) {
+      console.error(err);
+      alert('이미지 업로드에 실패했습니다.');
+    } finally {
+      e.target.value = '';
+    }
   }, [selectedContentItem]);
 
-  const handleOldImageFileToContent = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOldImageFileToContent = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file || !selectedContentItem) return;
-    const reader = new FileReader();
-    reader.onload = () => setSelectedContentItem(c => c ? { ...c, oldImageUrl: reader.result as string } : c);
-    reader.readAsDataURL(file);
-    e.target.value = '';
+    try {
+      const url = await uploadImageToStorage(file, 'content-old');
+      setSelectedContentItem(c => c ? { ...c, oldImageUrl: url } : c);
+    } catch (err) {
+      console.error(err);
+      alert('이미지 업로드에 실패했습니다.');
+    } finally {
+      e.target.value = '';
+    }
   }, [selectedContentItem]);
 
   const handleDeleteContent = useCallback(() => {
