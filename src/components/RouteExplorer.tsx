@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Place, PlaceCategory, categoryIcons, categoryColors, categoryLabels, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
 import { getMergedPlacesByGrade } from '@/data/dataManager';
-import { X, Plus, Trash2, Navigation, Route, ChevronUp, ChevronDown } from 'lucide-react';
+import { X, Plus, Trash2, Navigation, Route, ChevronUp, ChevronDown, Map as MapIcon } from 'lucide-react';
 
 interface RouteExplorerProps {
   grade: 3 | 4;
@@ -18,6 +18,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   const [showPicker, setShowPicker] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<PlaceCategory | 'all'>('all');
+  const [showInAppMap, setShowInAppMap] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   const allPlaces = useMemo(() => getMergedPlacesByGrade(grade), [grade]);
 
@@ -75,9 +78,64 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     return `https://map.kakao.com/link/to/${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
   }, [routePlaces]);
 
+  // In-app map: render markers + polyline for the route
+  useEffect(() => {
+    if (!showInAppMap || !mapRef.current || !window.kakao?.maps) return;
+    if (routePlaces.length === 0) return;
+
+    const points = [
+      { lat: school.lat, lng: school.lng, name: school.name, isSchool: true },
+      ...routePlaces.map(p => ({ lat: p.lat, lng: p.lng, name: p.name, color: categoryColors[p.category], isSchool: false })),
+    ];
+
+    // Compute bounds-aware center
+    const bounds = new window.kakao.maps.LatLngBounds();
+    points.forEach(p => bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
+
+    const map = new window.kakao.maps.Map(mapRef.current, {
+      center: new window.kakao.maps.LatLng(school.lat, school.lng),
+      level: 6,
+    });
+    mapInstanceRef.current = map;
+    map.setBounds(bounds);
+
+    // Polyline path
+    const path = points.map(p => new window.kakao.maps.LatLng(p.lat, p.lng));
+    const polyline = new window.kakao.maps.Polyline({
+      path,
+      strokeWeight: 4,
+      strokeColor: '#FF6B35',
+      strokeOpacity: 0.8,
+      strokeStyle: 'solid',
+    });
+    polyline.setMap(map);
+
+    // Markers with custom labels
+    points.forEach((p, idx) => {
+      const isSchool = p.isSchool;
+      const label = isSchool ? '🏫' : String(idx);
+      const bg = isSchool ? '#22c55e' : ((p as any).color || '#FF6B35');
+      const el = document.createElement('div');
+      el.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="background:${bg};color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${label}</div>
+          <div style="background:white;border:1px solid ${bg};color:#333;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:bold;margin-top:2px;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.2);">${p.name}</div>
+        </div>
+      `;
+      new window.kakao.maps.CustomOverlay({
+        position: new window.kakao.maps.LatLng(p.lat, p.lng),
+        content: el,
+        yAnchor: 0.5,
+        map,
+      });
+    });
+
+    return () => { mapInstanceRef.current = null; };
+  }, [showInAppMap, routePlaces, school]);
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
-      <div className="bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div className={`bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full ${showInAppMap ? 'max-w-3xl' : 'max-w-md'} max-h-[90vh] overflow-hidden transition-all`} onClick={e => e.stopPropagation()}>
         <div className="p-4 border-b flex items-center justify-between bg-primary/10">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <Route size={18} className="text-primary" /> 경로 탐험 모드
@@ -85,7 +143,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
         </div>
 
-        <div className="p-4 overflow-auto max-h-[60vh]">
+        <div className={`flex flex-col md:flex-row max-h-[80vh]`}>
+          {/* Left: route list */}
+          <div className={`p-4 overflow-auto ${showInAppMap ? 'md:w-[380px] md:border-r max-h-[40vh] md:max-h-[80vh]' : 'w-full max-h-[70vh]'}`}>
           {/* Route summary */}
           {routePlaces.length >= 2 && (
             <div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
@@ -195,21 +255,36 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
 
           {/* Actions */}
           {routePlaces.length >= 1 && (
-            <div className="mt-4 flex gap-2">
-              <a href={kakaoDirectionUrl} target="_blank" rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
-                <Navigation size={14} /> 길찾기
-              </a>
-              {routePlaces.length >= 2 && (
-                <a href={kakaoMapUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-accent text-accent-foreground text-sm font-bold hover:opacity-90 transition-opacity">
-                  📍 전체보기
-                </a>
-              )}
-              <button onClick={() => setRoutePlaces([])}
-                className="px-4 py-2.5 rounded-xl bg-muted text-muted-foreground text-sm font-medium cursor-pointer hover:bg-muted/80 transition-colors">
-                초기화
+            <div className="mt-4 space-y-2">
+              <button onClick={() => setShowInAppMap(v => !v)}
+                className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold cursor-pointer hover:opacity-90 transition-opacity">
+                <MapIcon size={14} /> {showInAppMap ? '지도 숨기기' : '앱에서 경로 보기'}
               </button>
+              <div className="flex gap-2">
+                <a href={kakaoDirectionUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-foreground text-xs font-medium hover:bg-muted/80 transition-colors">
+                  <Navigation size={12} /> 카카오 길찾기
+                </a>
+                {routePlaces.length >= 2 && (
+                  <a href={kakaoMapUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-foreground text-xs font-medium hover:bg-muted/80 transition-colors">
+                    📍 카카오맵
+                  </a>
+                )}
+                <button onClick={() => { setRoutePlaces([]); setShowInAppMap(false); }}
+                  className="px-3 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-medium cursor-pointer hover:bg-muted/80 transition-colors">
+                  초기화
+                </button>
+              </div>
+            </div>
+          )}
+          </div>
+
+          {/* Right: in-app map */}
+          {showInAppMap && (
+            <div className="flex-1 p-3 md:p-4 bg-muted/20">
+              <div ref={mapRef} className="w-full h-[40vh] md:h-[70vh] rounded-xl border overflow-hidden" />
+              <p className="text-[10px] text-muted-foreground mt-1.5 text-center">🟢 출발 학교 · 🔢 경로 순서 · 주황색 선이 이동 경로입니다</p>
             </div>
           )}
         </div>

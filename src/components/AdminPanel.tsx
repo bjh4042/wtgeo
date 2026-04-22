@@ -261,6 +261,14 @@ const AdminPanel = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleCityImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'mascotImageUrl' | 'logoUrl') => {
+    const file = e.target.files?.[0];
+    if (!file || !editingCity) return;
+    const reader = new FileReader();
+    reader.onload = () => setEditingCity({ ...editingCity, [field]: reader.result as string });
+    reader.readAsDataURL(file);
+  };
+
   const handleSaveSiteInfo = () => {
     saveSiteInfo(siteInfo);
     setEditingSiteInfo(false);
@@ -770,13 +778,32 @@ const AdminPanel = () => {
               <input value={editingCity.mascotEmoji} onChange={e => setEditingCity({ ...editingCity, mascotEmoji: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="text-[10px] font-semibold text-foreground">마스코트 이미지 URL</label>
-              <input value={editingCity.mascotImageUrl || ''} onChange={e => setEditingCity({ ...editingCity, mascotImageUrl: e.target.value })} className={inputClass} placeholder="https://..." />
-              {editingCity.mascotImageUrl && <img src={editingCity.mascotImageUrl} alt="" className="w-16 h-16 object-contain mt-1" />}
+              <label className="text-[10px] font-semibold text-foreground">마스코트 이미지 (URL 또는 파일 업로드)</label>
+              <input value={editingCity.mascotImageUrl || ''} onChange={e => setEditingCity({ ...editingCity, mascotImageUrl: e.target.value })} className={inputClass} placeholder="https://... 또는 아래에서 파일 선택" />
+              <div className="flex items-center gap-2 mt-1.5">
+                <label className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[11px] font-bold cursor-pointer hover:bg-primary/20">
+                  📁 파일 업로드
+                  <input type="file" accept="image/*" className="hidden" onChange={e => handleCityImageUpload(e, 'mascotImageUrl')} />
+                </label>
+                {editingCity.mascotImageUrl && (
+                  <button type="button" onClick={() => setEditingCity({ ...editingCity, mascotImageUrl: '' })} className="text-[11px] text-destructive cursor-pointer">삭제</button>
+                )}
+                {editingCity.mascotImageUrl && <img src={editingCity.mascotImageUrl} alt="" className="w-12 h-12 object-contain rounded border" />}
+              </div>
             </div>
             <div>
-              <label className="text-[10px] font-semibold text-foreground">로고 URL</label>
-              <input value={editingCity.logoUrl || ''} onChange={e => setEditingCity({ ...editingCity, logoUrl: e.target.value })} className={inputClass} placeholder="https://..." />
+              <label className="text-[10px] font-semibold text-foreground">로고 이미지 (URL 또는 파일 업로드)</label>
+              <input value={editingCity.logoUrl || ''} onChange={e => setEditingCity({ ...editingCity, logoUrl: e.target.value })} className={inputClass} placeholder="https://... 또는 아래에서 파일 선택" />
+              <div className="flex items-center gap-2 mt-1.5">
+                <label className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[11px] font-bold cursor-pointer hover:bg-primary/20">
+                  📁 파일 업로드
+                  <input type="file" accept="image/*" className="hidden" onChange={e => handleCityImageUpload(e, 'logoUrl')} />
+                </label>
+                {editingCity.logoUrl && (
+                  <button type="button" onClick={() => setEditingCity({ ...editingCity, logoUrl: '' })} className="text-[11px] text-destructive cursor-pointer">삭제</button>
+                )}
+                {editingCity.logoUrl && <img src={editingCity.logoUrl} alt="" className="w-12 h-12 object-contain rounded border" />}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
