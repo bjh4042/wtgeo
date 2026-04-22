@@ -78,6 +78,61 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     return `https://map.kakao.com/link/to/${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
   }, [routePlaces]);
 
+  // In-app map: render markers + polyline for the route
+  useEffect(() => {
+    if (!showInAppMap || !mapRef.current || !window.kakao?.maps) return;
+    if (routePlaces.length === 0) return;
+
+    const points = [
+      { lat: school.lat, lng: school.lng, name: school.name, isSchool: true },
+      ...routePlaces.map(p => ({ lat: p.lat, lng: p.lng, name: p.name, color: categoryColors[p.category], isSchool: false })),
+    ];
+
+    // Compute bounds-aware center
+    const bounds = new window.kakao.maps.LatLngBounds();
+    points.forEach(p => bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
+
+    const map = new window.kakao.maps.Map(mapRef.current, {
+      center: new window.kakao.maps.LatLng(school.lat, school.lng),
+      level: 6,
+    });
+    mapInstanceRef.current = map;
+    map.setBounds(bounds);
+
+    // Polyline path
+    const path = points.map(p => new window.kakao.maps.LatLng(p.lat, p.lng));
+    const polyline = new window.kakao.maps.Polyline({
+      path,
+      strokeWeight: 4,
+      strokeColor: '#FF6B35',
+      strokeOpacity: 0.8,
+      strokeStyle: 'solid',
+    });
+    polyline.setMap(map);
+
+    // Markers with custom labels
+    points.forEach((p, idx) => {
+      const isSchool = p.isSchool;
+      const label = isSchool ? '🏫' : String(idx);
+      const bg = isSchool ? '#22c55e' : ((p as any).color || '#FF6B35');
+      const el = document.createElement('div');
+      el.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="background:${bg};color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${label}</div>
+          <div style="background:white;border:1px solid ${bg};color:#333;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:bold;margin-top:2px;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.2);">${p.name}</div>
+        </div>
+      `;
+      new window.kakao.maps.CustomOverlay({
+        position: new window.kakao.maps.LatLng(p.lat, p.lng),
+        content: el,
+        yAnchor: 0.5,
+        map,
+      });
+    });
+
+    return () => { mapInstanceRef.current = null; };
+  }, [showInAppMap, routePlaces, school]);
+
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
       <div className="bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
