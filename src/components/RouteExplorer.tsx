@@ -81,17 +81,18 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     return `https://map.kakao.com/link/to/${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
   }, [routePlaces]);
 
-  // In-app map: render markers + polyline for the route
+  // In-app map: render markers + road-based polylines per segment with distinct colors
   useEffect(() => {
     if (!showInAppMap || !mapRef.current || !window.kakao?.maps) return;
     if (routePlaces.length === 0) return;
+
+    let cancelled = false;
 
     const points = [
       { lat: school.lat, lng: school.lng, name: school.name, isSchool: true },
       ...routePlaces.map(p => ({ lat: p.lat, lng: p.lng, name: p.name, color: categoryColors[p.category], isSchool: false })),
     ];
 
-    // Compute bounds-aware center
     const bounds = new window.kakao.maps.LatLngBounds();
     points.forEach(p => bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
 
@@ -101,17 +102,6 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     });
     mapInstanceRef.current = map;
     map.setBounds(bounds);
-
-    // Polyline path
-    const path = points.map(p => new window.kakao.maps.LatLng(p.lat, p.lng));
-    const polyline = new window.kakao.maps.Polyline({
-      path,
-      strokeWeight: 4,
-      strokeColor: '#FF6B35',
-      strokeOpacity: 0.8,
-      strokeStyle: 'solid',
-    });
-    polyline.setMap(map);
 
     // Markers with custom labels
     points.forEach((p, idx) => {
@@ -133,7 +123,47 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
       });
     });
 
-    return () => { mapInstanceRef.current = null; };
+    // Fetch road route per segment from OSRM (public, no key) and draw distinct-colored polylines
+    const fetchSegment = async (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${a.lng},${a.lat};${b.lng},${b.lat}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('OSRM failed');
+        const json = await res.json();
+        const coords: [number, number][] = json?.routes?.[0]?.geometry?.coordinates || [];
+        // OSRM returns [lng, lat]; convert to Kakao LatLng
+        return coords.map(([lng, lat]) => new window.kakao.maps.LatLng(lat, lng));
+      } catch (e) {
+        console.warn('[RouteExplorer] OSRM failed, falling back to straight line', e);
+        return [new window.kakao.maps.LatLng(a.lat, a.lng), new window.kakao.maps.LatLng(b.lat, b.lng)];
+      }
+    };
+
+    const polylines: any[] = [];
+    (async () => {
+      for (let i = 0; i < points.length - 1; i++) {
+        const a = points[i];
+        const b = points[i + 1];
+        const path = await fetchSegment(a, b);
+        if (cancelled) return;
+        const color = segmentColors[i % segmentColors.length];
+        const polyline = new window.kakao.maps.Polyline({
+          path,
+          strokeWeight: 5,
+          strokeColor: color,
+          strokeOpacity: 0.85,
+          strokeStyle: 'solid',
+        });
+        polyline.setMap(map);
+        polylines.push(polyline);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      polylines.forEach(pl => pl.setMap(null));
+      mapInstanceRef.current = null;
+    };
   }, [showInAppMap, routePlaces, school]);
 
   return (
