@@ -18,6 +18,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   const [showPicker, setShowPicker] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<PlaceCategory | 'all'>('all');
+  const [showInAppMap, setShowInAppMap] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   const allPlaces = useMemo(() => getMergedPlacesByGrade(grade), [grade]);
 
