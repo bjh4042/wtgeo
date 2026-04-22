@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Place, PlaceCategory, categoryIcons, categoryColors, categoryLabels, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
 import { getMergedPlacesByGrade } from '@/data/dataManager';
-import { X, Plus, Trash2, Navigation, Route, ChevronUp, ChevronDown } from 'lucide-react';
+import { X, Plus, Trash2, Navigation, Route, ChevronUp, ChevronDown, Map as MapIcon } from 'lucide-react';
 
 interface RouteExplorerProps {
   grade: 3 | 4;
