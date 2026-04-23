@@ -181,9 +181,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
         </div>
 
-        <div className={`flex flex-col md:flex-row max-h-[80vh]`}>
+        <div className={`flex flex-col md:flex-row max-h-[82vh]`}>
           {/* Left: route list */}
-          <div className={`p-4 overflow-auto ${showInAppMap ? 'md:w-[380px] md:border-r max-h-[40vh] md:max-h-[80vh]' : 'w-full max-h-[70vh]'}`}>
+          <div className={`p-4 overflow-auto ${showInAppMap ? 'md:w-[360px] md:border-r max-h-[38vh] md:max-h-[82vh]' : 'w-full max-h-[70vh]'}`}>
           {/* Route summary */}
           {routePlaces.length >= 2 && (
             <div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
