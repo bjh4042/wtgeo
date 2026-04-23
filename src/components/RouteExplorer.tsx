@@ -149,10 +149,15 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     let fullBounds: any = new window.kakao.maps.LatLngBounds();
     points.forEach(p => fullBounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
 
-    // Safely (re)attach polylines to the map — useful after zoom/pan/relayout
+    // Safely (re)attach polylines to the map — useful after zoom/pan/relayout.
+    // Strong reference management: clear array AFTER detaching from map to avoid duplicates.
     const redrawPolylines = () => {
-      polylines.forEach(pl => pl.setMap(null));
-      polylines = [];
+      if (polylines.length > 0) {
+        for (const pl of polylines) {
+          try { pl.setMap(null); } catch (e) { /* noop */ }
+        }
+        polylines.length = 0;
+      }
       segmentPaths.forEach((path, i) => {
         if (!path || path.length === 0) return;
         const color = segmentColors[i % segmentColors.length];
@@ -176,34 +181,42 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
         if (cancelled) return;
         segmentPaths[i] = path;
         path.forEach((latlng: any) => fullBounds.extend(latlng));
-        const color = segmentColors[i % segmentColors.length];
-        const polyline = new window.kakao.maps.Polyline({
-          path,
-          strokeWeight: 5,
-          strokeColor: color,
-          strokeOpacity: 0.85,
-          strokeStyle: 'solid',
-        });
-        polyline.setMap(map);
-        polylines.push(polyline);
       }
 
       if (cancelled) return;
-      // After all road segments are drawn, refit so the entire route is visible regardless of zoom
+      // Draw all polylines once, after segments are computed (prevents duplicates from incremental draws)
+      redrawPolylines();
+      // Refit so the entire route is visible regardless of zoom
       fitToBounds(fullBounds);
     })();
 
-    // Re-attach polylines on zoom/center change to guard against any rendering glitches
-    const onZoom = () => redrawPolylines();
-    const onCenter = () => redrawPolylines();
+    // Debounced redraw to avoid excessive re-rendering during zoom/pan
+    let redrawTimer: number | null = null;
+    const scheduleRedraw = () => {
+      if (redrawTimer !== null) window.clearTimeout(redrawTimer);
+      redrawTimer = window.setTimeout(() => {
+        redrawTimer = null;
+        if (cancelled) return;
+        redrawPolylines();
+      }, 150);
+    };
+
+    const onZoom = () => scheduleRedraw();
+    const onCenter = () => scheduleRedraw();
     window.kakao.maps.event.addListener(map, 'zoom_changed', onZoom);
     window.kakao.maps.event.addListener(map, 'center_changed', onCenter);
 
     // ResizeObserver: relayout + refit whenever the map container resizes (modal open animation, viewport change)
+    let resizeTimer: number | null = null;
     const onResize = () => {
-      map.relayout();
-      fitToBounds(fullBounds);
-      redrawPolylines();
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        resizeTimer = null;
+        if (cancelled) return;
+        map.relayout();
+        fitToBounds(fullBounds);
+        redrawPolylines();
+      }, 100);
     };
     const ro = new ResizeObserver(() => onResize());
     if (mapRef.current) ro.observe(mapRef.current);
@@ -211,11 +224,17 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
 
     return () => {
       cancelled = true;
+      initialTimers.forEach((t) => window.clearTimeout(t));
+      if (redrawTimer !== null) window.clearTimeout(redrawTimer);
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
       window.removeEventListener('resize', onResize);
       ro.disconnect();
       window.kakao.maps.event.removeListener(map, 'zoom_changed', onZoom);
       window.kakao.maps.event.removeListener(map, 'center_changed', onCenter);
-      polylines.forEach(pl => pl.setMap(null));
+      for (const pl of polylines) {
+        try { pl.setMap(null); } catch (e) { /* noop */ }
+      }
+      polylines.length = 0;
       mapInstanceRef.current = null;
     };
   }, [showInAppMap, routePlaces, school]);
