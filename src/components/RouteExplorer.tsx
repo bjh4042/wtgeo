@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { Place, PlaceCategory, categoryIcons, categoryColors, categoryLabels, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
 import { getMergedPlacesByGrade } from '@/data/dataManager';
-import { X, Plus, Trash2, Navigation, Route, ChevronUp, ChevronDown, Map as MapIcon } from 'lucide-react';
+import { X, Plus, Trash2, Route, ChevronUp, ChevronDown, Map as MapIcon } from 'lucide-react';
 
 interface RouteExplorerProps {
   grade: 3 | 4;
@@ -64,22 +64,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     return total;
   }, [routePlaces, school]);
 
-  // Kakao Maps URL: use multi-marker map view + direction to final destination
-  const kakaoMapUrl = useMemo(() => {
-    if (routePlaces.length === 0) return '';
-    // Multi-marker view: school + all route places
-    const markers = [
-      `${encodeURIComponent(school.name)},${school.lat},${school.lng}`,
-      ...routePlaces.map(p => `${encodeURIComponent(p.name)},${p.lat},${p.lng}`)
-    ];
-    return `https://map.kakao.com/link/map/${markers.join('/')}`;
-  }, [routePlaces, school]);
-
-  const kakaoDirectionUrl = useMemo(() => {
-    if (routePlaces.length === 0) return '';
-    const dest = routePlaces[routePlaces.length - 1];
-    return `https://map.kakao.com/link/to/${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
-  }, [routePlaces]);
+  // In-app map only — Kakao external links removed per user request
 
   // In-app map: render markers + road-based polylines per segment with distinct colors
   useEffect(() => {
@@ -149,17 +134,37 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
       }
     };
 
-    const polylines: any[] = [];
-    (async () => {
-      // Build a fresh bounds that includes BOTH markers AND every polyline coordinate
-      const fullBounds = new window.kakao.maps.LatLngBounds();
-      points.forEach(p => fullBounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
+    let polylines: any[] = [];
+    let segmentPaths: any[][] = [];
+    let fullBounds: any = new window.kakao.maps.LatLngBounds();
+    points.forEach(p => fullBounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
 
+    // Safely (re)attach polylines to the map — useful after zoom/pan/relayout
+    const redrawPolylines = () => {
+      polylines.forEach(pl => pl.setMap(null));
+      polylines = [];
+      segmentPaths.forEach((path, i) => {
+        if (!path || path.length === 0) return;
+        const color = segmentColors[i % segmentColors.length];
+        const polyline = new window.kakao.maps.Polyline({
+          path,
+          strokeWeight: 5,
+          strokeColor: color,
+          strokeOpacity: 0.85,
+          strokeStyle: 'solid',
+        });
+        polyline.setMap(map);
+        polylines.push(polyline);
+      });
+    };
+
+    (async () => {
       for (let i = 0; i < points.length - 1; i++) {
         const a = points[i];
         const b = points[i + 1];
         const path = await fetchSegment(a, b);
         if (cancelled) return;
+        segmentPaths[i] = path;
         path.forEach((latlng: any) => fullBounds.extend(latlng));
         const color = segmentColors[i % segmentColors.length];
         const polyline = new window.kakao.maps.Polyline({
@@ -178,13 +183,28 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
       fitToBounds(fullBounds);
     })();
 
-    // Relayout when window resizes (orientation change, devtools, etc.)
-    const onResize = () => map.relayout();
+    // Re-attach polylines on zoom/center change to guard against any rendering glitches
+    const onZoom = () => redrawPolylines();
+    const onCenter = () => redrawPolylines();
+    window.kakao.maps.event.addListener(map, 'zoom_changed', onZoom);
+    window.kakao.maps.event.addListener(map, 'center_changed', onCenter);
+
+    // ResizeObserver: relayout + refit whenever the map container resizes (modal open animation, viewport change)
+    const onResize = () => {
+      map.relayout();
+      fitToBounds(fullBounds);
+      redrawPolylines();
+    };
+    const ro = new ResizeObserver(() => onResize());
+    if (mapRef.current) ro.observe(mapRef.current);
     window.addEventListener('resize', onResize);
 
     return () => {
       cancelled = true;
       window.removeEventListener('resize', onResize);
+      ro.disconnect();
+      window.kakao.maps.event.removeListener(map, 'zoom_changed', onZoom);
+      window.kakao.maps.event.removeListener(map, 'center_changed', onCenter);
       polylines.forEach(pl => pl.setMap(null));
       mapInstanceRef.current = null;
     };
@@ -317,22 +337,10 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
                 className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold cursor-pointer hover:opacity-90 transition-opacity">
                 <MapIcon size={14} /> {showInAppMap ? '지도 숨기기' : '앱에서 경로 보기'}
               </button>
-              <div className="flex gap-2">
-                <a href={kakaoDirectionUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-foreground text-xs font-medium hover:bg-muted/80 transition-colors">
-                  <Navigation size={12} /> 카카오 길찾기
-                </a>
-                {routePlaces.length >= 2 && (
-                  <a href={kakaoMapUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-foreground text-xs font-medium hover:bg-muted/80 transition-colors">
-                    📍 카카오맵
-                  </a>
-                )}
-                <button onClick={() => { setRoutePlaces([]); setShowInAppMap(false); }}
-                  className="px-3 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-medium cursor-pointer hover:bg-muted/80 transition-colors">
-                  초기화
-                </button>
-              </div>
+              <button onClick={() => { setRoutePlaces([]); setShowInAppMap(false); }}
+                className="w-full px-3 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-medium cursor-pointer hover:bg-muted/80 transition-colors">
+                초기화
+              </button>
             </div>
           )}
           </div>
