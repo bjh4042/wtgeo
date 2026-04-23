@@ -95,8 +95,18 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
       if (lvl < 3) map.setLevel(3);
       if (lvl > 10) map.setLevel(10);
     };
-    // Initial fit (markers only) — wait a frame so the container has its real size
+    // Initial fit (markers only) — wait a frame so the container has its real size.
+    // Run multiple delayed relayouts to absorb modal open animation and reduce initial flicker.
     requestAnimationFrame(() => fitToBounds(bounds));
+    const initialTimers: number[] = [];
+    [120, 320, 600].forEach((delay) => {
+      const t = window.setTimeout(() => {
+        if (cancelled) return;
+        map.relayout();
+        fitToBounds(bounds);
+      }, delay);
+      initialTimers.push(t);
+    });
 
     // Markers with custom labels
     points.forEach((p, idx) => {
