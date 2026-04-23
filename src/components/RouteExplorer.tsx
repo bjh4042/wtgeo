@@ -98,10 +98,15 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
 
     const map = new window.kakao.maps.Map(mapRef.current, {
       center: new window.kakao.maps.LatLng(school.lat, school.lng),
-      level: 6,
+      level: 5,
     });
     mapInstanceRef.current = map;
-    map.setBounds(bounds);
+    // Fit bounds with padding, then clamp to a sensible zoom range so route stays visible at ~1km scale
+    map.setBounds(bounds, 40, 40, 40, 40);
+    // Kakao level: lower = more zoomed in. level 5 ≈ ~1km scale. Clamp between 4 and 8.
+    const currentLevel = map.getLevel();
+    if (currentLevel > 8) map.setLevel(8);
+    if (currentLevel < 4) map.setLevel(4);
 
     // Markers with custom labels
     points.forEach((p, idx) => {
@@ -167,8 +172,8 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   }, [showInAppMap, routePlaces, school]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
-      <div className={`bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full ${showInAppMap ? 'max-w-3xl' : 'max-w-md'} max-h-[90vh] overflow-hidden transition-all`} onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center">
+      <div className={`bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full ${showInAppMap ? 'max-w-6xl' : 'max-w-md'} max-h-[92vh] overflow-hidden transition-all`} onClick={e => e.stopPropagation()}>
         <div className="p-4 border-b flex items-center justify-between bg-primary/10">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <Route size={18} className="text-primary" /> 경로 탐험 모드
@@ -176,9 +181,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
         </div>
 
-        <div className={`flex flex-col md:flex-row max-h-[80vh]`}>
+        <div className={`flex flex-col md:flex-row max-h-[82vh]`}>
           {/* Left: route list */}
-          <div className={`p-4 overflow-auto ${showInAppMap ? 'md:w-[380px] md:border-r max-h-[40vh] md:max-h-[80vh]' : 'w-full max-h-[70vh]'}`}>
+          <div className={`p-4 overflow-auto ${showInAppMap ? 'md:w-[360px] md:border-r max-h-[38vh] md:max-h-[82vh]' : 'w-full max-h-[70vh]'}`}>
           {/* Route summary */}
           {routePlaces.length >= 2 && (
             <div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
@@ -316,7 +321,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
           {/* Right: in-app map */}
           {showInAppMap && (
             <div className="flex-1 p-3 md:p-4 bg-muted/20">
-              <div ref={mapRef} className="w-full h-[40vh] md:h-[70vh] rounded-xl border overflow-hidden" />
+              <div ref={mapRef} className="w-full h-[55vh] md:h-[78vh] rounded-xl border overflow-hidden" />
               <p className="text-[10px] text-muted-foreground mt-1.5 text-center">🟢 출발 학교 · 🔢 경로 순서 · 구간별 색상 선이 실제 도로 경로입니다</p>
             </div>
           )}
