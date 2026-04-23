@@ -302,22 +302,10 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
                 className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold cursor-pointer hover:opacity-90 transition-opacity">
                 <MapIcon size={14} /> {showInAppMap ? '지도 숨기기' : '앱에서 경로 보기'}
               </button>
-              <div className="flex gap-2">
-                <a href={kakaoDirectionUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-foreground text-xs font-medium hover:bg-muted/80 transition-colors">
-                  <Navigation size={12} /> 카카오 길찾기
-                </a>
-                {routePlaces.length >= 2 && (
-                  <a href={kakaoMapUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-muted text-foreground text-xs font-medium hover:bg-muted/80 transition-colors">
-                    📍 카카오맵
-                  </a>
-                )}
-                <button onClick={() => { setRoutePlaces([]); setShowInAppMap(false); }}
-                  className="px-3 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-medium cursor-pointer hover:bg-muted/80 transition-colors">
-                  초기화
-                </button>
-              </div>
+              <button onClick={() => { setRoutePlaces([]); setShowInAppMap(false); }}
+                className="w-full px-3 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-medium cursor-pointer hover:bg-muted/80 transition-colors">
+                초기화
+              </button>
             </div>
           )}
           </div>
