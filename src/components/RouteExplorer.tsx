@@ -321,7 +321,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
           {/* Right: in-app map */}
           {showInAppMap && (
             <div className="flex-1 p-3 md:p-4 bg-muted/20">
-              <div ref={mapRef} className="w-full h-[40vh] md:h-[70vh] rounded-xl border overflow-hidden" />
+              <div ref={mapRef} className="w-full h-[55vh] md:h-[78vh] rounded-xl border overflow-hidden" />
               <p className="text-[10px] text-muted-foreground mt-1.5 text-center">🟢 출발 학교 · 🔢 경로 순서 · 구간별 색상 선이 실제 도로 경로입니다</p>
             </div>
           )}
