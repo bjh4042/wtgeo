@@ -487,18 +487,26 @@ export function getVisitorCount(): number {
 }
 
 export function getTodayVisitorCount(): number {
-  // Check both old and new key names (DB function uses 'visitor_today')
-  const cloud = siteSettingsCache['today_visitor_count'] || siteSettingsCache['visitor_today'];
-  if (cloud && typeof cloud === 'object' && cloud !== null) {
-    const { date, count } = cloud as { date: string; count: number };
-    const today = new Date().toISOString().slice(0, 10);
-    if (date === today) return count || 0;
+  // Prefer new key (DB function writes to 'visitor_today'), fallback to legacy key
+  const today = new Date().toISOString().slice(0, 10);
+  const candidates = [
+    siteSettingsCache['visitor_today'],
+    siteSettingsCache['today_visitor_count'],
+  ];
+  for (const cloud of candidates) {
+    if (cloud && typeof cloud === 'object') {
+      const { date, count } = cloud as { date: string; count: number };
+      if (date === today) return count || 0;
+    }
   }
-  return 0;
+  // Fallback: derive from daily stats
+  const daily = (siteSettingsCache['visitor_daily'] || siteSettingsCache['daily_visitor_stats']) as Record<string, number> | undefined;
+  return daily?.[today] || 0;
 }
 
 export function getCloudHourlyStats(): { hour: string; count: number }[] {
-  const cloud = (siteSettingsCache['hourly_visitor_stats'] || siteSettingsCache['visitor_hourly']) as Record<string, number> | undefined;
+  // Prefer new key written by DB function
+  const cloud = (siteSettingsCache['visitor_hourly'] || siteSettingsCache['hourly_visitor_stats']) as Record<string, number> | undefined;
   const today = new Date().toISOString().slice(0, 10);
   const result: { hour: string; count: number }[] = [];
   for (let h = 0; h < 24; h++) {
@@ -509,7 +517,8 @@ export function getCloudHourlyStats(): { hour: string; count: number }[] {
 }
 
 export function getCloudDailyStats(): { date: string; count: number }[] {
-  const cloud = (siteSettingsCache['daily_visitor_stats'] || siteSettingsCache['visitor_daily']) as Record<string, number> | undefined;
+  // Prefer new key written by DB function
+  const cloud = (siteSettingsCache['visitor_daily'] || siteSettingsCache['daily_visitor_stats']) as Record<string, number> | undefined;
   if (!cloud) return [];
   return Object.entries(cloud)
     .sort(([a], [b]) => a.localeCompare(b))
