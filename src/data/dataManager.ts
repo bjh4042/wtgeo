@@ -516,14 +516,23 @@ export function getCloudHourlyStats(): { hour: string; count: number }[] {
   return result;
 }
 
-export function getCloudDailyStats(): { date: string; count: number }[] {
+export function getCloudDailyStats(options?: { startDate?: string; endDate?: string; lastNDays?: number }): { date: string; fullDate: string; count: number }[] {
   // Prefer new key written by DB function
   const cloud = (siteSettingsCache['visitor_daily'] || siteSettingsCache['daily_visitor_stats']) as Record<string, number> | undefined;
   if (!cloud) return [];
-  return Object.entries(cloud)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .slice(-14)
-    .map(([date, count]) => ({ date: date.slice(5), count }));
+
+  let entries = Object.entries(cloud).sort(([a], [b]) => a.localeCompare(b));
+
+  if (options?.startDate || options?.endDate) {
+    const start = options.startDate;
+    const end = options.endDate;
+    entries = entries.filter(([d]) => (!start || d >= start) && (!end || d <= end));
+  } else {
+    const n = options?.lastNDays ?? 14;
+    entries = entries.slice(-n);
+  }
+
+  return entries.map(([date, count]) => ({ date: date.slice(5), fullDate: date, count }));
 }
 
 export async function incrementVisitorCount(): Promise<number> {
