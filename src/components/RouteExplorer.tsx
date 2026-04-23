@@ -101,12 +101,17 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
       level: 5,
     });
     mapInstanceRef.current = map;
-    // Fit bounds with padding, then clamp to a sensible zoom range so route stays visible at ~1km scale
-    map.setBounds(bounds, 40, 40, 40, 40);
-    // Kakao level: lower = more zoomed in. level 5 ≈ ~1km scale. Clamp between 4 and 8.
-    const currentLevel = map.getLevel();
-    if (currentLevel > 8) map.setLevel(8);
-    if (currentLevel < 4) map.setLevel(4);
+
+    // Container size may not be finalized on first render (flex-1 inside modal). Force relayout then fit bounds.
+    const fitToBounds = (b: any) => {
+      map.relayout();
+      map.setBounds(b, 40, 40, 40, 40);
+      const lvl = map.getLevel();
+      if (lvl < 3) map.setLevel(3);
+      if (lvl > 10) map.setLevel(10);
+    };
+    // Initial fit (markers only) — wait a frame so the container has its real size
+    requestAnimationFrame(() => fitToBounds(bounds));
 
     // Markers with custom labels
     points.forEach((p, idx) => {
@@ -146,11 +151,16 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
 
     const polylines: any[] = [];
     (async () => {
+      // Build a fresh bounds that includes BOTH markers AND every polyline coordinate
+      const fullBounds = new window.kakao.maps.LatLngBounds();
+      points.forEach(p => fullBounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
+
       for (let i = 0; i < points.length - 1; i++) {
         const a = points[i];
         const b = points[i + 1];
         const path = await fetchSegment(a, b);
         if (cancelled) return;
+        path.forEach((latlng: any) => fullBounds.extend(latlng));
         const color = segmentColors[i % segmentColors.length];
         const polyline = new window.kakao.maps.Polyline({
           path,
@@ -162,10 +172,19 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
         polyline.setMap(map);
         polylines.push(polyline);
       }
+
+      if (cancelled) return;
+      // After all road segments are drawn, refit so the entire route is visible regardless of zoom
+      fitToBounds(fullBounds);
     })();
+
+    // Relayout when window resizes (orientation change, devtools, etc.)
+    const onResize = () => map.relayout();
+    window.addEventListener('resize', onResize);
 
     return () => {
       cancelled = true;
+      window.removeEventListener('resize', onResize);
       polylines.forEach(pl => pl.setMap(null));
       mapInstanceRef.current = null;
     };
