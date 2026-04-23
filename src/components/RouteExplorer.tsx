@@ -98,10 +98,15 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
 
     const map = new window.kakao.maps.Map(mapRef.current, {
       center: new window.kakao.maps.LatLng(school.lat, school.lng),
-      level: 6,
+      level: 5,
     });
     mapInstanceRef.current = map;
-    map.setBounds(bounds);
+    // Fit bounds with padding, then clamp to a sensible zoom range so route stays visible at ~1km scale
+    map.setBounds(bounds, 40, 40, 40, 40);
+    // Kakao level: lower = more zoomed in. level 5 ≈ ~1km scale. Clamp between 4 and 8.
+    const currentLevel = map.getLevel();
+    if (currentLevel > 8) map.setLevel(8);
+    if (currentLevel < 4) map.setLevel(4);
 
     // Markers with custom labels
     points.forEach((p, idx) => {
