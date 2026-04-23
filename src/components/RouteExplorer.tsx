@@ -134,17 +134,37 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
       }
     };
 
-    const polylines: any[] = [];
-    (async () => {
-      // Build a fresh bounds that includes BOTH markers AND every polyline coordinate
-      const fullBounds = new window.kakao.maps.LatLngBounds();
-      points.forEach(p => fullBounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
+    let polylines: any[] = [];
+    let segmentPaths: any[][] = [];
+    let fullBounds: any = new window.kakao.maps.LatLngBounds();
+    points.forEach(p => fullBounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
 
+    // Safely (re)attach polylines to the map — useful after zoom/pan/relayout
+    const redrawPolylines = () => {
+      polylines.forEach(pl => pl.setMap(null));
+      polylines = [];
+      segmentPaths.forEach((path, i) => {
+        if (!path || path.length === 0) return;
+        const color = segmentColors[i % segmentColors.length];
+        const polyline = new window.kakao.maps.Polyline({
+          path,
+          strokeWeight: 5,
+          strokeColor: color,
+          strokeOpacity: 0.85,
+          strokeStyle: 'solid',
+        });
+        polyline.setMap(map);
+        polylines.push(polyline);
+      });
+    };
+
+    (async () => {
       for (let i = 0; i < points.length - 1; i++) {
         const a = points[i];
         const b = points[i + 1];
         const path = await fetchSegment(a, b);
         if (cancelled) return;
+        segmentPaths[i] = path;
         path.forEach((latlng: any) => fullBounds.extend(latlng));
         const color = segmentColors[i % segmentColors.length];
         const polyline = new window.kakao.maps.Polyline({
@@ -163,13 +183,28 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
       fitToBounds(fullBounds);
     })();
 
-    // Relayout when window resizes (orientation change, devtools, etc.)
-    const onResize = () => map.relayout();
+    // Re-attach polylines on zoom/center change to guard against any rendering glitches
+    const onZoom = () => redrawPolylines();
+    const onCenter = () => redrawPolylines();
+    window.kakao.maps.event.addListener(map, 'zoom_changed', onZoom);
+    window.kakao.maps.event.addListener(map, 'center_changed', onCenter);
+
+    // ResizeObserver: relayout + refit whenever the map container resizes (modal open animation, viewport change)
+    const onResize = () => {
+      map.relayout();
+      fitToBounds(fullBounds);
+      redrawPolylines();
+    };
+    const ro = new ResizeObserver(() => onResize());
+    if (mapRef.current) ro.observe(mapRef.current);
     window.addEventListener('resize', onResize);
 
     return () => {
       cancelled = true;
       window.removeEventListener('resize', onResize);
+      ro.disconnect();
+      window.kakao.maps.event.removeListener(map, 'zoom_changed', onZoom);
+      window.kakao.maps.event.removeListener(map, 'center_changed', onCenter);
       polylines.forEach(pl => pl.setMap(null));
       mapInstanceRef.current = null;
     };
