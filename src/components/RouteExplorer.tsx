@@ -64,22 +64,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
     return total;
   }, [routePlaces, school]);
 
-  // Kakao Maps URL: use multi-marker map view + direction to final destination
-  const kakaoMapUrl = useMemo(() => {
-    if (routePlaces.length === 0) return '';
-    // Multi-marker view: school + all route places
-    const markers = [
-      `${encodeURIComponent(school.name)},${school.lat},${school.lng}`,
-      ...routePlaces.map(p => `${encodeURIComponent(p.name)},${p.lat},${p.lng}`)
-    ];
-    return `https://map.kakao.com/link/map/${markers.join('/')}`;
-  }, [routePlaces, school]);
-
-  const kakaoDirectionUrl = useMemo(() => {
-    if (routePlaces.length === 0) return '';
-    const dest = routePlaces[routePlaces.length - 1];
-    return `https://map.kakao.com/link/to/${encodeURIComponent(dest.name)},${dest.lat},${dest.lng}`;
-  }, [routePlaces]);
+  // In-app map only — Kakao external links removed per user request
 
   // In-app map: render markers + road-based polylines per segment with distinct colors
   useEffect(() => {
