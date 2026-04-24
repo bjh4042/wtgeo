@@ -101,10 +101,10 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
 
       {/* 관련 링크 */}
       <div className="flex flex-wrap gap-2 mt-2">
-        <a href={getRoadViewUrl(content.lat, content.lng)} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+        <button onClick={() => setShowRoadView(true)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer">
           <Eye size={13} />로드뷰
-        </a>
+        </button>
         <a href={`https://map.kakao.com/link/map/${encodeURIComponent(content.name)},${content.lat},${content.lng}`} target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">
           <MapPin size={13} />지도
