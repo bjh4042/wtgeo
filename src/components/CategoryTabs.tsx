@@ -104,22 +104,35 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                   className="fixed bg-popover border rounded-xl shadow-lg p-1.5 min-w-[175px] animate-in fade-in-0 zoom-in-95 duration-150"
                   style={{ top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999 }}
                 >
-                  {/* 전체 해제 */}
-                  <button
-                    onClick={() => {
-                      // Deselect all place categories
-                      placeCategories.forEach(pc => {
-                        if (activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
-                      });
-                      // Deselect all public subcategories
-                      (activePublicSubCategories ?? []).forEach(sub => onPublicSubCategoryToggle(sub));
-                      setShowPlaceDropdown(false);
-                      setShowPublicSub(false);
-                    }}
-                    className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-muted transition-colors text-muted-foreground"
-                  >
-                    전체 해제
-                  </button>
+                  {/* 전체 선택/해제 토글 */}
+                  {(() => {
+                    const hasAnySelection =
+                      activePlaceCategories.length > 0 ||
+                      (activePublicSubCategories !== null && activePublicSubCategories.length > 0);
+                    return (
+                      <button
+                        onClick={() => {
+                          if (hasAnySelection) {
+                            // 전체 해제
+                            placeCategories.forEach(pc => {
+                              if (activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
+                            });
+                            (activePublicSubCategories ?? []).forEach(sub => onPublicSubCategoryToggle(sub));
+                          } else {
+                            // 전체 선택 (모든 메인 카테고리 추가)
+                            placeCategories.forEach(pc => {
+                              if (!activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
+                            });
+                          }
+                          setShowPlaceDropdown(false);
+                          setShowPublicSub(false);
+                        }}
+                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-muted transition-colors text-muted-foreground"
+                      >
+                        {hasAnySelection ? '전체 해제' : '전체 선택'}
+                      </button>
+                    );
+                  })()}
                   <div className="h-px bg-border my-1" />
 
                   {placeCategories.map((pc) => {
