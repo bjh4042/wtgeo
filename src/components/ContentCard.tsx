@@ -155,6 +155,10 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
           </div>
         )}
       </div>
+
+      {showRoadView && (
+        <RoadViewModal lat={content.lat} lng={content.lng} name={content.name} onClose={() => setShowRoadView(false)} />
+      )}
     </div>
   );
 };
