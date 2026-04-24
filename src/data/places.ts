@@ -66,7 +66,9 @@ export const categoryIcons: Record<PlaceCategory, string> = {
 };
 
 export function getRoadViewUrl(lat: number, lng: number): string {
-  return `https://map.kakao.com/link/roadview/${lat},${lng}`;
+  // 카카오맵 로드뷰 진입 URL (link/roadview는 더 이상 안정적으로 동작하지 않음)
+  // map_type=TYPE_SKYVIEW + 좌표 기반으로 로드뷰 패널을 띄움
+  return `https://map.kakao.com/?map_type=TYPE_MAP&target=other&rv=on&urlX=${lng}&urlY=${lat}&urlLevel=2&map_attribute=ROADVIEW&eName=${encodeURIComponent('로드뷰')}&eX=${lng}&eY=${lat}`;
 }
 
 export function getDirectionUrl(lat: number, lng: number, name: string): string {
