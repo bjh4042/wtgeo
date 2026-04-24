@@ -152,7 +152,6 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
           </div>
         )}
       </div>
-      </div>
 
       {showRoadView && (
         <RoadViewModal lat={place.lat} lng={place.lng} name={place.name} onClose={() => setShowRoadView(false)} />
