@@ -4,6 +4,7 @@ import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtu
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import RoadViewModal from './RoadViewModal';
 
 interface PlaceCardProps {
   place: Place;
