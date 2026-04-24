@@ -22,6 +22,7 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
   const [showReport, setShowReport] = useState(false);
   const [reportMsg, setReportMsg] = useState('');
   const [sending, setSending] = useState(false);
+  const [showRoadView, setShowRoadView] = useState(false);
 
   const handleReport = async () => {
     if (!reportMsg.trim()) return;
