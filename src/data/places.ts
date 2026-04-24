@@ -66,6 +66,7 @@ export const categoryIcons: Record<PlaceCategory, string> = {
 };
 
 export function getRoadViewUrl(lat: number, lng: number): string {
+  // 카카오맵 외부 로드뷰 링크 (fallback용). 앱 내부 RoadViewModal을 우선 사용함.
   return `https://map.kakao.com/link/roadview/${lat},${lng}`;
 }
 

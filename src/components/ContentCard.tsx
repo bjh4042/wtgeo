@@ -4,6 +4,7 @@ import { X, ExternalLink, Youtube, Eye, MapPin, Star, AlertTriangle, Send } from
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import RoadViewModal from './RoadViewModal';
 
 interface ContentCardProps {
   content: MapContent;
@@ -20,6 +21,7 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
   const [showReport, setShowReport] = useState(false);
   const [reportMsg, setReportMsg] = useState('');
   const [sending, setSending] = useState(false);
+  const [showRoadView, setShowRoadView] = useState(false);
 
   const handleReport = async () => {
     if (!reportMsg.trim()) return;
@@ -99,10 +101,10 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
 
       {/* 관련 링크 */}
       <div className="flex flex-wrap gap-2 mt-2">
-        <a href={getRoadViewUrl(content.lat, content.lng)} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+        <button onClick={() => setShowRoadView(true)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer">
           <Eye size={13} />로드뷰
-        </a>
+        </button>
         <a href={`https://map.kakao.com/link/map/${encodeURIComponent(content.name)},${content.lat},${content.lng}`} target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">
           <MapPin size={13} />지도
@@ -153,6 +155,10 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
           </div>
         )}
       </div>
+
+      {showRoadView && (
+        <RoadViewModal lat={content.lat} lng={content.lng} name={content.name} onClose={() => setShowRoadView(false)} />
+      )}
     </div>
   );
 };

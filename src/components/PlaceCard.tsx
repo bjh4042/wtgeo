@@ -4,6 +4,7 @@ import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtu
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import RoadViewModal from './RoadViewModal';
 
 interface PlaceCardProps {
   place: Place;
@@ -21,6 +22,7 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
   const [showReport, setShowReport] = useState(false);
   const [reportMsg, setReportMsg] = useState('');
   const [sending, setSending] = useState(false);
+  const [showRoadView, setShowRoadView] = useState(false);
 
   const handleReport = async () => {
     if (!reportMsg.trim()) return;
@@ -108,9 +110,9 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
       </div>
 
       <div className="flex gap-2 flex-wrap">
-        <a href={roadViewUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+        <button onClick={() => setShowRoadView(true)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer">
           <Eye size={14} />로드뷰
-        </a>
+        </button>
         <a href={directionUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">
           <Navigation size={14} />길찾기
         </a>
@@ -150,6 +152,10 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
           </div>
         )}
       </div>
+
+      {showRoadView && (
+        <RoadViewModal lat={place.lat} lng={place.lng} name={place.name} onClose={() => setShowRoadView(false)} />
+      )}
     </div>
   );
 };
