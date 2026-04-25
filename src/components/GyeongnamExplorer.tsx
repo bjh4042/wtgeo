@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getGyeongnamCities, loadGyeongnamEditsFromCloud, loadDetailedBoundaries, isGyeongnamEditsLoaded, GyeongnamCity, GYEONGNAM_UPDATED_EVENT } from '@/data/gyeongnam';
-import { X, MapPin, Users, Ruler, Star, ExternalLink, ArrowLeft } from 'lucide-react';
+import { X, MapPin, Users, Ruler, Star, ExternalLink, ArrowLeft, ZoomIn } from 'lucide-react';
 
 interface GyeongnamExplorerProps {
   onClose: () => void;
