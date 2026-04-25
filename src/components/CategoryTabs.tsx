@@ -123,6 +123,11 @@ const CategoryTabs = ({ activeCategories, onCategoryToggle, activePlaceCategorie
                             placeCategories.forEach(pc => {
                               if (!activePlaceCategories.includes(pc)) onPlaceCategoryToggle(pc);
                             });
+                            // 공공기관 하위 카테고리도 전체 선택
+                            const currentSubs = activePublicSubCategories ?? [];
+                            publicSubCategories.forEach(sub => {
+                              if (!currentSubs.includes(sub)) onPublicSubCategoryToggle(sub);
+                            });
                           }
                           setShowPlaceDropdown(false);
                           setShowPublicSub(false);
