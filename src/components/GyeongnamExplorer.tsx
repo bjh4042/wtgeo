@@ -150,9 +150,19 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
               {/* City Header */}
               <div className="flex items-center gap-3">
                 {selectedCity.logoUrl ? (
-                  <img src={selectedCity.logoUrl} alt={`${selectedCity.name} 로고`} className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-lg" />
+                  <button
+                    type="button"
+                    onClick={() => setZoomImage({ url: selectedCity.logoUrl!, alt: `${selectedCity.name} 로고` })}
+                    className="relative group cursor-pointer rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary"
+                    aria-label={`${selectedCity.name} 로고 크게 보기`}
+                  >
+                    <img src={selectedCity.logoUrl} alt={`${selectedCity.name} 로고`} className="w-16 h-16 md:w-20 md:h-20 object-contain" />
+                    <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <ZoomIn className="text-white" size={20} />
+                    </span>
+                  </button>
                 ) : (
-                  <span className="text-3xl md:text-4xl">{selectedCity.mascotEmoji}</span>
+                  <span className="text-4xl md:text-5xl">{selectedCity.mascotEmoji}</span>
                 )}
                 <div className="flex-1">
                   <h3 className="text-lg md:text-xl font-bold text-foreground">{selectedCity.name}</h3>
@@ -176,11 +186,21 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                   <p className="text-[10px] text-muted-foreground">면적</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.area} km²</p>
                 </div>
-                <div className="bg-muted/50 rounded-xl p-2.5 text-center">
+                <div className="bg-muted/50 rounded-xl p-2.5 text-center flex flex-col items-center">
                   {selectedCity.mascotImageUrl ? (
-                    <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-6 h-6 mx-auto mb-0.5 object-contain" />
+                    <button
+                      type="button"
+                      onClick={() => setZoomImage({ url: selectedCity.mascotImageUrl!, alt: selectedCity.mascot })}
+                      className="relative group cursor-pointer focus:outline-none"
+                      aria-label={`${selectedCity.mascot} 크게 보기`}
+                    >
+                      <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-12 h-12 md:w-14 md:h-14 mb-0.5 object-contain" />
+                      <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 rounded">
+                        <ZoomIn className="text-white" size={16} />
+                      </span>
+                    </button>
                   ) : (
-                    <span className="text-sm">{selectedCity.mascotEmoji}</span>
+                    <span className="text-2xl md:text-3xl mb-0.5">{selectedCity.mascotEmoji}</span>
                   )}
                   <p className="text-[10px] text-muted-foreground">마스코트</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.mascot}</p>
