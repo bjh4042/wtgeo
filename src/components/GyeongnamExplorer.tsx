@@ -129,12 +129,14 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 <button
                   key={city.id}
                   onClick={() => setSelectedCity(city)}
-                  className="flex flex-col items-center gap-0.5 md:gap-1 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
+                  className="flex flex-col items-center gap-1 md:gap-1.5 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
                 >
                   {city.logoUrl ? (
-                    <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+                    <div className="relative group">
+                      <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-14 h-14 md:w-16 md:h-16 object-contain" />
+                    </div>
                   ) : (
-                    <span className="text-xl md:text-2xl">{city.mascotEmoji}</span>
+                    <span className="text-3xl md:text-4xl">{city.mascotEmoji}</span>
                   )}
                   <span className="text-xs md:text-sm font-bold text-foreground">{city.name}</span>
                 </button>
