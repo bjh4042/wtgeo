@@ -234,6 +234,29 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
           </div>
         )}
       </div>
+
+      {/* Image Zoom Popup */}
+      {zoomImage && (
+        <div
+          className="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 animate-in fade-in-0 duration-200"
+          onClick={(e) => { e.stopPropagation(); setZoomImage(null); }}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setZoomImage(null); }}
+            className="absolute top-4 right-4 text-white/90 hover:text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition-colors"
+            aria-label="닫기"
+          >
+            <X size={24} />
+          </button>
+          <img
+            src={zoomImage.url}
+            alt={zoomImage.alt}
+            className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <p className="absolute bottom-6 left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg">{zoomImage.alt}</p>
+        </div>
+      )}
     </div>
   );
 };
