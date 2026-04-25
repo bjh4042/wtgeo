@@ -37,9 +37,10 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     const currentCity = cities.find(city => city.id === selectedCity.id) ?? selectedCity;
     const center = new window.kakao.maps.LatLng(currentCity.lat, currentCity.lng);
     const isMobileMap = window.innerWidth < 768;
+    // 경남 전체는 도 단위 줌, 개별 시·군은 축척 8km(레벨 8) 기본
     const zoomLevel = currentCity.id === 'gyeongnam'
       ? (isMobileMap ? 12 : 11)
-      : (isMobileMap ? 10 : 8);
+      : 8;
     const map = new window.kakao.maps.Map(mapRef.current, { center, level: zoomLevel });
     mapInstanceRef.current = map;
 
