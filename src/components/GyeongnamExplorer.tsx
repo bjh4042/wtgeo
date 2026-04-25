@@ -12,6 +12,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
   const [selectedCity, setSelectedCity] = useState<GyeongnamCity | null>(null);
   const [cities, setCities] = useState<GyeongnamCity[]>(getGyeongnamCities());
   const [loaded, setLoaded] = useState(isGyeongnamEditsLoaded());
+  const [zoomImage, setZoomImage] = useState<{ url: string; alt: string } | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
 
