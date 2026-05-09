@@ -133,10 +133,10 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 >
                   {city.logoUrl ? (
                     <div className="relative group">
-                      <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-14 h-14 md:w-16 md:h-16 object-contain" />
+                      <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-28 h-28 md:w-36 md:h-36 object-contain" />
                     </div>
                   ) : (
-                    <span className="text-3xl md:text-4xl">{city.mascotEmoji}</span>
+                    <span className="text-6xl md:text-7xl">{city.mascotEmoji}</span>
                   )}
                   <span className="text-xs md:text-sm font-bold text-foreground">{city.name}</span>
                 </button>
