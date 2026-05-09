@@ -133,7 +133,21 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 >
                   {city.logoUrl ? (
                     <div className="relative group">
-                      <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-28 h-28 md:w-36 md:h-36 object-contain" />
+                      <img
+                        src={city.logoUrl}
+                        alt={`${city.name} 로고`}
+                        className="w-28 h-28 md:w-36 md:h-36 object-contain"
+                        referrerPolicy="no-referrer"
+                        
+                        loading="lazy"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          const parent = img.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<span class="text-6xl md:text-7xl">${city.mascotEmoji}</span>`;
+                          }
+                        }}
+                      />
                     </div>
                   ) : (
                     <span className="text-6xl md:text-7xl">{city.mascotEmoji}</span>
@@ -156,7 +170,18 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                     className="relative group cursor-pointer rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary"
                     aria-label={`${selectedCity.name} 로고 크게 보기`}
                   >
-                    <img src={selectedCity.logoUrl} alt={`${selectedCity.name} 로고`} className="w-16 h-16 md:w-20 md:h-20 object-contain" />
+                    <img
+                      src={selectedCity.logoUrl}
+                      alt={`${selectedCity.name} 로고`}
+                      className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        const parent = img.parentElement;
+                        if (parent) parent.innerHTML = `<span class="text-4xl md:text-5xl">${selectedCity.mascotEmoji}</span>`;
+                      }}
+                    />
                     <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <ZoomIn className="text-white" size={20} />
                     </span>
@@ -194,7 +219,18 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                       className="relative group cursor-pointer focus:outline-none rounded-lg overflow-hidden"
                       aria-label={`${selectedCity.mascot} 크게 보기`}
                     >
-                      <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-20 h-20 md:w-24 md:h-24 mb-0.5 object-contain" />
+                      <img
+                        src={selectedCity.mascotImageUrl}
+                        alt={selectedCity.mascot}
+                        className="w-20 h-20 md:w-24 md:h-24 mb-0.5 object-contain"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          const parent = img.parentElement;
+                          if (parent) parent.innerHTML = `<span class="text-5xl md:text-6xl mb-0.5">${selectedCity.mascotEmoji}</span>`;
+                        }}
+                      />
                       <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <ZoomIn className="text-white" size={20} />
                       </span>
@@ -285,6 +321,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
             src={zoomImage.url}
             alt={zoomImage.alt}
             className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            referrerPolicy="no-referrer"
             onClick={(e) => e.stopPropagation()}
           />
           <p className="absolute bottom-6 left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg">{zoomImage.alt}</p>
