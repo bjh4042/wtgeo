@@ -229,6 +229,39 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 </div>
               </div>
 
+              {/* 자세한 정보 (자연환경/특산물·산업/문화유산·축제) */}
+              {selectedCity.details && (selectedCity.details.nature || selectedCity.details.industry || selectedCity.details.culture) && (
+                <div className="space-y-2">
+                  {selectedCity.details.nature && (
+                    <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-xl p-3">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Trees size={14} className="text-emerald-600 dark:text-emerald-400" />
+                        <p className="text-xs md:text-sm font-bold text-foreground">자연환경</p>
+                      </div>
+                      <p className="text-xs md:text-sm text-foreground leading-relaxed">{selectedCity.details.nature}</p>
+                    </div>
+                  )}
+                  {selectedCity.details.industry && (
+                    <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl p-3">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Factory size={14} className="text-amber-600 dark:text-amber-400" />
+                        <p className="text-xs md:text-sm font-bold text-foreground">특산물 및 산업</p>
+                      </div>
+                      <p className="text-xs md:text-sm text-foreground leading-relaxed">{selectedCity.details.industry}</p>
+                    </div>
+                  )}
+                  {selectedCity.details.culture && (
+                    <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-900 rounded-xl p-3">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <PartyPopper size={14} className="text-pink-600 dark:text-pink-400" />
+                        <p className="text-xs md:text-sm font-bold text-foreground">문화유산 및 축제</p>
+                      </div>
+                      <p className="text-xs md:text-sm text-foreground leading-relaxed">{selectedCity.details.culture}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div ref={mapRef} className="w-full h-64 md:h-80 lg:h-96 rounded-xl border overflow-hidden" />
             </div>
           </div>
