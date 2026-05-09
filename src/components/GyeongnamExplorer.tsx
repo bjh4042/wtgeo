@@ -191,18 +191,25 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                     <button
                       type="button"
                       onClick={() => setZoomImage({ url: selectedCity.mascotImageUrl!, alt: selectedCity.mascot })}
-                      className="relative group cursor-pointer focus:outline-none"
+                      className="relative group cursor-pointer focus:outline-none rounded-lg overflow-hidden"
                       aria-label={`${selectedCity.mascot} 크게 보기`}
                     >
-                      <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-12 h-12 md:w-14 md:h-14 mb-0.5 object-contain" />
-                      <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 rounded">
-                        <ZoomIn className="text-white" size={16} />
+                      <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-20 h-20 md:w-24 md:h-24 mb-0.5 object-contain" />
+                      <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <ZoomIn className="text-white" size={20} />
                       </span>
                     </button>
                   ) : (
-                    <span className="text-2xl md:text-3xl mb-0.5">{selectedCity.mascotEmoji}</span>
+                    <button
+                      type="button"
+                      onClick={() => setZoomImage({ url: '', alt: selectedCity.mascot })}
+                      className="text-5xl md:text-6xl mb-0.5 cursor-pointer"
+                      aria-label={`${selectedCity.mascot} 크게 보기`}
+                    >
+                      {selectedCity.mascotEmoji}
+                    </button>
                   )}
-                  <p className="text-[10px] text-muted-foreground">마스코트</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">마스코트</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.mascot}</p>
                 </div>
               </div>
