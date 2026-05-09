@@ -219,7 +219,18 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                       className="relative group cursor-pointer focus:outline-none rounded-lg overflow-hidden"
                       aria-label={`${selectedCity.mascot} 크게 보기`}
                     >
-                      <img src={selectedCity.mascotImageUrl} alt={selectedCity.mascot} className="w-20 h-20 md:w-24 md:h-24 mb-0.5 object-contain" />
+                      <img
+                        src={selectedCity.mascotImageUrl}
+                        alt={selectedCity.mascot}
+                        className="w-20 h-20 md:w-24 md:h-24 mb-0.5 object-contain"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          const parent = img.parentElement;
+                          if (parent) parent.innerHTML = `<span class="text-5xl md:text-6xl mb-0.5">${selectedCity.mascotEmoji}</span>`;
+                        }}
+                      />
                       <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <ZoomIn className="text-white" size={20} />
                       </span>
