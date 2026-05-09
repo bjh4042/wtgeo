@@ -138,7 +138,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                         alt={`${city.name} 로고`}
                         className="w-28 h-28 md:w-36 md:h-36 object-contain"
                         referrerPolicy="no-referrer"
-                        crossOrigin="anonymous"
+                        
                         loading="lazy"
                         onError={(e) => {
                           const img = e.currentTarget;
