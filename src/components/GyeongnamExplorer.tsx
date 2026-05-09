@@ -321,6 +321,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
             src={zoomImage.url}
             alt={zoomImage.alt}
             className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            referrerPolicy="no-referrer"
             onClick={(e) => e.stopPropagation()}
           />
           <p className="absolute bottom-6 left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg">{zoomImage.alt}</p>
