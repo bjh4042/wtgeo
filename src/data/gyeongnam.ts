@@ -30,6 +30,11 @@ export interface GyeongnamCity {
   lng: number;
   highlights: string[];
   boundary?: [number, number][] | [number, number][][];
+  details?: {
+    nature?: string;
+    industry?: string;
+    culture?: string;
+  };
 }
 
 // In-memory cache for cloud edits
