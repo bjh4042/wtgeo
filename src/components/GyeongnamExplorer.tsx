@@ -41,7 +41,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
     // 경남 전체는 도 단위 줌, 개별 시·군은 축척 8km(레벨 8) 기본
     const zoomLevel = currentCity.id === 'gyeongnam'
       ? (isMobileMap ? 12 : 11)
-      : 8;
+      : 9;
     const map = new window.kakao.maps.Map(mapRef.current, { center, level: zoomLevel });
     mapInstanceRef.current = map;
 
@@ -175,18 +175,18 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-muted/50 rounded-xl p-2.5 text-center">
+              <div className="grid grid-cols-3 gap-2 items-stretch">
+                <div className="bg-muted/50 rounded-xl p-2.5 text-center flex flex-col items-center justify-center">
                   <Users size={14} className="text-primary mx-auto mb-0.5" />
                   <p className="text-[10px] text-muted-foreground">인구</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.population.toLocaleString()}명</p>
                 </div>
-                <div className="bg-muted/50 rounded-xl p-2.5 text-center">
+                <div className="bg-muted/50 rounded-xl p-2.5 text-center flex flex-col items-center justify-center">
                   <Ruler size={14} className="text-primary mx-auto mb-0.5" />
                   <p className="text-[10px] text-muted-foreground">면적</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.area} km²</p>
                 </div>
-                <div className="bg-muted/50 rounded-xl p-2.5 text-center flex flex-col items-center">
+                <div className="bg-muted/50 rounded-xl p-2.5 text-center flex flex-col items-center justify-center">
                   {selectedCity.mascotImageUrl ? (
                     <button
                       type="button"
