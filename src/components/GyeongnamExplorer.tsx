@@ -200,14 +200,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                       </span>
                     </button>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => setZoomImage({ url: '', alt: selectedCity.mascot })}
-                      className="text-5xl md:text-6xl mb-0.5 cursor-pointer"
-                      aria-label={`${selectedCity.mascot} 크게 보기`}
-                    >
-                      {selectedCity.mascotEmoji}
-                    </button>
+                    <span className="text-5xl md:text-6xl mb-0.5">{selectedCity.mascotEmoji}</span>
                   )}
                   <p className="text-[10px] text-muted-foreground mt-1">마스코트</p>
                   <p className="text-xs font-bold text-foreground">{selectedCity.mascot}</p>
