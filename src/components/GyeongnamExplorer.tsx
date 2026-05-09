@@ -133,7 +133,21 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 >
                   {city.logoUrl ? (
                     <div className="relative group">
-                      <img src={city.logoUrl} alt={`${city.name} 로고`} className="w-28 h-28 md:w-36 md:h-36 object-contain" />
+                      <img
+                        src={city.logoUrl}
+                        alt={`${city.name} 로고`}
+                        className="w-28 h-28 md:w-36 md:h-36 object-contain"
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
+                        loading="lazy"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          const parent = img.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<span class="text-6xl md:text-7xl">${city.mascotEmoji}</span>`;
+                          }
+                        }}
+                      />
                     </div>
                   ) : (
                     <span className="text-6xl md:text-7xl">{city.mascotEmoji}</span>
