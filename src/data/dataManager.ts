@@ -3,6 +3,7 @@ import { places as defaultPlaces, Place, PlaceCategory } from './places';
 import { stories, placenames, heritages, pastPresent, natureContent, MapContent, ContentCategory } from './content';
 import { schools as defaultSchools, School, getInitialConsonant } from './schools';
 import { supabase } from '@/integrations/supabase/client';
+import { adminApi } from '@/lib/adminApi';
 
 
 export const SCHOOLS_UPDATED_EVENT = 'geoje-schools-updated';
@@ -205,7 +206,7 @@ export async function savePlaceEdit(placeId: string, edit: Partial<Place>): Prom
     if (merged.youtubeUrl) row.youtube_url = merged.youtubeUrl;
     if (merged.subCategory) row.sub_category = merged.subCategory;
     if (merged.grade != null) row.grade = String(merged.grade);
-    await supabase.from('place_edits').upsert(row, { onConflict: 'place_id' });
+    await adminApi.upsert('place_edits', row, 'place_id');
   } catch (e) { console.error('Failed to save place edit:', e); }
   window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
 }
@@ -216,7 +217,7 @@ export async function saveCustomPlace(place: Place): Promise<void> {
   else customPlacesCache.push(place);
   localStorage.setItem('geoje-custom-places', JSON.stringify(customPlacesCache));
   try {
-    await supabase.from('custom_places').upsert({
+    await adminApi.upsert('custom_places', {
       place_id: place.id,
       name: place.name,
       description: place.description,
@@ -230,7 +231,7 @@ export async function saveCustomPlace(place: Place): Promise<void> {
       youtube_url: place.youtubeUrl || null,
       sub_category: (place as any).subCategory || null,
       grade: String(place.grade || 'all'),
-    }, { onConflict: 'place_id' });
+    }, 'place_id');
   } catch (e) { console.error('Failed to save custom place:', e); }
   window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
 }
@@ -242,7 +243,7 @@ export async function deletePlace(placeId: string): Promise<void> {
     customPlacesCache = customPlacesCache.filter(p => p.id !== placeId);
     localStorage.setItem('geoje-custom-places', JSON.stringify(customPlacesCache));
     try {
-      await supabase.from('custom_places').delete().eq('place_id', placeId);
+      await adminApi.delete('custom_places', { match: { place_id: placeId } });
     } catch (e) { console.error('Failed to delete custom place:', e); }
     window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
     return;
@@ -255,12 +256,12 @@ export async function deletePlace(placeId: string): Promise<void> {
 
   try {
     await Promise.all([
-      supabase.from('place_edits').delete().eq('place_id', placeId),
-      supabase.from('site_settings').upsert({
+      adminApi.delete('place_edits', { match: { place_id: placeId } }),
+      adminApi.upsert('site_settings', {
         key: 'deleted_place_ids',
         value: deletedPlaceIdsCache,
         updated_at: new Date().toISOString(),
-      }, { onConflict: 'key' }),
+      }, 'key'),
     ]);
   } catch (e) { console.error('Failed to delete place:', e); }
 
@@ -307,7 +308,7 @@ export async function saveContentEdit(contentId: string, edit: Partial<MapConten
     if (merged.referenceUrl) row.reference_url = merged.referenceUrl;
     if (merged.youtubeUrl) row.youtube_url = merged.youtubeUrl;
     if (merged.grade != null) row.grade = String(merged.grade);
-    await supabase.from('content_edits').upsert(row, { onConflict: 'content_id' });
+    await adminApi.upsert('content_edits', row, 'content_id');
   } catch (e) { console.error('Failed to save content edit:', e); }
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
 }
@@ -334,7 +335,7 @@ export async function saveCustomContent(content: MapContent): Promise<void> {
       youtube_url: content.youtubeUrl || null,
       grade: String(content.grade || 'all'),
     };
-    await supabase.from('custom_content').upsert(row, { onConflict: 'content_id' });
+    await adminApi.upsert('custom_content', row, 'content_id');
   } catch (e) { console.error('Failed to save custom content:', e); }
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
 }
@@ -348,7 +349,7 @@ export async function deleteContent(contentId: string): Promise<void> {
     customContentCache = customContentCache.filter(c => c.id !== contentId);
     localStorage.setItem('geoje-custom-content', JSON.stringify(customContentCache));
     try {
-      await supabase.from('custom_content').delete().eq('content_id', contentId);
+      await adminApi.delete('custom_content', { match: { content_id: contentId } });
     } catch (e) { console.error('Failed to delete custom content:', e); }
     window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
     return;
@@ -367,12 +368,12 @@ export async function deleteContent(contentId: string): Promise<void> {
 
   try {
     await Promise.all([
-      supabase.from('content_edits').delete().eq('content_id', contentId),
-      supabase.from('site_settings').upsert({
+      adminApi.delete('content_edits', { match: { content_id: contentId } }),
+      adminApi.upsert('site_settings', {
         key: 'deleted_content_ids',
         value: deletedContentIds,
         updated_at: new Date().toISOString(),
-      }, { onConflict: 'key' }),
+      }, 'key'),
     ]);
   } catch (e) { console.error('Failed to delete content:', e); }
 
@@ -412,7 +413,7 @@ export async function saveSchoolEdit(index: number, edit: Partial<School>): Prom
     if (merged.phone) row.phone = merged.phone;
     if (merged.district) row.district = merged.district;
     if (merged.website) row.website = merged.website;
-    await supabase.from('school_edits').upsert(row, { onConflict: 'school_index' });
+    await adminApi.upsert('school_edits', row, 'school_index');
   } catch (e) { console.error('Failed to save school edit:', e); }
   window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
 }
@@ -449,9 +450,9 @@ export async function saveNotice(notice: string | null): Promise<void> {
   }
   try {
     if (notice) {
-      await supabase.from('site_settings').upsert({ key: 'notice', value: JSON.stringify(notice), updated_at: new Date().toISOString() }, { onConflict: 'key' });
+      await adminApi.upsert('site_settings', { key: 'notice', value: JSON.stringify(notice), updated_at: new Date().toISOString() }, 'key');
     } else {
-      await supabase.from('site_settings').delete().eq('key', 'notice');
+      await adminApi.delete('site_settings', { match: { key: 'notice' } });
     }
   } catch (e) { console.error('Failed to save notice:', e); }
 }
@@ -476,7 +477,7 @@ export async function saveSiteInfo(info: any): Promise<void> {
   siteSettingsCache['site_info'] = info;
   localStorage.setItem('geoje-site-info', JSON.stringify(info));
   try {
-    await supabase.from('site_settings').upsert({ key: 'site_info', value: info, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    await adminApi.upsert('site_settings', { key: 'site_info', value: info, updated_at: new Date().toISOString() }, 'key');
   } catch (e) { console.error('Failed to save site info:', e); }
 }
 
@@ -541,8 +542,8 @@ export async function incrementVisitorCount(): Promise<number> {
   sessionStorage.setItem(sessionKey, 'true');
 
   try {
-    // Atomic increment via DB function — no race conditions
-    await supabase.rpc('increment_visitor');
+    // Atomic increment via edge function (service-role) — visitors can't call the RPC directly anymore.
+    await supabase.functions.invoke('track-visit', { body: {} });
 
     // Refresh caches from DB after atomic update
     const { data } = await supabase.from('site_settings')

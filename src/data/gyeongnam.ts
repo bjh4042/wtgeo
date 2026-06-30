@@ -13,6 +13,7 @@ export async function loadDetailedBoundaries(): Promise<void> {
 }
 
 import { supabase } from '@/integrations/supabase/client';
+import { adminApi } from '@/lib/adminApi';
 
 export interface GyeongnamCity {
   id: string;
@@ -110,9 +111,7 @@ export async function saveGyeongnamEdit(id: string, edit: Partial<GyeongnamCity>
       updated_at: new Date().toISOString(),
     };
 
-    await supabase
-      .from('gyeongnam_edits')
-      .upsert(row, { onConflict: 'city_id' });
+    await adminApi.upsert('gyeongnam_edits', row, 'city_id');
   } catch (e) {
     console.error('Failed to save gyeongnam edit to cloud:', e);
   }

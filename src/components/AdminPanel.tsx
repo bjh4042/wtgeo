@@ -15,8 +15,7 @@ import {
 } from '@/data/dataManager';
 import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent, parseExcelToGyeongnam, exportGyeongnamToExcel } from '@/data/excelSync';
 import { uploadImageToStorage } from '@/lib/uploadImage';
-
-const ADMIN_PASSWORD = '4042';
+import { setAdminPassword, clearAdminPassword, verifyAdminPassword, adminApi } from '@/lib/adminApi';
 
 export interface SiteInfo {
   serviceName: string;
@@ -125,24 +124,24 @@ const AdminPanel = () => {
   }, []);
 
   const markAsRead = async (id: string) => {
-    await supabase.from('error_reports').update({ is_read: true }).eq('id', id);
+    await adminApi.update('error_reports', { is_read: true }, { match: { id } });
     setReports(prev => prev.map(r => r.id === id ? { ...r, is_read: true } : r));
     if (selectedReport?.id === id) setSelectedReport(prev => prev ? { ...prev, is_read: true } : null);
   };
 
   const markAllRead = async () => {
-    await supabase.from('error_reports').update({ is_read: true }).eq('is_read', false);
+    await adminApi.update('error_reports', { is_read: true }, { match: { is_read: false } });
     setReports(prev => prev.map(r => ({ ...r, is_read: true })));
   };
 
   const deleteReport = async (id: string) => {
-    await supabase.from('error_reports').delete().eq('id', id);
+    await adminApi.delete('error_reports', { match: { id } });
     setReports(prev => prev.filter(r => r.id !== id));
     setSelectedReport(null);
   };
 
   const deleteAllReports = async () => {
-    await supabase.from('error_reports').delete().neq('id', '');
+    await adminApi.delete('error_reports', { matchNeq: { id: '' } });
     setReports([]);
     setSelectedReport(null);
   };
@@ -150,12 +149,14 @@ const AdminPanel = () => {
   useEffect(() => {
     setCurrentNotice(getNotice());
     setSiteInfo(getSiteInfo() as SiteInfo);
-    loadReports();
-  }, [loadReports]);
+  }, []);
 
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
+  const handleLogin = async () => {
+    const ok = await verifyAdminPassword(password);
+    if (ok) {
+      setAdminPassword(password);
       setIsAdmin(true); setError(false);
+      loadReports();
       loadAllDataFromCloud().then(() => {
         loadGyeongnamEditsFromCloud();
         forceUpdate(n => n + 1);
