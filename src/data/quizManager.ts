@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { adminApi } from '@/lib/adminApi';
 import { QuizQuestion } from './quiz';
 
 export interface QuizRow {
@@ -67,9 +68,8 @@ export async function fetchRandomQuestionsByGrade(grade: '3' | '4', count: numbe
 }
 
 export async function createQuizQuestion(payload: Omit<QuizRow, 'id'>): Promise<QuizRow | null> {
-  const { data, error } = await supabase
-    .from('quiz_questions')
-    .insert({
+  try {
+    const res: any = await adminApi.insert('quiz_questions', {
       grade: payload.grade,
       question: payload.question,
       type: payload.type,
@@ -77,56 +77,60 @@ export async function createQuizQuestion(payload: Omit<QuizRow, 'id'>): Promise<
       answer: payload.answer,
       explanation: payload.explanation,
       sort_order: payload.sort_order,
-    })
-    .select()
-    .single();
-  if (error || !data) {
+    });
+    await loadQuizQuestions(true);
+    window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
+    return (res?.data?.[0] ?? null) as QuizRow | null;
+  } catch (error) {
     console.error('createQuizQuestion failed', error);
     return null;
   }
-  await loadQuizQuestions(true);
-  window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
-  return data as unknown as QuizRow;
 }
 
 export async function updateQuizQuestion(id: string, patch: Partial<Omit<QuizRow, 'id'>>): Promise<boolean> {
-  const { error } = await supabase.from('quiz_questions').update(patch).eq('id', id);
-  if (error) {
+  try {
+    await adminApi.update('quiz_questions', patch, { match: { id } });
+    await loadQuizQuestions(true);
+    window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
+    return true;
+  } catch (error) {
     console.error('updateQuizQuestion failed', error);
     return false;
   }
-  await loadQuizQuestions(true);
-  window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
-  return true;
 }
 
 export async function deleteQuizQuestion(id: string): Promise<boolean> {
-  const { error } = await supabase.from('quiz_questions').delete().eq('id', id);
-  if (error) {
+  try {
+    await adminApi.delete('quiz_questions', { match: { id } });
+    await loadQuizQuestions(true);
+    window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
+    return true;
+  } catch (error) {
     console.error('deleteQuizQuestion failed', error);
     return false;
   }
-  await loadQuizQuestions(true);
-  window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
-  return true;
 }
 
 export async function bulkInsertQuizQuestions(rows: Omit<QuizRow, 'id'>[]): Promise<number> {
   if (rows.length === 0) return 0;
-  const { data, error } = await supabase.from('quiz_questions').insert(rows).select();
-  if (error) {
+  try {
+    const res: any = await adminApi.insert('quiz_questions', rows);
+    await loadQuizQuestions(true);
+    window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
+    return res?.data?.length || 0;
+  } catch (error) {
     console.error('bulkInsert failed', error);
     return 0;
   }
-  await loadQuizQuestions(true);
-  window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
-  return data?.length || 0;
 }
 
 export async function deleteAllByGrade(grade: '3' | '4'): Promise<boolean> {
-  const { error } = await supabase.from('quiz_questions').delete().eq('grade', grade);
-  if (error) return false;
-  await loadQuizQuestions(true);
-  window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
-  return true;
+  try {
+    await adminApi.delete('quiz_questions', { match: { grade } });
+    await loadQuizQuestions(true);
+    window.dispatchEvent(new Event(QUIZ_UPDATED_EVENT));
+    return true;
+  } catch {
+    return false;
+  }
 }
