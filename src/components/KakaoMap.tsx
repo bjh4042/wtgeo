@@ -29,7 +29,7 @@ interface KakaoMapProps {
   focusLocation?: { lat: number; lng: number; key: string } | null;
 }
 
-const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
+const KAKAO_API_KEY = (import.meta.env.VITE_KAKAO_API_KEY as string) || 'e59d21f6d3e29ccff958317c0b44fcbb';
 
 const ZOOM_STAGES = [
   { level: 12, delay: 1800 },
