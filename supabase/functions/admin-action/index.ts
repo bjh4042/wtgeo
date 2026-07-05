@@ -80,8 +80,12 @@ Deno.serve(async (req) => {
         upsert: false,
       });
       if (error) return json({ error: error.message }, 500);
-      const { data } = admin.storage.from("app-images").getPublicUrl(path);
-      return json({ url: data.publicUrl });
+      // Bucket is private; return a long-lived signed URL (~10 years).
+      const { data: signed, error: signErr } = await admin.storage
+        .from("app-images")
+        .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+      if (signErr) return json({ error: signErr.message }, 500);
+      return json({ url: signed.signedUrl });
     }
 
     const table = String(body.table || "");
