@@ -160,22 +160,30 @@ const AdminPanel = () => {
       loadAllDataFromCloud().then(() => {
         loadGyeongnamEditsFromCloud();
         forceUpdate(n => n + 1);
-        setCurrentNotice(getNotice());
+        const nx = getNotice();
+        setCurrentNotice(nx);
+        setNotice(nx ?? '');
         setSiteInfo(getSiteInfo() as SiteInfo);
       });
     } else { setError(true); }
   };
 
-  const handleSaveNotice = () => {
-    if (!notice.trim()) return;
-    saveNotice(notice.trim());
-    setCurrentNotice(notice.trim());
-    setNotice('');
+  const handleSaveNotice = async () => {
+    const trimmed = notice.trim();
+    if (trimmed) {
+      await saveNotice(trimmed);
+      setCurrentNotice(trimmed);
+    } else {
+      // 빈 값으로 저장 = 공지 삭제 (메인화면 팝업 뜨지 않음)
+      await saveNotice(null);
+      setCurrentNotice(null);
+    }
   };
 
-  const handleDeleteNotice = () => {
-    saveNotice(null);
+  const handleDeleteNotice = async () => {
+    await saveNotice(null);
     setCurrentNotice(null);
+    setNotice('');
   };
 
   const handleSavePlace = () => {
@@ -377,7 +385,7 @@ const AdminPanel = () => {
 
   return (
     <>
-    {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); forceUpdate(n => n + 1); }} />}
+    {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); setIsAdmin(false); setShowLogin(false); setPassword(''); clearAdminPassword(); }} />}
     {!showMapEditor && <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
       <div className="bg-card rounded-2xl p-4 md:p-5 max-w-3xl mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
@@ -417,12 +425,21 @@ const AdminPanel = () => {
               </div>
             )}
             <div>
-              <textarea value={notice} onChange={e => setNotice(e.target.value)} placeholder="공지사항을 입력하세요..."
+              <textarea value={notice} onChange={e => setNotice(e.target.value)} placeholder="공지사항을 입력하세요... (비워두고 저장하면 공지가 삭제됩니다)"
                 className="w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary" rows={3} />
-              <button onClick={handleSaveNotice} disabled={!notice.trim()}
-                className="mt-2 w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                <Send size={14} /> 공지 등록
-              </button>
+              <div className="mt-2 flex gap-2">
+                <button onClick={handleSaveNotice}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
+                  <Send size={14} /> 저장
+                </button>
+                {(currentNotice || notice) && (
+                  <button onClick={handleDeleteNotice}
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-destructive text-destructive-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
+                    <Trash2 size={14} /> 삭제
+                  </button>
+                )}
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">공지 내용을 모두 지운 뒤 <b>저장</b>을 누르면 메인화면 팝업이 뜨지 않습니다.</p>
             </div>
           </div>
         )}
