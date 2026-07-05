@@ -166,16 +166,22 @@ const AdminPanel = () => {
     } else { setError(true); }
   };
 
-  const handleSaveNotice = () => {
-    if (!notice.trim()) return;
-    saveNotice(notice.trim());
-    setCurrentNotice(notice.trim());
-    setNotice('');
+  const handleSaveNotice = async () => {
+    const trimmed = notice.trim();
+    if (trimmed) {
+      await saveNotice(trimmed);
+      setCurrentNotice(trimmed);
+    } else {
+      // 빈 값으로 저장 = 공지 삭제 (메인화면 팝업 뜨지 않음)
+      await saveNotice(null);
+      setCurrentNotice(null);
+    }
   };
 
-  const handleDeleteNotice = () => {
-    saveNotice(null);
+  const handleDeleteNotice = async () => {
+    await saveNotice(null);
     setCurrentNotice(null);
+    setNotice('');
   };
 
   const handleSavePlace = () => {
