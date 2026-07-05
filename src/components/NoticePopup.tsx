@@ -10,7 +10,7 @@ const NoticePopup = () => {
 
   useEffect(() => {
     getNoticeFromCloud().then(current => {
-      if (!current) return;
+      if (!current || !current.trim()) return;
 
       const dismissed = sessionStorage.getItem(DISMISSED_KEY);
       if (dismissed === current) return;
