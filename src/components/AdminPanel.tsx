@@ -160,7 +160,9 @@ const AdminPanel = () => {
       loadAllDataFromCloud().then(() => {
         loadGyeongnamEditsFromCloud();
         forceUpdate(n => n + 1);
-        setCurrentNotice(getNotice());
+        const nx = getNotice();
+        setCurrentNotice(nx);
+        setNotice(nx ?? '');
         setSiteInfo(getSiteInfo() as SiteInfo);
       });
     } else { setError(true); }
