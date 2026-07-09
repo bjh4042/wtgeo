@@ -40,7 +40,7 @@ const ExplorerPage = () => {
   
   const [zoomIn, setZoomIn] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
-  const [visitorCount, setVisitorCount] = useState(0);
+  
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSources, setShowSources] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
@@ -54,7 +54,7 @@ const ExplorerPage = () => {
 
   useEffect(() => {
     loadAllDataFromCloud().then(() => {
-      incrementVisitorCount().then(count => setVisitorCount(count));
+      incrementVisitorCount();
     });
     recordVisit();
   }, []);
