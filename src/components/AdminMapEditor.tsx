@@ -5,7 +5,7 @@ import { School } from '@/data/schools';
 import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, saveContentEdit, saveCustomContent, deleteContent, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
 import { stories, placenames, heritages, pastPresent, natureContent } from '@/data/content';
 import { places as defaultPlaces } from '@/data/places';
-import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen } from 'lucide-react';
+import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen, Move } from 'lucide-react';
 import { uploadImageToStorage } from '@/lib/uploadImage';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
