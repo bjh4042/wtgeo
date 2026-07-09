@@ -86,8 +86,12 @@ interface EditableSchool {
   website?: string;
 }
 
-const AdminPanel = () => {
-  const [showLogin, setShowLogin] = useState(false);
+interface AdminPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [password, setPassword] = useState('');
   const [notice, setNotice] = useState('');
