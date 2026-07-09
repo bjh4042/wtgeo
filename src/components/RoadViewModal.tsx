@@ -21,6 +21,8 @@ const RoadViewModal = ({ lat, lng, name, onClose }: RoadViewModalProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setError(null);
+    setLoading(true);
     const tryInit = (attempt = 0) => {
       const kakao = window.kakao;
       if (!kakao || !kakao.maps || !kakao.maps.RoadviewClient) {
