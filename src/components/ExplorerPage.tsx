@@ -21,7 +21,7 @@ import PlaceNameOrigins from '@/components/PlaceNameOrigins';
 import FavoriteCourse from '@/components/FavoriteCourse';
 import PlaceSearchBar from '@/components/PlaceSearchBar';
 import { useFavorites } from '@/hooks/useFavorites';
-import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
+import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT, getMergedPlaces, getMergedContent, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
 import { Home, Map, Route, MapPin, Star } from 'lucide-react';
 
