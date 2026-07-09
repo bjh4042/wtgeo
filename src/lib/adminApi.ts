@@ -44,6 +44,9 @@ export const adminApi = {
   upsert(table: string, row: any | any[], onConflict?: string) {
     return call("upsert", { table, row, onConflict });
   },
+  select(table: string, opts: { columns?: string; match?: Match; matchNeq?: Match; order?: { column: string; ascending?: boolean }; limit?: number } = {}) {
+    return call("select", { table, ...opts });
+  },
   insert(table: string, rows: any | any[]) {
     return call("insert", { table, rows });
   },

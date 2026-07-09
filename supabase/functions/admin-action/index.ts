@@ -91,6 +91,20 @@ Deno.serve(async (req) => {
     const table = String(body.table || "");
     if (!ALLOWED_TABLES.has(table)) return json({ error: "Forbidden table" }, 403);
 
+    if (action === "select") {
+      const columns: string = typeof body.columns === "string" && body.columns.length > 0 ? body.columns : "*";
+      let q: any = admin.from(table).select(columns);
+      for (const [k, v] of Object.entries(body.match || {})) q = q.eq(k, v as any);
+      for (const [k, v] of Object.entries(body.matchNeq || {})) q = q.neq(k, v as any);
+      if (body.order && typeof body.order.column === "string") {
+        q = q.order(body.order.column, { ascending: body.order.ascending !== false });
+      }
+      if (typeof body.limit === "number") q = q.limit(body.limit);
+      const { data, error } = await q;
+      if (error) return json({ error: error.message }, 500);
+      return json({ data });
+    }
+
     if (action === "upsert") {
       const onConflict: string | undefined = body.onConflict;
       const row = Array.isArray(body.row)
