@@ -389,7 +389,7 @@ const AdminPanel = () => {
 
   return (
     <>
-    {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); setIsAdmin(false); setShowLogin(false); setPassword(''); clearAdminPassword(); }} />}
+    {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); setIsAdmin(false); setShowLogin(false); setPassword(''); clearAdminPassword(); window.location.href = '/'; }} />}
     {!showMapEditor && <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
       <div className="bg-card rounded-2xl p-4 md:p-5 max-w-3xl mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
