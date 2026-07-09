@@ -23,7 +23,7 @@ import PlaceSearchBar from '@/components/PlaceSearchBar';
 import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, Users, Map, Route, MapPin, Star } from 'lucide-react';
+import { Home, Map, Route, MapPin, Star } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
