@@ -119,8 +119,12 @@ const AdminPanel = () => {
   const unreadCount = reports.filter(r => !r.is_read).length;
 
   const loadReports = useCallback(async () => {
-    const { data } = await supabase.from('error_reports').select('*').order('created_at', { ascending: false });
-    if (data) setReports(data as ErrorReport[]);
+    try {
+      const res: any = await adminApi.select('error_reports', { order: { column: 'created_at', ascending: false } });
+      if (res?.data) setReports(res.data as ErrorReport[]);
+    } catch (e) {
+      console.error('Failed to load reports', e);
+    }
   }, []);
 
   const markAsRead = async (id: string) => {
