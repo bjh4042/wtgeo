@@ -178,6 +178,7 @@ const ExplorerPage = () => {
           schoolName={step === 'explore' ? selectedSchool?.name : undefined}
           onQuizOpen={step === 'explore' ? () => setShowQuiz(true) : undefined}
           onSourcesOpen={step === 'explore' ? () => setShowSources(true) : undefined}
+          onAdminOpen={() => setShowAdmin(true)}
         />
       )}
 
