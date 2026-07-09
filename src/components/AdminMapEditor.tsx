@@ -5,7 +5,7 @@ import { School } from '@/data/schools';
 import { getMergedPlaces, getMergedSchools, getMergedContent, savePlaceEdit, saveCustomPlace, deletePlace, saveSchoolEdit, saveContentEdit, saveCustomContent, deleteContent, PLACES_UPDATED_EVENT, SCHOOLS_UPDATED_EVENT, CONTENT_UPDATED_EVENT } from '@/data/dataManager';
 import { stories, placenames, heritages, pastPresent, natureContent } from '@/data/content';
 import { places as defaultPlaces } from '@/data/places';
-import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen } from 'lucide-react';
+import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen, Move } from 'lucide-react';
 import { uploadImageToStorage } from '@/lib/uploadImage';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
@@ -80,6 +80,8 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [showSchools, setShowSchools] = useState(true);
   const [showContent, setShowContent] = useState(true);
   const [activeContentFilters, setActiveContentFilters] = useState<ContentCategory[]>([]);
+  const [dragMode, setDragMode] = useState(false);
+  const dragMarkerRef = useRef<any>(null);
 
   const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
   const allSchools = useMemo(() => getMergedSchools().map((s, i) => ({ ...s, index: i })), [renderKey]);
@@ -411,6 +413,45 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     return () => { window.removeEventListener(PLACES_UPDATED_EVENT, handler); window.removeEventListener(SCHOOLS_UPDATED_EVENT, handler); window.removeEventListener(CONTENT_UPDATED_EVENT, handler); };
   }, []);
 
+  // Turn off drag mode when leaving edit mode
+  useEffect(() => { if (!isEditing) setDragMode(false); }, [isEditing]);
+
+  // Draggable marker for the currently-edited item
+  useEffect(() => {
+    if (dragMarkerRef.current) {
+      dragMarkerRef.current.setMap(null);
+      dragMarkerRef.current = null;
+    }
+    if (!isLoaded || !mapInstance.current || !isEditing || !dragMode) return;
+
+    let lat: number | undefined;
+    let lng: number | undefined;
+    if (editorMode === 'place' && selectedPlace) { lat = Number(selectedPlace.lat); lng = Number(selectedPlace.lng); }
+    else if (editorMode === 'school' && selectedSchool) { lat = Number(selectedSchool.lat); lng = Number(selectedSchool.lng); }
+    else if (editorMode === 'content' && selectedContentItem) { lat = Number(selectedContentItem.lat); lng = Number(selectedContentItem.lng); }
+    if (lat === undefined || lng === undefined || Number.isNaN(lat) || Number.isNaN(lng)) return;
+
+    const pos = new window.kakao.maps.LatLng(lat, lng);
+    const marker = new window.kakao.maps.Marker({ position: pos, draggable: true, map: mapInstance.current, zIndex: 9999 });
+    dragMarkerRef.current = marker;
+
+    const onDragEnd = () => {
+      const p = marker.getPosition();
+      const nLat = parseFloat(p.getLat().toFixed(6));
+      const nLng = parseFloat(p.getLng().toFixed(6));
+      if (editorMode === 'place') setSelectedPlace(prev => prev ? { ...prev, lat: nLat, lng: nLng } : prev);
+      else if (editorMode === 'school') setSelectedSchool(prev => prev ? { ...prev, lat: nLat, lng: nLng } : prev);
+      else if (editorMode === 'content') setSelectedContentItem(prev => prev ? { ...prev, lat: nLat, lng: nLng } : prev);
+    };
+    window.kakao.maps.event.addListener(marker, 'dragend', onDragEnd);
+
+    return () => {
+      window.kakao.maps.event.removeListener(marker, 'dragend', onDragEnd);
+      marker.setMap(null);
+      if (dragMarkerRef.current === marker) dragMarkerRef.current = null;
+    };
+  }, [isLoaded, isEditing, dragMode, editorMode, selectedPlace?.id, selectedSchool?.index, selectedContentItem?.id, selectedPlace?.lat, selectedPlace?.lng, selectedSchool?.lat, selectedSchool?.lng, selectedContentItem?.lat, selectedContentItem?.lng]);
+
   const inputClass = "w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary";
 
   const currentItem = editorMode === 'place' ? selectedPlace : editorMode === 'content' ? selectedContentItem : selectedSchool;
@@ -558,6 +599,14 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                 {!isEditing && (
                   <button onClick={() => { setIsEditing(true); setDetailsExpanded(true); }}
                     className="px-2 py-1 rounded text-[10px] font-bold bg-primary text-primary-foreground cursor-pointer hover:opacity-90">수정</button>
+                )}
+                {isEditing && (
+                  <button
+                    onClick={() => setDragMode(m => !m)}
+                    title="핀을 드래그해서 위치 이동"
+                    className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-colors ${dragMode ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                    <Move size={10} /> {dragMode ? '드래그 ON' : '드래그'}
+                  </button>
                 )}
                 {(editorMode === 'place' || editorMode === 'content') && (
                   <button onClick={editorMode === 'place' ? handleDeletePlace : handleDeleteContent}
