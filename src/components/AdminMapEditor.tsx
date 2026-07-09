@@ -600,6 +600,14 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                   <button onClick={() => { setIsEditing(true); setDetailsExpanded(true); }}
                     className="px-2 py-1 rounded text-[10px] font-bold bg-primary text-primary-foreground cursor-pointer hover:opacity-90">수정</button>
                 )}
+                {isEditing && (
+                  <button
+                    onClick={() => setDragMode(m => !m)}
+                    title="핀을 드래그해서 위치 이동"
+                    className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-colors ${dragMode ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                    <Move size={10} /> {dragMode ? '드래그 ON' : '드래그'}
+                  </button>
+                )}
                 {(editorMode === 'place' || editorMode === 'content') && (
                   <button onClick={editorMode === 'place' ? handleDeletePlace : handleDeleteContent}
                     className="p-1 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
