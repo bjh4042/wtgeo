@@ -47,6 +47,7 @@ const ExplorerPage = () => {
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
   const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
   const [grade4VisibleIds, setGrade4VisibleIds] = useState<Set<string> | null>(null);
   const [focusLocation, setFocusLocation] = useState<{ lat: number; lng: number; key: string } | null>(null);
 
