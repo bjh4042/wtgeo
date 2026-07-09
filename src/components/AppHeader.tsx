@@ -1,4 +1,4 @@
-import { Info, X, Link2, Target } from 'lucide-react';
+import { Info, X, Link2, Target, Settings } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getSiteInfo } from '@/data/dataManager';
 import { SiteInfo } from './AdminPanel';
@@ -8,9 +8,10 @@ interface AppHeaderProps {
   onQuizOpen?: () => void;
   onSourcesOpen?: () => void;
   onInfoOpen?: () => void;
+  onAdminOpen?: () => void;
 }
 
-const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen }: AppHeaderProps) => {
+const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen, onAdminOpen }: AppHeaderProps) => {
   const [showGuide, setShowGuide] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [aboutTab, setAboutTab] = useState<'site' | 'dev'>('site');
@@ -47,6 +48,15 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen }: AppHea
           >
             <Info size={15} />
           </button>
+          {onAdminOpen && (
+            <button
+              onClick={onAdminOpen}
+              className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer"
+              title="관리자"
+            >
+              <Settings size={15} />
+            </button>
+          )}
         </div>
       </header>
 

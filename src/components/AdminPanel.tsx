@@ -86,8 +86,12 @@ interface EditableSchool {
   website?: string;
 }
 
-const AdminPanel = () => {
-  const [showLogin, setShowLogin] = useState(false);
+interface AdminPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [password, setPassword] = useState('');
   const [notice, setNotice] = useState('');
@@ -345,22 +349,15 @@ const AdminPanel = () => {
     return gyeongnamCitiesList.filter(c => c.name.includes(searchTerm) || c.mascot.includes(searchTerm));
   }, [gyeongnamCitiesList, searchTerm]);
 
-  if (!showLogin && !isAdmin) {
-    return (
-      <button onClick={() => setShowLogin(true)}
-        className="flex items-center gap-1 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors cursor-pointer">
-        <Settings size={12} /> 관리자
-      </button>
-    );
-  }
+  if (!isOpen) return null;
 
-  if (showLogin && !isAdmin) {
+  if (!isAdmin) {
     return (
       <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
         <div className="bg-card rounded-2xl p-6 max-w-sm mx-4 shadow-2xl w-full" onClick={e => e.stopPropagation()}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-foreground">🔐 관리자 로그인</h3>
-            <button onClick={() => { setShowLogin(false); setError(false); setPassword(''); }} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+            <button onClick={() => { onClose(); setError(false); setPassword(''); }} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
           </div>
           <div className="space-y-3">
             <input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(false); }} onKeyDown={e => e.key === 'Enter' && handleLogin()} placeholder="비밀번호 입력"
@@ -389,12 +386,12 @@ const AdminPanel = () => {
 
   return (
     <>
-    {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); setIsAdmin(false); setShowLogin(false); setPassword(''); clearAdminPassword(); window.location.href = '/'; }} />}
+    {showMapEditor && <AdminMapEditor onClose={() => { setShowMapEditor(false); setIsAdmin(false); onClose(); setPassword(''); clearAdminPassword(); window.location.href = '/'; }} />}
     {!showMapEditor && <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50">
       <div className="bg-card rounded-2xl p-4 md:p-5 max-w-3xl mx-2 md:mx-4 shadow-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base md:text-lg font-bold text-foreground">⚙️ 관리자 패널</h3>
-          <button onClick={() => { setIsAdmin(false); setShowLogin(false); }} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+          <button onClick={() => { setIsAdmin(false); onClose(); }} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
         </div>
 
         {/* Tabs */}

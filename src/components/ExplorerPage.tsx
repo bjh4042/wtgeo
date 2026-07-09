@@ -47,6 +47,7 @@ const ExplorerPage = () => {
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
   const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
   const [grade4VisibleIds, setGrade4VisibleIds] = useState<Set<string> | null>(null);
   const [focusLocation, setFocusLocation] = useState<{ lat: number; lng: number; key: string } | null>(null);
 
@@ -177,6 +178,7 @@ const ExplorerPage = () => {
           schoolName={step === 'explore' ? selectedSchool?.name : undefined}
           onQuizOpen={step === 'explore' ? () => setShowQuiz(true) : undefined}
           onSourcesOpen={step === 'explore' ? () => setShowSources(true) : undefined}
+          onAdminOpen={() => setShowAdmin(true)}
         />
       )}
 
@@ -364,12 +366,13 @@ const ExplorerPage = () => {
         </main>
       )}
 
+      <AdminPanel isOpen={showAdmin} onClose={() => setShowAdmin(false)} />
+
       {/* Footer */}
       {step !== 'explore' && (
         <footer className="text-center py-2 md:py-3 text-[10px] md:text-xs text-muted-foreground space-y-0.5">
           <div className="flex items-center justify-center gap-2">
             <span className="text-muted-foreground/30">|</span>
-            <AdminPanel />
           </div>
         </footer>
       )}
