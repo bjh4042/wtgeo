@@ -413,6 +413,45 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     return () => { window.removeEventListener(PLACES_UPDATED_EVENT, handler); window.removeEventListener(SCHOOLS_UPDATED_EVENT, handler); window.removeEventListener(CONTENT_UPDATED_EVENT, handler); };
   }, []);
 
+  // Turn off drag mode when leaving edit mode
+  useEffect(() => { if (!isEditing) setDragMode(false); }, [isEditing]);
+
+  // Draggable marker for the currently-edited item
+  useEffect(() => {
+    if (dragMarkerRef.current) {
+      dragMarkerRef.current.setMap(null);
+      dragMarkerRef.current = null;
+    }
+    if (!isLoaded || !mapInstance.current || !isEditing || !dragMode) return;
+
+    let lat: number | undefined;
+    let lng: number | undefined;
+    if (editorMode === 'place' && selectedPlace) { lat = Number(selectedPlace.lat); lng = Number(selectedPlace.lng); }
+    else if (editorMode === 'school' && selectedSchool) { lat = Number(selectedSchool.lat); lng = Number(selectedSchool.lng); }
+    else if (editorMode === 'content' && selectedContentItem) { lat = Number(selectedContentItem.lat); lng = Number(selectedContentItem.lng); }
+    if (lat === undefined || lng === undefined || Number.isNaN(lat) || Number.isNaN(lng)) return;
+
+    const pos = new window.kakao.maps.LatLng(lat, lng);
+    const marker = new window.kakao.maps.Marker({ position: pos, draggable: true, map: mapInstance.current, zIndex: 9999 });
+    dragMarkerRef.current = marker;
+
+    const onDragEnd = () => {
+      const p = marker.getPosition();
+      const nLat = parseFloat(p.getLat().toFixed(6));
+      const nLng = parseFloat(p.getLng().toFixed(6));
+      if (editorMode === 'place') setSelectedPlace(prev => prev ? { ...prev, lat: nLat, lng: nLng } : prev);
+      else if (editorMode === 'school') setSelectedSchool(prev => prev ? { ...prev, lat: nLat, lng: nLng } : prev);
+      else if (editorMode === 'content') setSelectedContentItem(prev => prev ? { ...prev, lat: nLat, lng: nLng } : prev);
+    };
+    window.kakao.maps.event.addListener(marker, 'dragend', onDragEnd);
+
+    return () => {
+      window.kakao.maps.event.removeListener(marker, 'dragend', onDragEnd);
+      marker.setMap(null);
+      if (dragMarkerRef.current === marker) dragMarkerRef.current = null;
+    };
+  }, [isLoaded, isEditing, dragMode, editorMode, selectedPlace?.id, selectedSchool?.index, selectedContentItem?.id]);
+
   const inputClass = "w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary";
 
   const currentItem = editorMode === 'place' ? selectedPlace : editorMode === 'content' ? selectedContentItem : selectedSchool;
