@@ -80,6 +80,8 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [showSchools, setShowSchools] = useState(true);
   const [showContent, setShowContent] = useState(true);
   const [activeContentFilters, setActiveContentFilters] = useState<ContentCategory[]>([]);
+  const [dragMode, setDragMode] = useState(false);
+  const dragMarkerRef = useRef<any>(null);
 
   const allPlaces = useMemo(() => getMergedPlaces(), [renderKey]);
   const allSchools = useMemo(() => getMergedSchools().map((s, i) => ({ ...s, index: i })), [renderKey]);
