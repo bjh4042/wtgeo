@@ -23,7 +23,7 @@ import PlaceSearchBar from '@/components/PlaceSearchBar';
 import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, Users, Map, Route, MapPin, Star } from 'lucide-react';
+import { Home, Map, Route, MapPin, Star } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -40,7 +40,7 @@ const ExplorerPage = () => {
   
   const [zoomIn, setZoomIn] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
-  const [visitorCount, setVisitorCount] = useState(0);
+  
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSources, setShowSources] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
@@ -54,7 +54,7 @@ const ExplorerPage = () => {
 
   useEffect(() => {
     loadAllDataFromCloud().then(() => {
-      incrementVisitorCount().then(count => setVisitorCount(count));
+      incrementVisitorCount();
     });
     recordVisit();
   }, []);
@@ -341,9 +341,6 @@ const ExplorerPage = () => {
       {/* Footer */}
       {step !== 'explore' && (
         <footer className="text-center py-2 md:py-3 text-[10px] md:text-xs text-muted-foreground space-y-0.5">
-          <div className="flex items-center justify-center gap-3">
-            <span className="flex items-center gap-1"><Users size={11} /> 방문자 {visitorCount.toLocaleString()}명</span>
-          </div>
           <div className="flex items-center justify-center gap-2">
             <span className="text-muted-foreground/30">|</span>
             <AdminPanel />
