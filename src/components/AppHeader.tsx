@@ -48,6 +48,15 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen, onAdminO
           >
             <Info size={15} />
           </button>
+          {onAdminOpen && (
+            <button
+              onClick={onAdminOpen}
+              className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer"
+              title="관리자"
+            >
+              <Settings size={15} />
+            </button>
+          )}
         </div>
       </header>
 
