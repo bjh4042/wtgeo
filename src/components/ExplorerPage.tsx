@@ -69,6 +69,32 @@ const ExplorerPage = () => {
     return () => window.removeEventListener(SCHOOLS_UPDATED_EVENT, syncSelectedSchool);
   }, [selectedSchool]);
 
+  // Keep selectedPlace in sync with edits (coordinates, description, etc.)
+  useEffect(() => {
+    const syncPlace = () => {
+      setSelectedPlace(prev => {
+        if (!prev) return prev;
+        const updated = getMergedPlaces().find(p => p.id === prev.id);
+        return updated ? { ...prev, ...updated } : prev;
+      });
+    };
+    window.addEventListener(PLACES_UPDATED_EVENT, syncPlace);
+    return () => window.removeEventListener(PLACES_UPDATED_EVENT, syncPlace);
+  }, []);
+
+  // Keep selectedContent in sync with edits
+  useEffect(() => {
+    const syncContent = () => {
+      setSelectedContent(prev => {
+        if (!prev) return prev;
+        const updated = getMergedContent().find(c => c.id === prev.id);
+        return updated ? { ...prev, ...updated } : prev;
+      });
+    };
+    window.addEventListener(CONTENT_UPDATED_EVENT, syncContent);
+    return () => window.removeEventListener(CONTENT_UPDATED_EVENT, syncContent);
+  }, []);
+
   const handleConsonantSelect = (c: string) => { setSelectedConsonant(c); setStep('school'); };
   const handleSchoolSelect = (school: School) => { setSelectedSchool(school); setStep('grade'); };
   const handleGradeSelect = (grade: 3 | 4) => {
