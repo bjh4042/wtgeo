@@ -450,7 +450,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       marker.setMap(null);
       if (dragMarkerRef.current === marker) dragMarkerRef.current = null;
     };
-  }, [isLoaded, isEditing, dragMode, editorMode, selectedPlace?.id, selectedSchool?.index, selectedContentItem?.id]);
+  }, [isLoaded, isEditing, dragMode, editorMode, selectedPlace?.id, selectedSchool?.index, selectedContentItem?.id, selectedPlace?.lat, selectedPlace?.lng, selectedSchool?.lat, selectedSchool?.lng, selectedContentItem?.lat, selectedContentItem?.lng]);
 
   const inputClass = "w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary";
 
