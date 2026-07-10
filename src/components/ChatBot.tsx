@@ -38,13 +38,13 @@ const ChatBot = ({ grade }: ChatBotProps) => {
     const q = text.trim();
     if (!q || loading) return;
     setError(null);
-    const next: ChatTurn[] = [...messages, { role: "user", content: q }];
+    const next: UITurn[] = [...messages, { role: "user", content: q }];
     setMessages(next);
     setInput("");
     setLoading(true);
     try {
-      const answer = await askChatbot(grade, next);
-      setMessages([...next, { role: "assistant", content: answer || "답변을 생성하지 못했어요." }]);
+      const { text: answer, followups } = await askChatbot(grade, next);
+      setMessages([...next, { role: "assistant", content: answer || "답변을 생성하지 못했어요.", followups }]);
     } catch (e) {
       setError((e as Error).message || "챗봇 오류");
       setMessages(next); // keep user message
