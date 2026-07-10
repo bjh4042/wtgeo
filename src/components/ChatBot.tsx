@@ -7,9 +7,11 @@ interface ChatBotProps {
   grade: 3 | 4;
 }
 
+type UITurn = ChatTurn & { followups?: string[] };
+
 const ChatBot = ({ grade }: ChatBotProps) => {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatTurn[]>([]);
+  const [messages, setMessages] = useState<UITurn[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
