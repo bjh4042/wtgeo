@@ -47,6 +47,9 @@ function buildGrade3Context(): string {
     "",
     "## 거제시 Q&A 지식베이스 (읍·면·동별 상세 문답)",
     ...qaLines,
+    "",
+    "## 거제시 초등학교 정보 (개교연도·학급수·학생수·주소·연락처)",
+    ...schoolLines,
   ].join("\n");
 }
 
