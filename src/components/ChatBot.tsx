@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { askChatbot, SUGGESTED_QUESTIONS, type ChatTurn } from "@/lib/chatbotService";
+import { checkForbiddenWords, FORBIDDEN_WORD_MESSAGE } from "@/data/forbiddenWords";
 
 interface ChatBotProps {
   grade: 3 | 4;
