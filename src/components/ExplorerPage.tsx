@@ -369,6 +369,10 @@ const ExplorerPage = () => {
 
       <AdminPanel isOpen={showAdmin} onClose={() => setShowAdmin(false)} />
 
+      {step === 'explore' && selectedGrade && !isZooming && (
+        <ChatBot grade={selectedGrade} />
+      )}
+
       {/* Footer */}
       {step !== 'explore' && (
         <footer className="text-center py-2 md:py-3 text-[10px] md:text-xs text-muted-foreground space-y-0.5">
