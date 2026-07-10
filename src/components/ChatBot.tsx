@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { askChatbot, SUGGESTED_QUESTIONS, type ChatTurn } from "@/lib/chatbotService";
 import { checkForbiddenWords, FORBIDDEN_WORD_MESSAGE } from "@/data/forbiddenWords";
 import { findSchoolInfo } from "@/data/schoolQA";
+import { findGeojePopulation, findGyeongnamPopulation } from "@/data/populationQA";
 
 interface ChatBotProps {
   grade: 3 | 4;
