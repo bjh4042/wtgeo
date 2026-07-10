@@ -3,6 +3,7 @@ import { getMergedPlacesByGrade, getMergedContent } from "@/data/dataManager";
 import { getGyeongnamCities } from "@/data/gyeongnam";
 import { categoryLabels, publicSubCategoryLabels } from "@/data/places";
 import { contentCategoryLabels } from "@/data/content";
+import { chatbotQA } from "@/data/chatbotQA";
 
 // Build a compact knowledge base string from local merged data.
 // Keep it small: name + category + address + description (trimmed).
