@@ -3,6 +3,7 @@ import { getMergedPlacesByGrade, getMergedContent } from "@/data/dataManager";
 import { getGyeongnamCities } from "@/data/gyeongnam";
 import { categoryLabels, publicSubCategoryLabels } from "@/data/places";
 import { contentCategoryLabels } from "@/data/content";
+import { chatbotQA } from "@/data/chatbotQA";
 
 // Build a compact knowledge base string from local merged data.
 // Keep it small: name + category + address + description (trimmed).
@@ -25,12 +26,19 @@ function buildGrade3Context(): string {
     return `- [${cat}] ${c.name} | 설명: ${desc}`;
   });
 
+  const qaLines = chatbotQA.map(
+    (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
+  );
+
   return [
     "## 거제시 장소 목록",
     ...placeLines,
     "",
     "## 거제시 콘텐츠(옛이야기·지명·국가유산·자연 등)",
     ...contentLines,
+    "",
+    "## 거제시 Q&A 지식베이스 (읍·면·동별 상세 문답)",
+    ...qaLines,
   ].join("\n");
 }
 
@@ -63,7 +71,7 @@ function buildGrade4Context(): string {
 export function buildKnowledgeContext(grade: 3 | 4): string {
   const ctx = grade === 3 ? buildGrade3Context() : buildGrade4Context();
   // Safety cap to keep prompt reasonable
-  const MAX = 60000;
+  const MAX = 200000;
   return ctx.length > MAX ? ctx.slice(0, MAX) + "\n...(생략)" : ctx;
 }
 
