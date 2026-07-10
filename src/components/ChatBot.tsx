@@ -39,6 +39,15 @@ const ChatBot = ({ grade }: ChatBotProps) => {
     const q = text.trim();
     if (!q || loading) return;
     setError(null);
+    if (checkForbiddenWords(q)) {
+      setMessages([
+        ...messages,
+        { role: "user", content: q },
+        { role: "assistant", content: FORBIDDEN_WORD_MESSAGE },
+      ]);
+      setInput("");
+      return;
+    }
     const next: UITurn[] = [...messages, { role: "user", content: q }];
     setMessages(next);
     setInput("");
