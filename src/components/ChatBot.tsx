@@ -140,26 +140,6 @@ const ChatBot = ({ grade }: ChatBotProps) => {
               </div>
             ))}
 
-            {/* Follow-up question suggestions after the last assistant message */}
-            {!loading && (() => {
-              const last = messages[messages.length - 1];
-              if (!last || last.role !== "assistant" || !last.followups?.length) return null;
-              return (
-                <div className="space-y-1.5 pt-1">
-                  <p className="text-[11px] font-semibold text-muted-foreground px-1">💡 관련 질문</p>
-                  {last.followups.map((q) => (
-                    <button
-                      key={q}
-                      onClick={() => send(q)}
-                      className="w-full text-left px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 text-xs cursor-pointer transition-colors"
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-              );
-            })()}
-
             {loading && (
               <div className="flex justify-start">
                 <div className="px-3 py-2 rounded-2xl rounded-bl-sm bg-muted text-muted-foreground flex items-center gap-2 text-xs">
@@ -172,6 +152,34 @@ const ChatBot = ({ grade }: ChatBotProps) => {
               <div className="text-xs text-destructive px-2">⚠️ {error}</div>
             )}
           </div>
+
+          {/* 질문 가이드 (항상 노출) — 최근 질문과 관련된 예시 3개 */}
+          {(() => {
+            const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant") as UITurn | undefined;
+            const guides =
+              lastAssistant?.followups && lastAssistant.followups.length > 0
+                ? lastAssistant.followups.slice(0, 3)
+                : SUGGESTED_QUESTIONS[grade].slice(0, 3);
+            return (
+              <div className="border-t bg-muted/30 px-3 py-2">
+                <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">
+                  💡 질문 가이드 {lastAssistant ? "· 방금 대화와 관련된 추천" : ""}
+                </p>
+                <div className="space-y-1">
+                  {guides.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => send(q)}
+                      disabled={loading}
+                      className="w-full text-left px-2.5 py-1.5 rounded-md bg-background hover:bg-accent text-xs cursor-pointer transition-colors disabled:opacity-50 border"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Composer */}
           <form onSubmit={onSubmit} className="border-t p-2 flex items-end gap-2 md:rounded-b-2xl">
