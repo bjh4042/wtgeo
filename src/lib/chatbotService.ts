@@ -28,7 +28,7 @@ function buildGrade3Context(): string {
     return `- [${cat}] ${c.name} | 설명: ${desc}`;
   });
 
-  const qaLines = chatbotQA.map(
+  const qaLines = [...chatbotQA, ...chatbotQAFun].map(
     (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
   );
 
