@@ -116,7 +116,7 @@ export const schoolQA: SchoolQA[] = [
     "website": "http://suwol-e.gne.go.kr",
     "phone": "055-635-2962",
     "address": "경상남도 거제시 수월로 68 (수월동)",
-    "address_old": "수월동",
+    
     "answer": "수월초등학교는 1936년에 개교해 전통이 아주 깊은 학교야. 대단지 아파트 중간인 수월로 68에 위치하며 22학급, 520명의 친구들이 다녀. 홈페이지(http://suwol-e.gne.go.kr)와 연락처(055-635-2962)를 통해 소통하고 있어."
   },
   {
