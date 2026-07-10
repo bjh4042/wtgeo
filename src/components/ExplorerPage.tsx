@@ -20,6 +20,7 @@ import RouteExplorer from '@/components/RouteExplorer';
 import PlaceNameOrigins from '@/components/PlaceNameOrigins';
 import FavoriteCourse from '@/components/FavoriteCourse';
 import PlaceSearchBar from '@/components/PlaceSearchBar';
+import ChatBot from '@/components/ChatBot';
 import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT, getMergedPlaces, getMergedContent, loadAllDataFromCloud } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
@@ -367,6 +368,10 @@ const ExplorerPage = () => {
       )}
 
       <AdminPanel isOpen={showAdmin} onClose={() => setShowAdmin(false)} />
+
+      {step === 'explore' && selectedGrade && !isZooming && (
+        <ChatBot grade={selectedGrade} />
+      )}
 
       {/* Footer */}
       {step !== 'explore' && (
