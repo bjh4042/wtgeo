@@ -6,6 +6,7 @@ import { contentCategoryLabels } from "@/data/content";
 import { chatbotQA } from "@/data/chatbotQA";
 import { chatbotQA4 } from "@/data/chatbotQA4";
 import { chatbotQAFun } from "@/data/chatbotQAFun";
+import { schoolQA } from "@/data/schoolQA";
 
 // Build a compact knowledge base string from local merged data.
 // Keep it small: name + category + address + description (trimmed).
