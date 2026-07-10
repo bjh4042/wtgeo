@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { askChatbot, SUGGESTED_QUESTIONS, type ChatTurn } from "@/lib/chatbotService";
 import { checkForbiddenWords, FORBIDDEN_WORD_MESSAGE } from "@/data/forbiddenWords";
 import { findSchoolInfo } from "@/data/schoolQA";
+import { findGeojePopulation, findGyeongnamPopulation } from "@/data/populationQA";
 
 interface ChatBotProps {
   grade: 3 | 4;
@@ -73,6 +74,45 @@ const ChatBot = ({ grade }: ChatBotProps) => {
             `${hit.school_name}은 언제 개교했어?`,
             `${hit.category}에 있는 다른 초등학교 알려줘`,
             `${hit.school_name} 근처 가볼만한 곳 있어?`,
+          ],
+        },
+      ]);
+      return;
+    }
+
+    // 인구 직답: "인구/몇 명/사람" + 지역명 매칭 시 즉시 응답
+    const gnPop = grade === 4 ? findGyeongnamPopulation(q) : null;
+    if (gnPop) {
+      const answer =
+        `📊 **${gnPop.region}**(${gnPop.type})의 인구는 **${gnPop.population}**이야!\n\n` +
+        `- 기준일: ${gnPop.base_date}\n- 시·군청 주소: ${gnPop.office_address}\n\n${gnPop.description}`;
+      setMessages([
+        ...next,
+        {
+          role: "assistant",
+          content: answer,
+          followups: [
+            `${gnPop.region}의 대표 관광지는 뭐야?`,
+            `${gnPop.region}의 특산물이 뭐야?`,
+            `경상남도에서 인구가 가장 많은 도시는 어디야?`,
+          ],
+        },
+      ]);
+      return;
+    }
+    const geojePop = findGeojePopulation(q);
+    if (geojePop) {
+      const answer =
+        `📊 **${geojePop.region}**의 인구는 **${geojePop.population}**이야!\n\n${geojePop.description}`;
+      setMessages([
+        ...next,
+        {
+          role: "assistant",
+          content: answer,
+          followups: [
+            `${geojePop.region}에는 어떤 곳들이 있어?`,
+            `${geojePop.region} 근처 가볼만한 곳 알려줘`,
+            `거제시에서 인구가 가장 많은 동네는 어디야?`,
           ],
         },
       ]);
