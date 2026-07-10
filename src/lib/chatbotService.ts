@@ -83,9 +83,17 @@ function buildGrade4Context(): string {
     (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
   );
 
+  const gnPopLines = gyeongnamPopulation.map(
+    (p) =>
+      `- [인구/경상남도] ${p.region}(${p.type}): ${p.population} · ${p.base_date} · 시·군청 주소: ${p.office_address} — ${p.description}`,
+  );
+
   return [
     "## 경상남도 18개 시·군",
     ...cityLines,
+    "",
+    "## 경상남도 시·군별 인구 및 시청/군청 주소 (2026년 6월 말 기준)",
+    ...gnPopLines,
     "",
     "## 거제시 4학년 심화 Q&A (공공기관·주민참여·역사·자연·산업 등)",
     ...g4qaLines,
