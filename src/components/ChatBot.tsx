@@ -140,6 +140,26 @@ const ChatBot = ({ grade }: ChatBotProps) => {
               </div>
             ))}
 
+            {/* Follow-up question suggestions after the last assistant message */}
+            {!loading && (() => {
+              const last = messages[messages.length - 1];
+              if (!last || last.role !== "assistant" || !last.followups?.length) return null;
+              return (
+                <div className="space-y-1.5 pt-1">
+                  <p className="text-[11px] font-semibold text-muted-foreground px-1">💡 관련 질문</p>
+                  {last.followups.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => send(q)}
+                      className="w-full text-left px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 text-xs cursor-pointer transition-colors"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+
             {loading && (
               <div className="flex justify-start">
                 <div className="px-3 py-2 rounded-2xl rounded-bl-sm bg-muted text-muted-foreground flex items-center gap-2 text-xs">
