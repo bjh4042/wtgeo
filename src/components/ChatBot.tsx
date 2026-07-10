@@ -4,7 +4,13 @@ import ReactMarkdown from "react-markdown";
 import { askChatbot, SUGGESTED_QUESTIONS, type ChatTurn } from "@/lib/chatbotService";
 import { checkForbiddenWords, FORBIDDEN_WORD_MESSAGE } from "@/data/forbiddenWords";
 import { findSchoolInfo } from "@/data/schoolQA";
-import { findGeojePopulation, findGyeongnamPopulation } from "@/data/populationQA";
+import {
+  findGeojePopulation,
+  findGyeongnamPopulation,
+  hasPopulationIntent,
+  getGeojeRegionNames,
+  getGyeongnamRegionNames,
+} from "@/data/populationQA";
 
 interface ChatBotProps {
   grade: 3 | 4;
@@ -118,6 +124,46 @@ const ChatBot = ({ grade }: ChatBotProps) => {
       ]);
       return;
     }
+
+    // 인구 의도는 있는데 지역이 특정되지 않았을 때 → 되묻기(fallback)
+    if (hasPopulationIntent(q)) {
+      if (grade === 4) {
+        const names = getGyeongnamRegionNames();
+        const sample = names.slice(0, 6).join(", ");
+        setMessages([
+          ...next,
+          {
+            role: "assistant",
+            content:
+              `어느 지역의 인구가 궁금해? 🙂\n경상남도 **18개 시·군** 중 하나를 알려줘.\n예) ${sample} 등\n\n예시로 이렇게 물어봐 줘: "창원시 인구", "통영 몇 명 살아?"`,
+            followups: [
+              "창원시 인구 알려줘",
+              "김해시 인구 몇 명이야?",
+              "경상남도에서 인구가 가장 많은 도시는?",
+            ],
+          },
+        ]);
+        return;
+      } else {
+        const names = getGeojeRegionNames();
+        const sample = names.slice(0, 6).join(", ");
+        setMessages([
+          ...next,
+          {
+            role: "assistant",
+            content:
+              `거제시 어느 **동/면**의 인구가 궁금해? 🙂\n예) ${sample} 등\n\n예시: "고현동 인구", "일운면 몇 명 살아?"`,
+            followups: [
+              "고현동 인구 알려줘",
+              "장승포동 인구는?",
+              "거제시에서 인구가 가장 많은 동네는?",
+            ],
+          },
+        ]);
+        return;
+      }
+    }
+
 
     setLoading(true);
     try {
