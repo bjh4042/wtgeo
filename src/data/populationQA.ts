@@ -41,43 +41,87 @@ export const gyeongnamPopulation: GyeongnamPopulationItem[] = [
   { id:17, region:"산청군", type:"군", population:"약 33,500명", base_date:"2026년 6월 말 기준", office_address:"경상남도 산청군 산청읍 친환경로 2701 (옥산리)", description:"지리산 자락의 맑은 정기를 받고 자란 몸에 좋은 약초와 한의학 박물관인 동의보감촌이 유명하단다." },
   { id:18, region:"의령군", type:"군", population:"약 25,200명", base_date:"2026년 6월 말 기준", office_address:"경상남도 의령군 의령읍 충익로 63 (중동리)", description:"임진왜란 때 붉은 옷을 입고 왜적을 물리친 곽재우 의병장 장군의 기상과 고소한 망개떡이 대표적인 경남에서 인구가 가장 적은 군이야." },
 ];
-const POP_KEYWORDS = ["인구", "몇 명", "몇명", "사람", "몇이나", "몇 이나"];
+const POP_KEYWORDS = [
+  "인구", "몇명", "몇 명", "사람수", "사람 수",
+  "얼마나살", "얼마나 살", "얼마나거주", "얼마나 거주",
+  "인구수", "주민수", "주민 수", "인구는", "인구가",
+  "몇이나", "몇 이나",
+];
 
 function normalize(s: string): string {
-  return s.replace(/\s+/g, "");
+  // 공백/특수문자/숫자 제거 → 우회 매칭 방지 및 오탈자 허용
+  return s.replace(/\s+/g, "").toLowerCase();
 }
 
-// 지역명 별칭(동/면/시/군/특례시 제거해도 매칭되게)
+function normalizeStrict(s: string): string {
+  // 문자만 남김(한글/영문). 지역명 대조에 사용.
+  return s.replace(/[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]/g, "").toLowerCase();
+}
+
+export function hasPopulationIntent(userInput: string): boolean {
+  const q = normalize(userInput);
+  const qs = normalizeStrict(userInput);
+  return POP_KEYWORDS.some((k) => q.includes(normalize(k)) || qs.includes(normalizeStrict(k)));
+}
+
+// 지역명 별칭 — 원본, 접미사 제거형, 흔한 변형 모두 생성
 function regionAliases(region: string): string[] {
-  const stripped = region
-    .replace(/특례시$/, "")
-    .replace(/광역시$/, "")
+  const aliases = new Set<string>();
+  aliases.add(region);
+
+  // 큰 접미사 먼저 제거
+  let s = region
     .replace(/특별자치시$/, "")
-    .replace(/(동|면|읍|시|군|구)$/, "");
-  return Array.from(new Set([region, stripped].filter(Boolean)));
+    .replace(/광역시$/, "")
+    .replace(/특례시$/, "");
+  aliases.add(s);
+
+  // 일반 행정 접미사 제거 (동/면/읍/시/군/구/리)
+  const noSuffix = s.replace(/(동|면|읍|시|군|구|리)$/, "");
+  aliases.add(noSuffix);
+
+  // 숫자가 붙은 동네(옥포1동, 옥포2동) → "옥포"까지도 별칭 추가
+  const noDigit = noSuffix.replace(/\d+$/, "");
+  aliases.add(noDigit);
+
+  // 흔한 별칭
+  if (region === "창원시") ["창원", "창원특례시"].forEach((a) => aliases.add(a));
+  if (region === "거제시") ["거제", "거제도"].forEach((a) => aliases.add(a));
+
+  // 2자 이상만 유효(1자 별칭은 오매칭 위험)
+  return Array.from(aliases).filter((a) => a && a.length >= 2);
+}
+
+function findByRegion<T extends { region: string }>(list: T[], userInput: string): T | null {
+  const q = normalize(userInput);
+  const qs = normalizeStrict(userInput);
+  // 긴 이름부터 매칭(옥포2동이 옥포보다 먼저)
+  const sorted = [...list].sort((a, b) => b.region.length - a.region.length);
+  for (const item of sorted) {
+    for (const alias of regionAliases(item.region)) {
+      const na = normalize(alias);
+      const nsa = normalizeStrict(alias);
+      if ((na && q.includes(na)) || (nsa && qs.includes(nsa))) return item;
+    }
+  }
+  return null;
 }
 
 export function findGeojePopulation(userInput: string) {
-  const q = normalize(userInput);
-  if (!POP_KEYWORDS.some((k) => q.includes(normalize(k)))) return null;
-  // 긴 이름부터 매칭(옥포2동이 옥포보다 먼저)
-  const sorted = [...geojePopulation].sort((a, b) => b.region.length - a.region.length);
-  for (const item of sorted) {
-    for (const alias of regionAliases(item.region)) {
-      if (alias && q.includes(normalize(alias))) return item;
-    }
-  }
-  return null;
+  if (!hasPopulationIntent(userInput)) return null;
+  return findByRegion(geojePopulation, userInput);
 }
 
 export function findGyeongnamPopulation(userInput: string) {
-  const q = normalize(userInput);
-  if (!POP_KEYWORDS.some((k) => q.includes(normalize(k)))) return null;
-  const sorted = [...gyeongnamPopulation].sort((a, b) => b.region.length - a.region.length);
-  for (const item of sorted) {
-    for (const alias of regionAliases(item.region)) {
-      if (alias && q.includes(normalize(alias))) return item;
-    }
-  }
-  return null;
+  if (!hasPopulationIntent(userInput)) return null;
+  return findByRegion(gyeongnamPopulation, userInput);
 }
+
+// 인구 의도는 있는데 지역이 특정되지 않았을 때 안내용 후보 목록
+export function getGeojeRegionNames(): string[] {
+  return geojePopulation.map((p) => p.region);
+}
+export function getGyeongnamRegionNames(): string[] {
+  return gyeongnamPopulation.map((p) => p.region);
+}
+
