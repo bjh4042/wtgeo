@@ -39,6 +39,10 @@ function buildGrade3Context(): string {
       `- [학교/${s.category}] ${s.school_name} | 개교: ${s.established_year} | ${s.num_classes} · ${s.num_students} | 주소: ${s.address} | 전화: ${s.phone} | 홈페이지: ${s.website} | 설명: ${s.answer.replace(/\s+/g, " ")}`,
   );
 
+  const popLines = geojePopulation.map(
+    (p) => `- [인구/거제시] ${p.region}: ${p.population} — ${p.description}`,
+  );
+
   return [
     "## 거제시 장소 목록",
     ...placeLines,
@@ -51,6 +55,9 @@ function buildGrade3Context(): string {
     "",
     "## 거제시 초등학교 정보 (개교연도·학급수·학생수·주소·연락처)",
     ...schoolLines,
+    "",
+    "## 거제시 행정구역별 인구 (2026년 5월 말 기준)",
+    ...popLines,
   ].join("\n");
 }
 
