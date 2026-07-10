@@ -33,6 +33,11 @@ function buildGrade3Context(): string {
     (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
   );
 
+  const schoolLines = schoolQA.map(
+    (s) =>
+      `- [학교/${s.category}] ${s.school_name} | 개교: ${s.established_year} | ${s.num_classes} · ${s.num_students} | 주소: ${s.address} | 전화: ${s.phone} | 홈페이지: ${s.website} | 설명: ${s.answer.replace(/\s+/g, " ")}`,
+  );
+
   return [
     "## 거제시 장소 목록",
     ...placeLines,
