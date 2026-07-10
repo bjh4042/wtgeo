@@ -3,6 +3,7 @@ import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { askChatbot, SUGGESTED_QUESTIONS, type ChatTurn } from "@/lib/chatbotService";
 import { checkForbiddenWords, FORBIDDEN_WORD_MESSAGE } from "@/data/forbiddenWords";
+import { findSchoolInfo } from "@/data/schoolQA";
 
 interface ChatBotProps {
   grade: 3 | 4;
@@ -51,6 +52,33 @@ const ChatBot = ({ grade }: ChatBotProps) => {
     const next: UITurn[] = [...messages, { role: "user", content: q }];
     setMessages(next);
     setInput("");
+
+    // 학교 정보 직답: 학교명 또는 '<동/면> + 초등학교' 매칭 시 AI 호출 없이 즉시 응답
+    const hit = findSchoolInfo(q);
+    if (hit) {
+      const answer =
+        `**${hit.school_name}** (${hit.category})\n\n` +
+        `${hit.answer}\n\n` +
+        `- 개교: ${hit.established_year}\n` +
+        `- 규모: ${hit.num_classes} · ${hit.num_students}\n` +
+        `- 주소: ${hit.address}\n` +
+        `- 전화: ${hit.phone}\n` +
+        `- 홈페이지: ${hit.website}`;
+      setMessages([
+        ...next,
+        {
+          role: "assistant",
+          content: answer,
+          followups: [
+            `${hit.school_name}은 언제 개교했어?`,
+            `${hit.category}에 있는 다른 초등학교 알려줘`,
+            `${hit.school_name} 근처 가볼만한 곳 있어?`,
+          ],
+        },
+      ]);
+      return;
+    }
+
     setLoading(true);
     try {
       const { text: answer, followups } = await askChatbot(grade, next);

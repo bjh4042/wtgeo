@@ -6,6 +6,7 @@ import { contentCategoryLabels } from "@/data/content";
 import { chatbotQA } from "@/data/chatbotQA";
 import { chatbotQA4 } from "@/data/chatbotQA4";
 import { chatbotQAFun } from "@/data/chatbotQAFun";
+import { schoolQA } from "@/data/schoolQA";
 
 // Build a compact knowledge base string from local merged data.
 // Keep it small: name + category + address + description (trimmed).
@@ -32,6 +33,11 @@ function buildGrade3Context(): string {
     (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
   );
 
+  const schoolLines = schoolQA.map(
+    (s) =>
+      `- [학교/${s.category}] ${s.school_name} | 개교: ${s.established_year} | ${s.num_classes} · ${s.num_students} | 주소: ${s.address} | 전화: ${s.phone} | 홈페이지: ${s.website} | 설명: ${s.answer.replace(/\s+/g, " ")}`,
+  );
+
   return [
     "## 거제시 장소 목록",
     ...placeLines,
@@ -41,6 +47,9 @@ function buildGrade3Context(): string {
     "",
     "## 거제시 Q&A 지식베이스 (읍·면·동별 상세 문답)",
     ...qaLines,
+    "",
+    "## 거제시 초등학교 정보 (개교연도·학급수·학생수·주소·연락처)",
+    ...schoolLines,
   ].join("\n");
 }
 
