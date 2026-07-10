@@ -71,7 +71,7 @@ function buildGrade4Context(): string {
 export function buildKnowledgeContext(grade: 3 | 4): string {
   const ctx = grade === 3 ? buildGrade3Context() : buildGrade4Context();
   // Safety cap to keep prompt reasonable
-  const MAX = 60000;
+  const MAX = 200000;
   return ctx.length > MAX ? ctx.slice(0, MAX) + "\n...(생략)" : ctx;
 }
 
