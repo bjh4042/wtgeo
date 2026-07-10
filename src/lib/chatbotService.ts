@@ -4,6 +4,7 @@ import { getGyeongnamCities } from "@/data/gyeongnam";
 import { categoryLabels, publicSubCategoryLabels } from "@/data/places";
 import { contentCategoryLabels } from "@/data/content";
 import { chatbotQA } from "@/data/chatbotQA";
+import { chatbotQA4 } from "@/data/chatbotQA4";
 
 // Build a compact knowledge base string from local merged data.
 // Keep it small: name + category + address + description (trimmed).
@@ -60,9 +61,16 @@ function buildGrade4Context(): string {
     return `- ${c.name}(${c.nameHanja}) | 인구 ${c.population.toLocaleString()}명, 면적 ${c.area}㎢ | 마스코트: ${c.mascot} | 지명유래: ${(c.nameOrigin ?? "").slice(0, 200)} | 대표: ${highlights} | ${details}`.trim();
   });
 
+  const g4qaLines = chatbotQA4.map(
+    (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
+  );
+
   return [
     "## 경상남도 18개 시·군",
     ...cityLines,
+    "",
+    "## 거제시 4학년 심화 Q&A (공공기관·주민참여·역사·자연·산업 등)",
+    ...g4qaLines,
     "",
     g3,
   ].join("\n");
