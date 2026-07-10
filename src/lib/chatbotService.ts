@@ -5,6 +5,7 @@ import { categoryLabels, publicSubCategoryLabels } from "@/data/places";
 import { contentCategoryLabels } from "@/data/content";
 import { chatbotQA } from "@/data/chatbotQA";
 import { chatbotQA4 } from "@/data/chatbotQA4";
+import { chatbotQAFun } from "@/data/chatbotQAFun";
 
 // Build a compact knowledge base string from local merged data.
 // Keep it small: name + category + address + description (trimmed).
@@ -27,7 +28,7 @@ function buildGrade3Context(): string {
     return `- [${cat}] ${c.name} | 설명: ${desc}`;
   });
 
-  const qaLines = chatbotQA.map(
+  const qaLines = [...chatbotQA, ...chatbotQAFun].map(
     (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
   );
 
