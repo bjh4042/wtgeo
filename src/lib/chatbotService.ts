@@ -75,14 +75,17 @@ export interface ChatTurn {
 export async function askChatbot(
   grade: 3 | 4,
   messages: ChatTurn[],
-): Promise<string> {
+): Promise<{ text: string; followups: string[] }> {
   const context = buildKnowledgeContext(grade);
   const { data, error } = await supabase.functions.invoke("chatbot", {
     body: { grade, messages, context },
   });
   if (error) throw new Error(error.message || "챗봇 응답 실패");
   if (data && (data as any).error) throw new Error((data as any).error);
-  return (data as any)?.text ?? "";
+  return {
+    text: (data as any)?.text ?? "",
+    followups: Array.isArray((data as any)?.followups) ? (data as any).followups : [],
+  };
 }
 
 export const SUGGESTED_QUESTIONS: Record<3 | 4, string[]> = {

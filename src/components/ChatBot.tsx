@@ -7,9 +7,11 @@ interface ChatBotProps {
   grade: 3 | 4;
 }
 
+type UITurn = ChatTurn & { followups?: string[] };
+
 const ChatBot = ({ grade }: ChatBotProps) => {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatTurn[]>([]);
+  const [messages, setMessages] = useState<UITurn[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,13 +38,13 @@ const ChatBot = ({ grade }: ChatBotProps) => {
     const q = text.trim();
     if (!q || loading) return;
     setError(null);
-    const next: ChatTurn[] = [...messages, { role: "user", content: q }];
+    const next: UITurn[] = [...messages, { role: "user", content: q }];
     setMessages(next);
     setInput("");
     setLoading(true);
     try {
-      const answer = await askChatbot(grade, next);
-      setMessages([...next, { role: "assistant", content: answer || "답변을 생성하지 못했어요." }]);
+      const { text: answer, followups } = await askChatbot(grade, next);
+      setMessages([...next, { role: "assistant", content: answer || "답변을 생성하지 못했어요.", followups }]);
     } catch (e) {
       setError((e as Error).message || "챗봇 오류");
       setMessages(next); // keep user message
@@ -137,6 +139,26 @@ const ChatBot = ({ grade }: ChatBotProps) => {
                 )}
               </div>
             ))}
+
+            {/* Follow-up question suggestions after the last assistant message */}
+            {!loading && (() => {
+              const last = messages[messages.length - 1];
+              if (!last || last.role !== "assistant" || !last.followups?.length) return null;
+              return (
+                <div className="space-y-1.5 pt-1">
+                  <p className="text-[11px] font-semibold text-muted-foreground px-1">💡 관련 질문</p>
+                  {last.followups.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => send(q)}
+                      className="w-full text-left px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 text-xs cursor-pointer transition-colors"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
 
             {loading && (
               <div className="flex justify-start">
