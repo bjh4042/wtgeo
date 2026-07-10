@@ -26,12 +26,19 @@ function buildGrade3Context(): string {
     return `- [${cat}] ${c.name} | 설명: ${desc}`;
   });
 
+  const qaLines = chatbotQA.map(
+    (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
+  );
+
   return [
     "## 거제시 장소 목록",
     ...placeLines,
     "",
     "## 거제시 콘텐츠(옛이야기·지명·국가유산·자연 등)",
     ...contentLines,
+    "",
+    "## 거제시 Q&A 지식베이스 (읍·면·동별 상세 문답)",
+    ...qaLines,
   ].join("\n");
 }
 
