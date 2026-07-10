@@ -91,9 +91,22 @@ ${context}
     }
 
     const data = await resp.json();
-    const text = data?.choices?.[0]?.message?.content ?? "";
+    const raw = data?.choices?.[0]?.message?.content ?? "";
 
-    return new Response(JSON.stringify({ text }), {
+    // Extract [FOLLOWUPS]...[/FOLLOWUPS] block
+    let text = raw;
+    let followups: string[] = [];
+    const m = raw.match(/\[FOLLOWUPS\]([\s\S]*?)\[\/FOLLOWUPS\]/);
+    if (m) {
+      text = raw.replace(m[0], "").trim();
+      followups = m[1]
+        .split("\n")
+        .map((l: string) => l.replace(/^\s*[-*\d.)]+\s*/, "").trim())
+        .filter((l: string) => l.length > 0)
+        .slice(0, 3);
+    }
+
+    return new Response(JSON.stringify({ text, followups }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
