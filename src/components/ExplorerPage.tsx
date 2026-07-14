@@ -22,7 +22,7 @@ import FavoriteCourse from '@/components/FavoriteCourse';
 import PlaceSearchBar from '@/components/PlaceSearchBar';
 import ChatBot from '@/components/ChatBot';
 import { useFavorites } from '@/hooks/useFavorites';
-import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT, getMergedPlaces, getMergedContent, loadAllDataFromCloud } from '@/data/dataManager';
+import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT, getMergedPlaces, getMergedContent, loadAllDataFromCloud, getVisitorCount, getTodayVisitorCount } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
 import { Home, Map, Route, MapPin, Star } from 'lucide-react';
 
