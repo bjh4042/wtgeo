@@ -377,7 +377,7 @@ const ExplorerPage = () => {
       {step !== 'explore' && (
         <footer className="text-center py-2 md:py-3 text-[10px] md:text-xs text-muted-foreground space-y-0.5">
           <div className="flex items-center justify-center gap-2 flex-wrap">
-            <span>© 니카쌤 · 수박쌤</span>
+            <span>© 2025 수박쌤. 원작: 인디스쿨 니카쌤</span>
             <span className="text-muted-foreground/30">|</span>
             <span>오늘 방문자 {getTodayVisitorCount().toLocaleString()}명</span>
             <span className="text-muted-foreground/30">|</span>
