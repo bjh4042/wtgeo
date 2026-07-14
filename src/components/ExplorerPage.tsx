@@ -376,8 +376,12 @@ const ExplorerPage = () => {
       {/* Footer */}
       {step !== 'explore' && (
         <footer className="text-center py-2 md:py-3 text-[10px] md:text-xs text-muted-foreground space-y-0.5">
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <span>© 니카쌤 · 수박쌤</span>
             <span className="text-muted-foreground/30">|</span>
+            <span>오늘 방문자 {getTodayVisitorCount().toLocaleString()}명</span>
+            <span className="text-muted-foreground/30">|</span>
+            <span>누적 방문자 {getVisitorCount().toLocaleString()}명</span>
           </div>
         </footer>
       )}
