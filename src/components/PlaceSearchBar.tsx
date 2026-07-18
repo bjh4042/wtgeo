@@ -149,7 +149,9 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
       {open && query.trim() && (
         <div className="absolute right-0 mt-1 w-72 sm:w-80 max-h-80 overflow-auto rounded-lg border bg-popover text-popover-foreground shadow-xl z-50">
           {results.length === 0 ? (
-            <div className="px-3 py-4 text-xs text-muted-foreground text-center">검색 결과가 없습니다.</div>
+            <div className="px-3 py-5 text-xs text-muted-foreground text-center leading-relaxed">
+              찾은 장소가 없어요.<br />다른 이름이나 장소 종류로 다시 찾아보세요.
+            </div>
           ) : (
             <ul className="py-1">
               {results.map((r, idx) => {
