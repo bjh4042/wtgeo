@@ -240,30 +240,33 @@ const ExplorerPage = () => {
                   {/* Favorites button */}
                   <button
                     onClick={() => setShowFavorites(true)}
-                    className="relative flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent/20 text-accent-foreground hover:bg-accent/40 transition-colors"
+                    aria-label="내 코스"
+                    className="relative flex items-center gap-1 px-2 sm:px-2.5 md:px-3 py-1.5 min-h-[36px] rounded-full text-xs font-bold cursor-pointer bg-accent/20 text-accent-foreground hover:bg-accent/40 transition-colors"
                   >
-                    <Star size={10} className="md:w-3 md:h-3 fill-accent text-accent" />
-                    <span className="hidden sm:inline">코스</span>
+                    <Star size={12} className="md:w-3.5 md:h-3.5 fill-accent text-accent" />
+                    <span className="hidden sm:inline">내 코스</span>
                     {favorites.length > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[8px] flex items-center justify-center font-bold">
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] flex items-center justify-center font-bold">
                         {favorites.length}
                       </span>
                     )}
                   </button>
                   <button
                     onClick={() => setShowRouteExplorer(true)}
-                    className="flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
+                    aria-label="경로 탐험"
+                    className="flex items-center gap-1 px-2 sm:px-2.5 md:px-3 py-1.5 min-h-[36px] rounded-full text-xs font-bold cursor-pointer bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
                   >
-                    <Route size={10} className="md:w-3 md:h-3" />
+                    <Route size={12} className="md:w-3.5 md:h-3.5" />
                     <span className="hidden sm:inline">경로탐험</span>
                     <span className="sm:hidden">경로</span>
                   </button>
                   {selectedGrade === 3 && (
                     <button
                       onClick={() => setShowPlaceNameOrigins(true)}
-                      className="flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-[hsl(142,50%,42%)] text-[hsl(0,0%,100%)] hover:opacity-90 transition-colors"
+                      aria-label="지명 유래"
+                      className="flex items-center gap-1 px-2 sm:px-2.5 md:px-3 py-1.5 min-h-[36px] rounded-full text-xs font-bold cursor-pointer bg-[hsl(142,50%,42%)] text-[hsl(0,0%,100%)] hover:opacity-90 transition-colors"
                     >
-                      <MapPin size={10} className="md:w-3 md:h-3" />
+                      <MapPin size={12} className="md:w-3.5 md:h-3.5" />
                       <span className="hidden sm:inline">지명유래</span>
                       <span className="sm:hidden">지명</span>
                     </button>
@@ -271,9 +274,10 @@ const ExplorerPage = () => {
                   {selectedGrade === 4 && (
                     <button
                       onClick={() => setShowGyeongnam(true)}
-                      className="flex items-center gap-1 px-1.5 sm:px-2 md:px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                      aria-label="경상남도 시·군 탐색"
+                      className="flex items-center gap-1 px-2 sm:px-2.5 md:px-3 py-1.5 min-h-[36px] rounded-full text-xs font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                     >
-                      <Map size={10} className="md:w-3 md:h-3" />
+                      <Map size={12} className="md:w-3.5 md:h-3.5" />
                       <span className="hidden sm:inline">경남 시·군</span>
                       <span className="sm:hidden">경남</span>
                     </button>
@@ -291,10 +295,10 @@ const ExplorerPage = () => {
                   <button className="back-btn" onClick={handleReset}>
                     <Home size={16} /> 처음으로
                   </button>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full"
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap"
                     style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
                   >
-                    {selectedGrade}학년
+                    {selectedGrade}학년 · {selectedGrade === 3 ? '거제시' : '경상남도'}
                   </span>
                 </div>
                 <div className="flex-1 overflow-auto p-3 lg:p-4 text-xs text-muted-foreground leading-relaxed">
@@ -310,10 +314,10 @@ const ExplorerPage = () => {
                   <button className="back-btn text-xs" onClick={handleReset}>
                     <Home size={14} /> <span className="hidden xs:inline">처음으로</span><span className="xs:hidden">홈</span>
                   </button>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
                     style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
                   >
-                    {selectedGrade}학년
+                    {selectedGrade}학년 · {selectedGrade === 3 ? '거제시' : '경상남도'}
                   </span>
                 </div>
               </div>

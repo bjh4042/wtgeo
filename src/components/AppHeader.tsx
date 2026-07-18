@@ -32,29 +32,31 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen, onAdminO
             </span>
           )}
           {schoolName && onSourcesOpen && (
-            <button onClick={onSourcesOpen} className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer" title="관련 누리집">
-              <Link2 size={15} />
+            <button onClick={onSourcesOpen} aria-label="관련 누리집" className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer" title="관련 누리집">
+              <Link2 size={16} />
             </button>
           )}
           {schoolName && onQuizOpen && (
-            <button onClick={onQuizOpen} className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer" title="퀴즈">
-              <Target size={15} />
+            <button onClick={onQuizOpen} aria-label="퀴즈 열기" className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer" title="퀴즈">
+              <Target size={16} />
             </button>
           )}
           <button
             onClick={() => setShowAbout(true)}
-            className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer"
+            aria-label="안내 사항"
+            className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer"
             title="안내"
           >
-            <Info size={15} />
+            <Info size={16} />
           </button>
           {onAdminOpen && (
             <button
               onClick={onAdminOpen}
-              className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer"
+              aria-label="관리자"
+              className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors cursor-pointer"
               title="관리자"
             >
-              <Settings size={15} />
+              <Settings size={16} />
             </button>
           )}
         </div>

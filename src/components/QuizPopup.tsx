@@ -12,6 +12,7 @@ type QuizState = 'intro' | 'playing' | 'result';
 
 const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   const isGrade4 = grade === 4;
+  const regionLabel = isGrade4 ? '경상남도' : '거제';
   const quizTitle = isGrade4 ? '🗺️ 경상남도 탐험 퀴즈' : '🎯 거제 탐험 퀴즈';
   const quizIntro = isGrade4 ? '경상남도에 대해 얼마나 알고 있나요?' : '거제시에 대해 얼마나 알고 있나요?';
   const [state, setState] = useState<QuizState>('intro');
@@ -21,11 +22,24 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   const [elapsed, setElapsed] = useState(0);
   const [score, setScore] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const answersRef = useRef<(number | null)[]>([]);
+  const questionsRef = useRef<QuizQuestion[]>([]);
   const maxTime = 600; // 10분
 
   useEffect(() => {
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, []);
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [onClose]);
+
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+  useEffect(() => { questionsRef.current = questions; }, [questions]);
 
   const startQuiz = async () => {
     const gradeKey: '3' | '4' = isGrade4 ? '4' : '3';
@@ -34,16 +48,20 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
       alert('등록된 문제가 없습니다. 관리자에게 문의하세요.');
       return;
     }
+    const initAnswers = Array(randomQs.length).fill(null);
     setQuestions(randomQs);
-    setAnswers(Array(randomQs.length).fill(null));
+    setAnswers(initAnswers);
+    answersRef.current = initAnswers;
+    questionsRef.current = randomQs;
     setCurrentQ(0);
     setElapsed(0);
     setScore(0);
     setState('playing');
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setElapsed(prev => {
         if (prev >= maxTime - 1) {
-          finishQuizWithAnswers(randomQs);
+          finishQuizWithAnswers();
           return maxTime;
         }
         return prev + 1;
@@ -51,10 +69,11 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
     }, 1000);
   };
 
-  const finishQuizWithAnswers = (qs?: QuizQuestion[]) => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    const qList = qs || questions;
-    const s = answers.reduce((acc, a, i) => acc + (a === qList[i]?.answer ? 1 : 0), 0);
+  const finishQuizWithAnswers = () => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    const qList = questionsRef.current;
+    const aList = answersRef.current;
+    const s = aList.reduce((acc, a, i) => acc + (a === qList[i]?.answer ? 1 : 0), 0);
     setScore(s);
     setState('result');
   };
@@ -64,9 +83,10 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   };
 
   const selectAnswer = (ansIdx: number) => {
-    const newAnswers = [...answers];
+    const newAnswers = [...answersRef.current];
     newAnswers[currentQ] = ansIdx;
     setAnswers(newAnswers);
+    answersRef.current = newAnswers;
 
     setTimeout(() => {
       if (currentQ < questions.length - 1) {
@@ -76,12 +96,11 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   };
 
   const getGrade = () => {
-    // S: 9-10점 AND 1분 이내
-    // A: 7-8점 AND 3분 이내 OR 9-10점 AND 3분 이내
-    // B: 나머지
-    if (score >= 9 && elapsed <= 60) return { grade: 'S', color: '#FFD700', emoji: '🏆', label: '최고예요! 거제 박사!' };
-    if (score >= 7 && elapsed <= 180) return { grade: 'A', color: '#4CAF50', emoji: '🎖️', label: '잘했어요! 거제 전문가!' };
-    return { grade: 'B', color: '#2196F3', emoji: '👍', label: '좋아요! 조금 더 공부해봐요!' };
+    // 정답 수 기준 등급 (시간은 정보로만 표시)
+    if (score >= 9) return { grade: 'S', color: '#FFD700', emoji: '🏆', label: `최고예요! ${regionLabel} 박사!` };
+    if (score >= 7) return { grade: 'A', color: '#4CAF50', emoji: '🎖️', label: `잘했어요! ${regionLabel} 탐험가!` };
+    if (score >= 5) return { grade: 'B', color: '#2196F3', emoji: '👍', label: '좋아요! 조금 더 공부해봐요!' };
+    return { grade: '재도전', color: '#F59E0B', emoji: '💪', label: '다시 도전해봐요!' };
   };
 
   const formatTime = (s: number) => {
@@ -100,17 +119,18 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
           <>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-foreground">{quizTitle}</h3>
-              <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+              <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
             </div>
             <div className="space-y-3 text-sm text-muted-foreground">
               <p>{quizIntro}</p>
               <p>📝 총 20문제 중 <strong className="text-foreground">랜덤 10문제</strong> 출제 (OX + 선다형)</p>
               <p>⏱️ 제한시간 <strong className="text-foreground">10분</strong></p>
               <div className="p-3 rounded-lg bg-muted/50 space-y-1">
-                <p className="font-semibold text-foreground">등급 기준 (점수 + 시간)</p>
-                <p>🏆 <strong>S등급</strong>: 9문제 이상 정답 + 1분 이내</p>
-                <p>🎖️ <strong>A등급</strong>: 7문제 이상 정답 + 3분 이내</p>
-                <p>👍 <strong>B등급</strong>: 그 외</p>
+                <p className="font-semibold text-foreground">등급 기준 (정답 수)</p>
+                <p>🏆 <strong>S등급</strong>: 9~10문제 정답</p>
+                <p>🎖️ <strong>A등급</strong>: 7~8문제 정답</p>
+                <p>👍 <strong>B등급</strong>: 5~6문제 정답</p>
+                <p>💪 <strong>재도전</strong>: 0~4문제 정답</p>
               </div>
             </div>
             <button
@@ -134,7 +154,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
                   {formatTime(elapsed)}
                 </span>
                 <button onClick={() => { if (timerRef.current) clearInterval(timerRef.current); setState('intro'); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer px-2 py-1 rounded bg-muted">종료</button>
-                <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={18} /></button>
+                <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={18} /></button>
               </div>
             </div>
 
@@ -210,7 +230,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
           <>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-foreground">📊 결과 리포트</h3>
-              <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+              <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
             </div>
 
             <div className="text-center mb-4">
