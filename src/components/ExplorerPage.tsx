@@ -314,10 +314,10 @@ const ExplorerPage = () => {
                   <button className="back-btn text-xs" onClick={handleReset}>
                     <Home size={14} /> <span className="hidden xs:inline">처음으로</span><span className="xs:hidden">홈</span>
                   </button>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
                     style={{ backgroundColor: selectedGrade === 3 ? 'hsl(var(--grade-3))' : 'hsl(var(--grade-4))', color: 'white' }}
                   >
-                    {selectedGrade}학년
+                    {selectedGrade}학년 · {selectedGrade === 3 ? '거제시' : '경상남도'}
                   </span>
                 </div>
               </div>
