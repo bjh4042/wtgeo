@@ -119,7 +119,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
           <>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-foreground">{quizTitle}</h3>
-              <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+              <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
             </div>
             <div className="space-y-3 text-sm text-muted-foreground">
               <p>{quizIntro}</p>
@@ -154,7 +154,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
                   {formatTime(elapsed)}
                 </span>
                 <button onClick={() => { if (timerRef.current) clearInterval(timerRef.current); setState('intro'); }} className="text-xs text-muted-foreground hover:text-foreground cursor-pointer px-2 py-1 rounded bg-muted">종료</button>
-                <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={18} /></button>
+                <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={18} /></button>
               </div>
             </div>
 
@@ -230,7 +230,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
           <>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-foreground">📊 결과 리포트</h3>
-              <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+              <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
             </div>
 
             <div className="text-center mb-4">
