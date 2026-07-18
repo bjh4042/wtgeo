@@ -12,6 +12,7 @@ type QuizState = 'intro' | 'playing' | 'result';
 
 const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   const isGrade4 = grade === 4;
+  const regionLabel = isGrade4 ? '경상남도' : '거제';
   const quizTitle = isGrade4 ? '🗺️ 경상남도 탐험 퀴즈' : '🎯 거제 탐험 퀴즈';
   const quizIntro = isGrade4 ? '경상남도에 대해 얼마나 알고 있나요?' : '거제시에 대해 얼마나 알고 있나요?';
   const [state, setState] = useState<QuizState>('intro');
@@ -21,11 +22,24 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   const [elapsed, setElapsed] = useState(0);
   const [score, setScore] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const answersRef = useRef<(number | null)[]>([]);
+  const questionsRef = useRef<QuizQuestion[]>([]);
   const maxTime = 600; // 10분
 
   useEffect(() => {
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, []);
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [onClose]);
+
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+  useEffect(() => { questionsRef.current = questions; }, [questions]);
 
   const startQuiz = async () => {
     const gradeKey: '3' | '4' = isGrade4 ? '4' : '3';
@@ -34,16 +48,20 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
       alert('등록된 문제가 없습니다. 관리자에게 문의하세요.');
       return;
     }
+    const initAnswers = Array(randomQs.length).fill(null);
     setQuestions(randomQs);
-    setAnswers(Array(randomQs.length).fill(null));
+    setAnswers(initAnswers);
+    answersRef.current = initAnswers;
+    questionsRef.current = randomQs;
     setCurrentQ(0);
     setElapsed(0);
     setScore(0);
     setState('playing');
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setElapsed(prev => {
         if (prev >= maxTime - 1) {
-          finishQuizWithAnswers(randomQs);
+          finishQuizWithAnswers();
           return maxTime;
         }
         return prev + 1;
@@ -51,10 +69,11 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
     }, 1000);
   };
 
-  const finishQuizWithAnswers = (qs?: QuizQuestion[]) => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    const qList = qs || questions;
-    const s = answers.reduce((acc, a, i) => acc + (a === qList[i]?.answer ? 1 : 0), 0);
+  const finishQuizWithAnswers = () => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    const qList = questionsRef.current;
+    const aList = answersRef.current;
+    const s = aList.reduce((acc, a, i) => acc + (a === qList[i]?.answer ? 1 : 0), 0);
     setScore(s);
     setState('result');
   };
@@ -64,9 +83,10 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   };
 
   const selectAnswer = (ansIdx: number) => {
-    const newAnswers = [...answers];
+    const newAnswers = [...answersRef.current];
     newAnswers[currentQ] = ansIdx;
     setAnswers(newAnswers);
+    answersRef.current = newAnswers;
 
     setTimeout(() => {
       if (currentQ < questions.length - 1) {
