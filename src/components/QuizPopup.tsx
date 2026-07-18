@@ -126,10 +126,11 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
               <p>📝 총 20문제 중 <strong className="text-foreground">랜덤 10문제</strong> 출제 (OX + 선다형)</p>
               <p>⏱️ 제한시간 <strong className="text-foreground">10분</strong></p>
               <div className="p-3 rounded-lg bg-muted/50 space-y-1">
-                <p className="font-semibold text-foreground">등급 기준 (점수 + 시간)</p>
-                <p>🏆 <strong>S등급</strong>: 9문제 이상 정답 + 1분 이내</p>
-                <p>🎖️ <strong>A등급</strong>: 7문제 이상 정답 + 3분 이내</p>
-                <p>👍 <strong>B등급</strong>: 그 외</p>
+                <p className="font-semibold text-foreground">등급 기준 (정답 수)</p>
+                <p>🏆 <strong>S등급</strong>: 9~10문제 정답</p>
+                <p>🎖️ <strong>A등급</strong>: 7~8문제 정답</p>
+                <p>👍 <strong>B등급</strong>: 5~6문제 정답</p>
+                <p>💪 <strong>재도전</strong>: 0~4문제 정답</p>
               </div>
             </div>
             <button
