@@ -96,12 +96,11 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
   };
 
   const getGrade = () => {
-    // S: 9-10점 AND 1분 이내
-    // A: 7-8점 AND 3분 이내 OR 9-10점 AND 3분 이내
-    // B: 나머지
-    if (score >= 9 && elapsed <= 60) return { grade: 'S', color: '#FFD700', emoji: '🏆', label: '최고예요! 거제 박사!' };
-    if (score >= 7 && elapsed <= 180) return { grade: 'A', color: '#4CAF50', emoji: '🎖️', label: '잘했어요! 거제 전문가!' };
-    return { grade: 'B', color: '#2196F3', emoji: '👍', label: '좋아요! 조금 더 공부해봐요!' };
+    // 정답 수 기준 등급 (시간은 정보로만 표시)
+    if (score >= 9) return { grade: 'S', color: '#FFD700', emoji: '🏆', label: `최고예요! ${regionLabel} 박사!` };
+    if (score >= 7) return { grade: 'A', color: '#4CAF50', emoji: '🎖️', label: `잘했어요! ${regionLabel} 탐험가!` };
+    if (score >= 5) return { grade: 'B', color: '#2196F3', emoji: '👍', label: '좋아요! 조금 더 공부해봐요!' };
+    return { grade: '재도전', color: '#F59E0B', emoji: '💪', label: '다시 도전해봐요!' };
   };
 
   const formatTime = (s: number) => {
