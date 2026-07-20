@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { X, ExternalLink, MapPin, ChevronDown, ChevronRight, Loader2, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
+import EmptyState from '@/components/EmptyState';
 
 interface OriginEntry {
   name: string;
