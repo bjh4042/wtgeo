@@ -4,6 +4,8 @@ import { getMergedPlaces, getMergedContent } from '@/data/dataManager';
 import { Place } from '@/data/places';
 import { MapContent } from '@/data/content';
 import { useState } from 'react';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
+import EmptyState from '@/components/EmptyState';
 
 interface FavoriteCourseProps {
   onClose: () => void;
