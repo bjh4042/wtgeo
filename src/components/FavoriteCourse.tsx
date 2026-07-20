@@ -21,6 +21,7 @@ interface FavoriteCourseProps {
 
 const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, removeFavorite, clearAll, reorder, courseName, setCourseName }: FavoriteCourseProps) => {
   const [editingName, setEditingName] = useState(false);
+  useModalBehavior(onClose);
   const allPlaces = getMergedPlaces();
   const allContent = getMergedContent();
 
