@@ -315,7 +315,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
             <div className="mt-3 border rounded-xl p-3 bg-muted/30">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-foreground">장소 선택</span>
-                <button onClick={() => { setShowPicker(false); setSearchTerm(''); }} className="text-muted-foreground cursor-pointer"><X size={16} /></button>
+                <button onClick={() => { setShowPicker(false); setSearchTerm(''); }} aria-label="장소 선택 닫기" className="text-muted-foreground cursor-pointer"><X size={16} /></button>
               </div>
 
               {/* Category filter chips */}
