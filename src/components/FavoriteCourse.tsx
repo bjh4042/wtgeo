@@ -1,5 +1,5 @@
 import { X, Star, Trash2, ChevronUp, ChevronDown, MapPin, Navigation } from 'lucide-react';
-import { FavoriteItem, useFavorites } from '@/hooks/useFavorites';
+import { FavoriteItem } from '@/hooks/useFavorites';
 import { getMergedPlaces, getMergedContent } from '@/data/dataManager';
 import { Place } from '@/data/places';
 import { MapContent } from '@/data/content';
