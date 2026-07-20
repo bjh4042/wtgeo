@@ -296,9 +296,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
                     <span className="text-sm font-bold text-foreground truncate block">{categoryIcons[place.category]} {place.name}</span>
                   </button>
                   <div className="flex items-center gap-0.5 flex-shrink-0">
-                    <button onClick={() => movePlace(index, -1)} disabled={index === 0} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronUp size={14} /></button>
-                    <button onClick={() => movePlace(index, 1)} disabled={index === routePlaces.length - 1} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronDown size={14} /></button>
-                    <button onClick={() => removePlace(index)} className="p-1 rounded text-destructive/70 hover:text-destructive cursor-pointer"><Trash2 size={14} /></button>
+                    <button onClick={() => movePlace(index, -1)} disabled={index === 0} aria-label={`${place.name} 위로 이동`} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronUp size={14} /></button>
+                    <button onClick={() => movePlace(index, 1)} disabled={index === routePlaces.length - 1} aria-label={`${place.name} 아래로 이동`} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronDown size={14} /></button>
+                    <button onClick={() => removePlace(index)} aria-label={`${place.name} 경로에서 빼기`} className="p-1 rounded text-destructive/70 hover:text-destructive cursor-pointer"><Trash2 size={14} /></button>
                   </div>
                 </div>
               </div>
