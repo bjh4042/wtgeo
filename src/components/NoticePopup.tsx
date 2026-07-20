@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Megaphone } from 'lucide-react';
 import { getNoticeFromCloud } from '@/data/dataManager';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
 
 const DISMISSED_KEY = 'geoje-notice-dismissed';
 
