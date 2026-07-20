@@ -89,11 +89,11 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
         {/* List */}
         <div className="flex-1 overflow-auto p-3">
           {favorites.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Star size={40} className="mx-auto mb-3 opacity-30" />
-              <p className="font-medium">즐겨찾기한 장소가 없어요</p>
-              <p className="text-xs mt-1">장소 카드에서 ⭐ 버튼을 눌러 추가해보세요!</p>
-            </div>
+            <EmptyState
+              icon="⭐"
+              title="아직 담아 둔 장소가 없어요."
+              description={'마음에 드는 장소를 찾아 내 코스에 담아 보세요.\n장소 카드에서 ⭐ 버튼을 눌러 추가할 수 있어요.'}
+            />
           ) : (
             <div className="space-y-1">
               {favorites.map((item, idx) => (
