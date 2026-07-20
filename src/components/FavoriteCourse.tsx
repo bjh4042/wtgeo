@@ -80,7 +80,7 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
           <div className="px-4 py-2 bg-muted/30 flex items-center justify-between text-xs text-muted-foreground">
             <span>📍 {favorites.length}곳</span>
             {getTotalDistance() && <span><Navigation size={11} className="inline mr-1" />총 거리: {getTotalDistance()}</span>}
-            <button onClick={clearAll} className="text-destructive hover:underline cursor-pointer flex items-center gap-1">
+            <button onClick={clearAll} aria-label="내 코스 전체 비우기" className="text-destructive hover:underline cursor-pointer flex items-center gap-1">
               <Trash2 size={11} />전체 삭제
             </button>
           </div>
