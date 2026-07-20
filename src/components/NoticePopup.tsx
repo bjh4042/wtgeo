@@ -26,7 +26,10 @@ const NoticePopup = () => {
     if (notice) sessionStorage.setItem(DISMISSED_KEY, notice);
   };
 
-  if (!notice || !show) return null;
+  const isOpen = !!(notice && show);
+  useModalBehavior(handleClose, isOpen);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/40" onClick={handleClose}>
@@ -39,7 +42,7 @@ const NoticePopup = () => {
             <Megaphone size={16} className="text-accent-foreground" />
           </div>
           <h3 className="text-lg font-bold text-foreground">📢 공지사항</h3>
-          <button onClick={handleClose} className="ml-auto text-muted-foreground hover:text-foreground cursor-pointer">
+          <button onClick={handleClose} aria-label="공지사항 닫기" className="ml-auto text-muted-foreground hover:text-foreground cursor-pointer">
             <X size={20} />
           </button>
         </div>
