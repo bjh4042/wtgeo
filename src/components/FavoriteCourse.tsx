@@ -1,9 +1,11 @@
 import { X, Star, Trash2, ChevronUp, ChevronDown, MapPin, Navigation } from 'lucide-react';
-import { FavoriteItem, useFavorites } from '@/hooks/useFavorites';
+import { FavoriteItem } from '@/hooks/useFavorites';
 import { getMergedPlaces, getMergedContent } from '@/data/dataManager';
 import { Place } from '@/data/places';
 import { MapContent } from '@/data/content';
 import { useState } from 'react';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
+import EmptyState from '@/components/EmptyState';
 
 interface FavoriteCourseProps {
   onClose: () => void;
@@ -19,6 +21,7 @@ interface FavoriteCourseProps {
 
 const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, removeFavorite, clearAll, reorder, courseName, setCourseName }: FavoriteCourseProps) => {
   const [editingName, setEditingName] = useState(false);
+  useModalBehavior(onClose);
   const allPlaces = getMergedPlaces();
   const allContent = getMergedContent();
 
@@ -69,7 +72,7 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
               </h2>
             )}
           </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={22} /></button>
+          <button onClick={onClose} aria-label="내 코스 창 닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={22} /></button>
         </div>
 
         {/* Stats */}
@@ -77,7 +80,7 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
           <div className="px-4 py-2 bg-muted/30 flex items-center justify-between text-xs text-muted-foreground">
             <span>📍 {favorites.length}곳</span>
             {getTotalDistance() && <span><Navigation size={11} className="inline mr-1" />총 거리: {getTotalDistance()}</span>}
-            <button onClick={clearAll} className="text-destructive hover:underline cursor-pointer flex items-center gap-1">
+            <button onClick={clearAll} aria-label="내 코스 전체 비우기" className="text-destructive hover:underline cursor-pointer flex items-center gap-1">
               <Trash2 size={11} />전체 삭제
             </button>
           </div>
@@ -86,11 +89,11 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
         {/* List */}
         <div className="flex-1 overflow-auto p-3">
           {favorites.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Star size={40} className="mx-auto mb-3 opacity-30" />
-              <p className="font-medium">즐겨찾기한 장소가 없어요</p>
-              <p className="text-xs mt-1">장소 카드에서 ⭐ 버튼을 눌러 추가해보세요!</p>
-            </div>
+            <EmptyState
+              icon="⭐"
+              title="아직 담아 둔 장소가 없어요."
+              description={'마음에 드는 장소를 찾아 내 코스에 담아 보세요.\n장소 카드에서 ⭐ 버튼을 눌러 추가할 수 있어요.'}
+            />
           ) : (
             <div className="space-y-1">
               {favorites.map((item, idx) => (
@@ -105,12 +108,12 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
                   </button>
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     {idx > 0 && (
-                      <button onClick={() => reorder(idx, idx - 1)} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronUp size={14} /></button>
+                      <button onClick={() => reorder(idx, idx - 1)} aria-label={`${item.name} 위로 이동`} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronUp size={14} /></button>
                     )}
                     {idx < favorites.length - 1 && (
-                      <button onClick={() => reorder(idx, idx + 1)} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronDown size={14} /></button>
+                      <button onClick={() => reorder(idx, idx + 1)} aria-label={`${item.name} 아래로 이동`} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronDown size={14} /></button>
                     )}
-                    <button onClick={() => removeFavorite(item.id)} className="p-1 hover:bg-destructive/10 rounded text-destructive cursor-pointer"><Trash2 size={14} /></button>
+                    <button onClick={() => removeFavorite(item.id)} aria-label={`${item.name} 내 코스에서 빼기`} className="p-1 hover:bg-destructive/10 rounded text-destructive cursor-pointer"><Trash2 size={14} /></button>
                   </div>
                 </div>
               ))}

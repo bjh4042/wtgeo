@@ -3,6 +3,8 @@ import { Place, PlaceCategory, categoryIcons, categoryColors, categoryLabels, ge
 import { School } from '@/data/schools';
 import { getMergedPlacesByGrade } from '@/data/dataManager';
 import { X, Plus, Trash2, Route, ChevronUp, ChevronDown, Map as MapIcon } from 'lucide-react';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
+import EmptyState from '@/components/EmptyState';
 
 interface RouteExplorerProps {
   grade: 3 | 4;
@@ -21,6 +23,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   const [showInAppMap, setShowInAppMap] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+
+  useModalBehavior(onClose);
+
 
   // Distinct colors per route segment
   const segmentColors = ['#FF6B35', '#3B82F6', '#22C55E', '#A855F7', '#EAB308', '#EC4899', '#06B6D4', '#F97316', '#8B5CF6', '#10B981'];
@@ -240,14 +245,15 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   }, [showInAppMap, routePlaces, school]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
       <div className={`bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full ${showInAppMap ? 'max-w-6xl' : 'max-w-md'} max-h-[92vh] overflow-hidden transition-all`} onClick={e => e.stopPropagation()}>
         <div className="p-4 border-b flex items-center justify-between bg-primary/10">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <Route size={18} className="text-primary" /> 경로 탐험 모드
           </h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+          <button onClick={onClose} aria-label="경로 탐험 창 닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
         </div>
+
 
         <div className={`flex flex-col md:flex-row max-h-[82vh]`}>
           {/* Left: route list */}
@@ -290,9 +296,9 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
                     <span className="text-sm font-bold text-foreground truncate block">{categoryIcons[place.category]} {place.name}</span>
                   </button>
                   <div className="flex items-center gap-0.5 flex-shrink-0">
-                    <button onClick={() => movePlace(index, -1)} disabled={index === 0} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronUp size={14} /></button>
-                    <button onClick={() => movePlace(index, 1)} disabled={index === routePlaces.length - 1} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronDown size={14} /></button>
-                    <button onClick={() => removePlace(index)} className="p-1 rounded text-destructive/70 hover:text-destructive cursor-pointer"><Trash2 size={14} /></button>
+                    <button onClick={() => movePlace(index, -1)} disabled={index === 0} aria-label={`${place.name} 위로 이동`} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronUp size={14} /></button>
+                    <button onClick={() => movePlace(index, 1)} disabled={index === routePlaces.length - 1} aria-label={`${place.name} 아래로 이동`} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer"><ChevronDown size={14} /></button>
+                    <button onClick={() => removePlace(index)} aria-label={`${place.name} 경로에서 빼기`} className="p-1 rounded text-destructive/70 hover:text-destructive cursor-pointer"><Trash2 size={14} /></button>
                   </div>
                 </div>
               </div>
@@ -309,7 +315,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
             <div className="mt-3 border rounded-xl p-3 bg-muted/30">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-foreground">장소 선택</span>
-                <button onClick={() => { setShowPicker(false); setSearchTerm(''); }} className="text-muted-foreground cursor-pointer"><X size={16} /></button>
+                <button onClick={() => { setShowPicker(false); setSearchTerm(''); }} aria-label="장소 선택 닫기" className="text-muted-foreground cursor-pointer"><X size={16} /></button>
               </div>
 
               {/* Category filter chips */}
@@ -345,16 +351,24 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
               <div className="text-[10px] text-muted-foreground mb-1">총 {filteredPlaces.length}개 장소</div>
 
               <div className="max-h-40 overflow-auto space-y-1">
-                {filteredPlaces.slice(0, 30).map(p => (
-                  <button key={p.id} onClick={() => addPlace(p)}
-                    className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer text-left">
-                    <span className="text-base">{categoryIcons[p.category]}</span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{p.address}</p>
-                    </div>
-                  </button>
-                ))}
+                {filteredPlaces.length === 0 ? (
+                  <EmptyState
+                    icon="🔍"
+                    title="찾은 장소가 없어요."
+                    description="다른 이름이나 장소 종류로 다시 찾아보세요."
+                  />
+                ) : (
+                  filteredPlaces.slice(0, 30).map(p => (
+                    <button key={p.id} onClick={() => addPlace(p)}
+                      className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer text-left">
+                      <span className="text-base">{categoryIcons[p.category]}</span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{p.address}</p>
+                      </div>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -368,7 +382,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
               </button>
               <button onClick={() => { setRoutePlaces([]); setShowInAppMap(false); }}
                 className="w-full px-3 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-medium cursor-pointer hover:bg-muted/80 transition-colors">
-                초기화
+                처음부터
               </button>
             </div>
           )}

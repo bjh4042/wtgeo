@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, ExternalLink, AlertCircle } from 'lucide-react';
 import { getRoadViewUrl } from '@/data/places';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
 
 interface RoadViewModalProps {
   lat: number;
@@ -19,6 +20,7 @@ const RoadViewModal = ({ lat, lng, name, onClose }: RoadViewModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  useModalBehavior(onClose);
 
   useEffect(() => {
     setError(null);
