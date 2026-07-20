@@ -176,8 +176,13 @@ const PlaceNameOrigins = ({ onClose }: PlaceNameOriginsProps) => {
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             {detailView ? (
               <>
-                <button onClick={() => setDetailView(null)} className="text-muted-foreground hover:text-foreground cursor-pointer">
+                <button
+                  onClick={() => setDetailView(null)}
+                  aria-label="지명 목록으로 돌아가기"
+                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
                   <ArrowLeft size={18} />
+                  <span className="text-xs font-medium hidden sm:inline">목록</span>
                 </button>
                 <MapPin size={18} className="text-primary" /> {detailView.name}
               </>
@@ -187,10 +192,11 @@ const PlaceNameOrigins = ({ onClose }: PlaceNameOriginsProps) => {
               </>
             )}
           </h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
+          <button onClick={onClose} aria-label="지명유래 창 닫기" className="text-muted-foreground hover:text-foreground cursor-pointer">
             <X size={20} />
           </button>
         </div>
+
 
         {detailView ? (
           /* Detail view */
