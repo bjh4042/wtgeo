@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, ExternalLink, AlertCircle } from 'lucide-react';
 import { getRoadViewUrl } from '@/data/places';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
 
 interface RoadViewModalProps {
   lat: number;
