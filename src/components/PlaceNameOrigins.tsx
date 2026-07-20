@@ -139,6 +139,9 @@ const PlaceNameOrigins = ({ onClose }: PlaceNameOriginsProps) => {
   const [loading, setLoading] = useState(false);
   const [contentCache, setContentCache] = useState<Record<string, string>>({});
 
+  useModalBehavior(onClose);
+
+
   const handleEntryClick = async (entry: OriginEntry) => {
     setDetailView(entry);
 
