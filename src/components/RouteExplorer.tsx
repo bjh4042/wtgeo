@@ -351,16 +351,24 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
               <div className="text-[10px] text-muted-foreground mb-1">총 {filteredPlaces.length}개 장소</div>
 
               <div className="max-h-40 overflow-auto space-y-1">
-                {filteredPlaces.slice(0, 30).map(p => (
-                  <button key={p.id} onClick={() => addPlace(p)}
-                    className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer text-left">
-                    <span className="text-base">{categoryIcons[p.category]}</span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{p.address}</p>
-                    </div>
-                  </button>
-                ))}
+                {filteredPlaces.length === 0 ? (
+                  <EmptyState
+                    icon="🔍"
+                    title="찾은 장소가 없어요."
+                    description="다른 이름이나 장소 종류로 다시 찾아보세요."
+                  />
+                ) : (
+                  filteredPlaces.slice(0, 30).map(p => (
+                    <button key={p.id} onClick={() => addPlace(p)}
+                      className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer text-left">
+                      <span className="text-base">{categoryIcons[p.category]}</span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{p.address}</p>
+                      </div>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
           )}
