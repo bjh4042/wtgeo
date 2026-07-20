@@ -20,6 +20,7 @@ const RoadViewModal = ({ lat, lng, name, onClose }: RoadViewModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  useModalBehavior(onClose);
 
   useEffect(() => {
     setError(null);
