@@ -108,12 +108,12 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
                   </button>
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     {idx > 0 && (
-                      <button onClick={() => reorder(idx, idx - 1)} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronUp size={14} /></button>
+                      <button onClick={() => reorder(idx, idx - 1)} aria-label={`${item.name} 위로 이동`} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronUp size={14} /></button>
                     )}
                     {idx < favorites.length - 1 && (
-                      <button onClick={() => reorder(idx, idx + 1)} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronDown size={14} /></button>
+                      <button onClick={() => reorder(idx, idx + 1)} aria-label={`${item.name} 아래로 이동`} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronDown size={14} /></button>
                     )}
-                    <button onClick={() => removeFavorite(item.id)} className="p-1 hover:bg-destructive/10 rounded text-destructive cursor-pointer"><Trash2 size={14} /></button>
+                    <button onClick={() => removeFavorite(item.id)} aria-label={`${item.name} 내 코스에서 빼기`} className="p-1 hover:bg-destructive/10 rounded text-destructive cursor-pointer"><Trash2 size={14} /></button>
                   </div>
                 </div>
               ))}
