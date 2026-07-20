@@ -3,6 +3,8 @@ import { Place, PlaceCategory, categoryIcons, categoryColors, categoryLabels, ge
 import { School } from '@/data/schools';
 import { getMergedPlacesByGrade } from '@/data/dataManager';
 import { X, Plus, Trash2, Route, ChevronUp, ChevronDown, Map as MapIcon } from 'lucide-react';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
+import EmptyState from '@/components/EmptyState';
 
 interface RouteExplorerProps {
   grade: 3 | 4;
