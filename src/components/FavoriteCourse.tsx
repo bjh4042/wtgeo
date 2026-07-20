@@ -72,7 +72,7 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
               </h2>
             )}
           </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={22} /></button>
+          <button onClick={onClose} aria-label="내 코스 창 닫기" className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={22} /></button>
         </div>
 
         {/* Stats */}
