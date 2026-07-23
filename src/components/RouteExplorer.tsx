@@ -246,7 +246,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
-      <div className={`bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full ${showInAppMap ? 'max-w-6xl' : 'max-w-md'} max-h-[92vh] overflow-hidden transition-all`} onClick={e => e.stopPropagation()}>
+      <div className={`bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full ${showInAppMap ? 'max-w-6xl' : 'max-w-md'} max-h-[calc(100dvh-0.75rem)] overflow-hidden transition-all flex flex-col`} onClick={e => e.stopPropagation()}>
         <div className="p-4 border-b flex items-center justify-between bg-primary/10">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <Route size={18} className="text-primary" /> 경로 탐험 모드

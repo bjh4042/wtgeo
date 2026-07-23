@@ -82,7 +82,7 @@ const RoadViewModal = ({ lat, lng, name, onClose }: RoadViewModalProps) => {
       onClick={onClose}
     >
       <div
-        className="bg-card rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-4xl h-[80dvh] max-h-[calc(100dvh-1.5rem)] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-2.5 border-b bg-muted/40 flex-shrink-0">

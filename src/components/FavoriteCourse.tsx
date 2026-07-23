@@ -52,7 +52,7 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col animate-scale-in" onClick={e => e.stopPropagation()}>
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100dvh-1.5rem)] flex flex-col animate-scale-in" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="p-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-2">

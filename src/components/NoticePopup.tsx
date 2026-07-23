@@ -34,7 +34,7 @@ const NoticePopup = () => {
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/40" onClick={handleClose}>
       <div
-        className="bg-card rounded-2xl p-6 max-w-sm mx-4 shadow-2xl animate-scale-in"
+        className="bg-card rounded-2xl p-6 max-w-sm mx-4 shadow-2xl animate-scale-in max-h-[calc(100dvh-1.5rem)] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 mb-3">
