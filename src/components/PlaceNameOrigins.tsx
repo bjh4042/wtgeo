@@ -170,7 +170,7 @@ const PlaceNameOrigins = ({ onClose }: PlaceNameOriginsProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[calc(100dvh-1.5rem)] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-4 border-b flex items-center justify-between bg-primary/10 flex-shrink-0">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
