@@ -114,7 +114,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-card rounded-2xl p-5 max-w-md mx-4 shadow-2xl w-full max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
+      <div className="bg-card rounded-2xl p-5 max-w-md mx-4 shadow-2xl w-full max-h-[calc(100dvh-1.5rem)] overflow-auto" onClick={e => e.stopPropagation()}>
         {state === 'intro' && (
           <>
             <div className="flex items-center justify-between mb-4">
