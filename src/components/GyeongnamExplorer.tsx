@@ -129,28 +129,28 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
                 <button
                   key={city.id}
                   onClick={() => setSelectedCity(city)}
-                  className="flex flex-col items-center gap-1 md:gap-1.5 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
+                  aria-label={`${city.name} 상세 보기`}
+                  className="flex flex-col items-center gap-1 md:gap-1.5 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
                 >
                   {city.logoUrl ? (
-                    <div className="relative group">
+                    <div className="relative">
                       <img
                         src={city.logoUrl}
-                        alt={`${city.name} 로고`}
+                        alt=""
                         className="w-28 h-28 md:w-36 md:h-36 object-contain"
                         referrerPolicy="no-referrer"
-                        
                         loading="lazy"
                         onError={(e) => {
                           const img = e.currentTarget;
                           const parent = img.parentElement;
                           if (parent) {
-                            parent.innerHTML = `<span class="text-6xl md:text-7xl">${city.mascotEmoji}</span>`;
+                            parent.innerHTML = `<span class="text-6xl md:text-7xl" aria-hidden="true">${city.mascotEmoji}</span>`;
                           }
                         }}
                       />
                     </div>
                   ) : (
-                    <span className="text-6xl md:text-7xl">{city.mascotEmoji}</span>
+                    <span className="text-6xl md:text-7xl" aria-hidden="true">{city.mascotEmoji}</span>
                   )}
                   <span className="text-xs md:text-sm font-bold text-foreground">{city.name}</span>
                 </button>
@@ -159,7 +159,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
           </div>
         ) : (
           /* City Detail */
-          <div className="overflow-auto max-h-[75vh]">
+          <div className="overflow-auto flex-1">
             <div className="p-3 md:p-4 space-y-3">
               {/* City Header */}
               <div className="flex items-center gap-3">
