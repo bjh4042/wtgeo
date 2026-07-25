@@ -79,21 +79,44 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
         </div>
       )}
 
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="text-base sm:text-lg font-bold text-foreground flex-1 min-w-0 truncate">{place.name}</h3>
-        <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+      <div className="flex items-start justify-between mb-2 gap-2">
+        <h3 className="text-base sm:text-lg font-bold text-foreground flex-1 min-w-0 break-keep line-clamp-2" title={place.name}>{place.name}</h3>
+        <div className="flex items-center gap-1 flex-shrink-0">
           {onToggleFavorite && (
-            <button onClick={() => onToggleFavorite(place)} className="cursor-pointer transition-colors" title={isFavorite ? '즐겨찾기 해제' : '즐겨찾기'}>
+            <button
+              onClick={() => onToggleFavorite(place)}
+              className="cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+              title={isFavorite ? '내 코스에서 빼기' : '내 코스에 담기'}
+              aria-label={isFavorite ? '내 코스에서 빼기' : '내 코스에 담기'}
+              aria-pressed={!!isFavorite}
+            >
               <Star size={20} className={isFavorite ? 'text-accent fill-accent' : 'text-muted-foreground hover:text-accent'} />
             </button>
           )}
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+          <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
             <X size={20} />
           </button>
         </div>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-2 leading-relaxed">{place.description}</p>
+      {description && (
+        <div className="mb-2">
+          <p
+            className={`text-sm text-muted-foreground leading-relaxed ${isLongDesc && !descExpanded ? 'line-clamp-3' : ''}`}
+          >
+            {description}
+          </p>
+          {isLongDesc && (
+            <button
+              onClick={() => setDescExpanded(v => !v)}
+              className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline cursor-pointer"
+              aria-expanded={descExpanded}
+            >
+              {descExpanded ? (<><ChevronUp size={12} />간단히 보기</>) : (<><ChevronDown size={12} />더 알아보기</>)}
+            </button>
+          )}
+        </div>
+      )}
 
       {place.origin && (
         <div className="mb-2">
