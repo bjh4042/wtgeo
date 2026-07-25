@@ -132,10 +132,12 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
         </div>
       )}
 
-      <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
-        <MapPin size={14} className="flex-shrink-0" />
-        <span>{place.address}</span>
-      </div>
+      {place.address && (
+        <div className="flex items-start gap-1 text-xs text-muted-foreground mb-1">
+          <MapPin size={14} className="flex-shrink-0 mt-0.5" />
+          <span className="break-keep">{place.address}</span>
+        </div>
+      )}
 
       <div className="flex items-center gap-3 text-xs mb-3 px-2 py-1.5 rounded-lg bg-muted/50">
         <span className="flex items-center gap-1 text-primary font-medium">
