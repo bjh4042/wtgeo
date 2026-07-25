@@ -1,7 +1,7 @@
 import { Place, categoryColors, categoryIcons, getRoadViewUrl, getDirectionUrl, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
-import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube, Star, AlertTriangle, Send } from 'lucide-react';
-import { useState } from 'react';
+import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube, Star, AlertTriangle, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import RoadViewModal from './RoadViewModal';
@@ -14,6 +14,8 @@ interface PlaceCardProps {
   onToggleFavorite?: (place: Place) => void;
 }
 
+const DESC_EXPAND_THRESHOLD = 120;
+
 const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: PlaceCardProps) => {
   const color = categoryColors[place.category];
   const icon = categoryIcons[place.category];
@@ -23,6 +25,16 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
   const [reportMsg, setReportMsg] = useState('');
   const [sending, setSending] = useState(false);
   const [showRoadView, setShowRoadView] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
+
+  // Reset per-place local UI state when switching places
+  useEffect(() => {
+    setImgError(false);
+    setShowOrigin(false);
+    setShowReport(false);
+    setReportMsg('');
+    setDescExpanded(false);
+  }, [place.id]);
 
   const handleReport = async () => {
     if (!reportMsg.trim()) return;
@@ -47,6 +59,8 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
   const distanceText = distanceKm < 1 ? `${Math.round(distanceKm * 1000)}m` : `${distanceKm.toFixed(1)}km`;
 
   const categoryLabel = place.category === 'tourism' ? '관광' : place.category === 'nature' ? '자연' : place.category === 'culture' ? '문화' : place.category === 'public' ? '공공기관' : place.category === 'experience' ? '체험' : '시장';
+  const description = place.description || '';
+  const isLongDesc = description.length > DESC_EXPAND_THRESHOLD;
 
   return (
     <div className="place-card animate-slide-up max-w-sm">
