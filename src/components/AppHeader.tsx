@@ -27,7 +27,7 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen, onAdminO
         <h1 className="text-xl font-extrabold tracking-tight">거제 탐험대</h1>
         <div className="flex items-center gap-2">
           {schoolName && (
-            <span className="text-sm font-medium opacity-90 hidden sm:inline">
+            <span className="text-sm font-medium opacity-90 hidden sm:inline max-w-[10rem] md:max-w-[16rem] truncate" title={schoolName}>
               📍 {schoolName}
             </span>
           )}
