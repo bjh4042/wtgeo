@@ -105,52 +105,52 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
       <div
-        className="bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-2xl max-h-[90vh] md:max-h-[85vh] overflow-hidden animate-slide-up md:animate-scale-in"
+        className="bg-card rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-2xl max-h-[90dvh] md:max-h-[85dvh] overflow-hidden animate-slide-up md:animate-scale-in flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="p-3 md:p-4 border-b flex items-center justify-between bg-primary/10 sticky top-0 z-10">
           {selectedCity ? (
-            <button onClick={() => setSelectedCity(null)} className="flex items-center gap-1 text-sm font-bold text-primary cursor-pointer">
+            <button onClick={() => setSelectedCity(null)} aria-label="시·군 목록으로 돌아가기" className="flex items-center gap-1 text-sm font-bold text-primary cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded">
               <ArrowLeft size={16} /> 시·군 목록
             </button>
           ) : (
-            <h2 className="text-base md:text-lg font-bold text-foreground">🗺️ 경상남도 시·군 탐색</h2>
+            <h2 className="text-base md:text-lg font-bold text-foreground truncate pr-2">🗺️ 경상남도 시·군 탐색</h2>
           )}
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={20} /></button>
+          <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"><X size={20} /></button>
         </div>
 
         {!selectedCity ? (
           /* City Grid */
-          <div className="p-3 md:p-4 overflow-auto max-h-[75vh]">
+          <div className="p-3 md:p-4 overflow-auto flex-1">
             <p className="text-xs md:text-sm text-muted-foreground mb-3">경상남도와 18개 시·군을 선택하여 지명 유래, 마스코트, 인구 등을 알아보세요!</p>
             <div className="grid grid-cols-3 gap-1.5 md:gap-2">
               {cities.map(city => (
                 <button
                   key={city.id}
                   onClick={() => setSelectedCity(city)}
-                  className="flex flex-col items-center gap-1 md:gap-1.5 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer"
+                  aria-label={`${city.name} 상세 보기`}
+                  className="flex flex-col items-center gap-1 md:gap-1.5 p-2 md:p-3 rounded-xl border hover:border-primary hover:bg-primary/5 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
                 >
                   {city.logoUrl ? (
-                    <div className="relative group">
+                    <div className="relative">
                       <img
                         src={city.logoUrl}
-                        alt={`${city.name} 로고`}
+                        alt=""
                         className="w-28 h-28 md:w-36 md:h-36 object-contain"
                         referrerPolicy="no-referrer"
-                        
                         loading="lazy"
                         onError={(e) => {
                           const img = e.currentTarget;
                           const parent = img.parentElement;
                           if (parent) {
-                            parent.innerHTML = `<span class="text-6xl md:text-7xl">${city.mascotEmoji}</span>`;
+                            parent.innerHTML = `<span class="text-6xl md:text-7xl" aria-hidden="true">${city.mascotEmoji}</span>`;
                           }
                         }}
                       />
                     </div>
                   ) : (
-                    <span className="text-6xl md:text-7xl">{city.mascotEmoji}</span>
+                    <span className="text-6xl md:text-7xl" aria-hidden="true">{city.mascotEmoji}</span>
                   )}
                   <span className="text-xs md:text-sm font-bold text-foreground">{city.name}</span>
                 </button>
@@ -159,7 +159,7 @@ const GyeongnamExplorer = ({ onClose }: GyeongnamExplorerProps) => {
           </div>
         ) : (
           /* City Detail */
-          <div className="overflow-auto max-h-[75vh]">
+          <div className="overflow-auto flex-1">
             <div className="p-3 md:p-4 space-y-3">
               {/* City Header */}
               <div className="flex items-center gap-3">

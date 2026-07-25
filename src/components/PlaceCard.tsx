@@ -1,7 +1,7 @@
 import { Place, categoryColors, categoryIcons, getRoadViewUrl, getDirectionUrl, getDistance, getEstimatedTime } from '@/data/places';
 import { School } from '@/data/schools';
-import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube, Star, AlertTriangle, Send } from 'lucide-react';
-import { useState } from 'react';
+import { X, MapPin, Navigation, Eye, ExternalLink, Clock, Route, BookOpen, Youtube, Star, AlertTriangle, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import RoadViewModal from './RoadViewModal';
@@ -14,6 +14,8 @@ interface PlaceCardProps {
   onToggleFavorite?: (place: Place) => void;
 }
 
+const DESC_EXPAND_THRESHOLD = 120;
+
 const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: PlaceCardProps) => {
   const color = categoryColors[place.category];
   const icon = categoryIcons[place.category];
@@ -23,6 +25,16 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
   const [reportMsg, setReportMsg] = useState('');
   const [sending, setSending] = useState(false);
   const [showRoadView, setShowRoadView] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
+
+  // Reset per-place local UI state when switching places
+  useEffect(() => {
+    setImgError(false);
+    setShowOrigin(false);
+    setShowReport(false);
+    setReportMsg('');
+    setDescExpanded(false);
+  }, [place.id]);
 
   const handleReport = async () => {
     if (!reportMsg.trim()) return;
@@ -47,6 +59,8 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
   const distanceText = distanceKm < 1 ? `${Math.round(distanceKm * 1000)}m` : `${distanceKm.toFixed(1)}km`;
 
   const categoryLabel = place.category === 'tourism' ? '관광' : place.category === 'nature' ? '자연' : place.category === 'culture' ? '문화' : place.category === 'public' ? '공공기관' : place.category === 'experience' ? '체험' : '시장';
+  const description = place.description || '';
+  const isLongDesc = description.length > DESC_EXPAND_THRESHOLD;
 
   return (
     <div className="place-card animate-slide-up max-w-sm">
@@ -65,21 +79,44 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
         </div>
       )}
 
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="text-base sm:text-lg font-bold text-foreground flex-1 min-w-0 truncate">{place.name}</h3>
-        <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+      <div className="flex items-start justify-between mb-2 gap-2">
+        <h3 className="text-base sm:text-lg font-bold text-foreground flex-1 min-w-0 break-keep line-clamp-2" title={place.name}>{place.name}</h3>
+        <div className="flex items-center gap-1 flex-shrink-0">
           {onToggleFavorite && (
-            <button onClick={() => onToggleFavorite(place)} className="cursor-pointer transition-colors" title={isFavorite ? '즐겨찾기 해제' : '즐겨찾기'}>
+            <button
+              onClick={() => onToggleFavorite(place)}
+              className="cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+              title={isFavorite ? '내 코스에서 빼기' : '내 코스에 담기'}
+              aria-label={isFavorite ? '내 코스에서 빼기' : '내 코스에 담기'}
+              aria-pressed={!!isFavorite}
+            >
               <Star size={20} className={isFavorite ? 'text-accent fill-accent' : 'text-muted-foreground hover:text-accent'} />
             </button>
           )}
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+          <button onClick={onClose} aria-label="닫기" className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
             <X size={20} />
           </button>
         </div>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-2 leading-relaxed">{place.description}</p>
+      {description && (
+        <div className="mb-2">
+          <p
+            className={`text-sm text-muted-foreground leading-relaxed ${isLongDesc && !descExpanded ? 'line-clamp-3' : ''}`}
+          >
+            {description}
+          </p>
+          {isLongDesc && (
+            <button
+              onClick={() => setDescExpanded(v => !v)}
+              className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline cursor-pointer"
+              aria-expanded={descExpanded}
+            >
+              {descExpanded ? (<><ChevronUp size={12} />간단히 보기</>) : (<><ChevronDown size={12} />더 알아보기</>)}
+            </button>
+          )}
+        </div>
+      )}
 
       {place.origin && (
         <div className="mb-2">
@@ -95,10 +132,12 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
         </div>
       )}
 
-      <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
-        <MapPin size={14} className="flex-shrink-0" />
-        <span>{place.address}</span>
-      </div>
+      {place.address && (
+        <div className="flex items-start gap-1 text-xs text-muted-foreground mb-1">
+          <MapPin size={14} className="flex-shrink-0 mt-0.5" />
+          <span className="break-keep">{place.address}</span>
+        </div>
+      )}
 
       <div className="flex items-center gap-3 text-xs mb-3 px-2 py-1.5 rounded-lg bg-muted/50">
         <span className="flex items-center gap-1 text-primary font-medium">
@@ -110,8 +149,8 @@ const PlaceCard = ({ place, school, onClose, isFavorite, onToggleFavorite }: Pla
       </div>
 
       <div className="flex gap-2 flex-wrap">
-        <button onClick={() => setShowRoadView(true)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer">
-          <Eye size={14} />로드뷰
+        <button onClick={() => setShowRoadView(true)} aria-label="로드뷰 보기" className="flex items-center gap-1 px-3 py-1.5 min-h-[32px] rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer">
+          <Eye size={14} />로드뷰 보기
         </button>
         <a href={directionUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors">
           <Navigation size={14} />길찾기
