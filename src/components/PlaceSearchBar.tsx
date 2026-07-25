@@ -87,10 +87,12 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
     if (r.kind === 'place') onPlaceSelect(r.item);
     else if (r.kind === 'content') onContentSelect(r.item);
     else if (r.kind === 'school') onSchoolSelect?.(r.item);
-    inputRef.current?.blur();
-    setQuery('');
+    // Blur (helps close mobile keyboard so the place card is visible)
+    // Keep query & expanded state so the student can return to their results.
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     setOpen(false);
-    setExpanded(false);
   };
 
   const handleExpand = () => {
