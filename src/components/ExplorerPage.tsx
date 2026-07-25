@@ -114,6 +114,15 @@ const ExplorerPage = () => {
   const handlePlaceSelect = useCallback((place: Place) => {
     setSelectedPlace(place);
     setSelectedContent(null);
+    // Ensure the marker becomes visible on the map (aligns search/list/map state).
+    setActiveCategories(prev => (prev.includes('place') ? prev : [...prev, 'place']));
+    setActivePlaceCategories(prev => (prev.includes(place.category) ? prev : [...prev, place.category]));
+    if (place.category === 'public' && place.subCategory) {
+      setActivePublicSubCategories(prev => {
+        if (prev === null) return prev; // null = show-all, no change needed
+        return prev.includes(place.subCategory!) ? prev : [...prev, place.subCategory!];
+      });
+    }
     // For grade 4, reveal the place on map when selected from filter
     setGrade4VisibleIds(prev => {
       if (prev === null || prev.has(place.id)) return prev;
@@ -126,6 +135,7 @@ const ExplorerPage = () => {
   const handleContentSelect = useCallback((content: MapContent) => {
     setSelectedContent(content);
     setSelectedPlace(null);
+    setActiveCategories(prev => (prev.includes(content.contentType) ? prev : [...prev, content.contentType]));
   }, []);
 
   const handleCategoryToggle = (cat: ContentCategory) => {
