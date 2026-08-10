@@ -95,17 +95,25 @@ function regionAliases(region: string): string[] {
 function findByRegion<T extends { region: string }>(list: T[], userInput: string): T | null {
   const q = normalize(userInput);
   const qs = normalizeStrict(userInput);
-  // 긴 이름부터 매칭(옥포2동이 옥포보다 먼저)
-  const sorted = [...list].sort((a, b) => b.region.length - a.region.length);
-  for (const item of sorted) {
+  // 점수가 가장 높은 별칭을 가진 항목 선택(옥포1동/옥포2동 처럼 숫자만 다른 지역 오매칭 방지)
+  let best: T | null = null;
+  let bestScore = 0;
+  for (const item of list) {
     for (const alias of regionAliases(item.region)) {
       const na = normalize(alias);
       const nsa = normalizeStrict(alias);
-      if ((na && q.includes(na)) || (nsa && qs.includes(nsa))) return item;
+      // 숫자를 보존한 매칭(na)을 우선하고, 숫자를 제거한 매칭(nsa)은 낮은 점수
+      const score = na && q.includes(na) ? alias.length * 10 : nsa && qs.includes(nsa) ? alias.length : 0;
+      if (score > bestScore) {
+        best = item;
+        bestScore = score;
+      }
     }
   }
-  return null;
+  return best;
+
 }
+
 
 export function findGeojePopulation(userInput: string) {
   if (!hasPopulationIntent(userInput)) return null;
