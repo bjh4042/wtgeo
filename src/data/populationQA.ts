@@ -95,21 +95,23 @@ function regionAliases(region: string): string[] {
 function findByRegion<T extends { region: string }>(list: T[], userInput: string): T | null {
   const q = normalize(userInput);
   const qs = normalizeStrict(userInput);
-  // 가장 긴 별칭이 일치하는 항목을 선택(옥포1동/옥포2동 처럼 접두어가 같은 지역 오매칭 방지)
+  // 점수가 가장 높은 별칭을 가진 항목 선택(옥포1동/옥포2동 처럼 숫자만 다른 지역 오매칭 방지)
   let best: T | null = null;
-  let bestLen = 0;
+  let bestScore = 0;
   for (const item of list) {
     for (const alias of regionAliases(item.region)) {
       const na = normalize(alias);
       const nsa = normalizeStrict(alias);
-      const hit = (na && q.includes(na)) || (nsa && qs.includes(nsa));
-      if (hit && alias.length > bestLen) {
+      // 숫자를 보존한 매칭(na)을 우선하고, 숫자를 제거한 매칭(nsa)은 낮은 점수
+      const score = na && q.includes(na) ? alias.length * 10 : nsa && qs.includes(nsa) ? alias.length : 0;
+      if (score > bestScore) {
         best = item;
-        bestLen = alias.length;
+        bestScore = score;
       }
     }
   }
   return best;
+
 }
 
 
