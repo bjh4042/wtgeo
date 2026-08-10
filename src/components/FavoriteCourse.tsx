@@ -3,7 +3,7 @@ import { FavoriteItem } from '@/hooks/useFavorites';
 import { getMergedPlaces, getMergedContent } from '@/data/dataManager';
 import { Place } from '@/data/places';
 import { MapContent } from '@/data/content';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useModalBehavior } from '@/hooks/useModalBehavior';
 import EmptyState from '@/components/EmptyState';
 
@@ -22,8 +22,17 @@ interface FavoriteCourseProps {
 const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, removeFavorite, clearAll, reorder, courseName, setCourseName }: FavoriteCourseProps) => {
   const [editingName, setEditingName] = useState(false);
   useModalBehavior(onClose);
-  const allPlaces = getMergedPlaces();
-  const allContent = getMergedContent();
+  const allPlaces = useMemo(() => getMergedPlaces(), []);
+  const allContent = useMemo(() => getMergedContent(), []);
+
+  // Resolve each saved item against current data so renamed places show their
+  // up-to-date name, and removed places can be flagged instead of dead-clicking.
+  const rows = useMemo(() => favorites.map(item => {
+    const source = item.type === 'place'
+      ? allPlaces.find(p => p.id === item.id)
+      : allContent.find(c => c.id === item.id);
+    return { item, source, name: source?.name ?? item.name, available: !!source };
+  }), [favorites, allPlaces, allContent]);
 
   const handleItemClick = (item: FavoriteItem) => {
     if (item.type === 'place') {
@@ -35,7 +44,7 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
     }
   };
 
-  const getTotalDistance = () => {
+  const totalDistance = useMemo(() => {
     if (favorites.length < 2) return null;
     let total = 0;
     for (let i = 1; i < favorites.length; i++) {
@@ -48,7 +57,8 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
       total += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
     return total < 1 ? `${Math.round(total * 1000)}m` : `${total.toFixed(1)}km`;
-  };
+  }, [favorites]);
+
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
@@ -79,7 +89,7 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
         {favorites.length > 0 && (
           <div className="px-4 py-2 bg-muted/30 flex items-center justify-between text-xs text-muted-foreground">
             <span>📍 {favorites.length}곳</span>
-            {getTotalDistance() && <span><Navigation size={11} className="inline mr-1" />총 거리: {getTotalDistance()}</span>}
+            {totalDistance && <span><Navigation size={11} className="inline mr-1" />총 거리: {totalDistance}</span>}
             <button onClick={clearAll} aria-label="내 코스 전체 비우기" className="text-destructive hover:underline cursor-pointer flex items-center gap-1">
               <Trash2 size={11} />전체 삭제
             </button>
@@ -96,28 +106,44 @@ const FavoriteCourse = ({ onClose, onPlaceSelect, onContentSelect, favorites, re
             />
           ) : (
             <div className="space-y-1">
-              {favorites.map((item, idx) => (
-                <div key={item.id} className="flex items-center gap-2 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group">
+              {rows.map(({ item, name, available }, idx) => (
+                <div key={item.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors">
                   <span className="text-xs font-bold text-primary w-5 text-center flex-shrink-0">{idx + 1}</span>
                   <button
                     onClick={() => handleItemClick(item)}
-                    className="flex-1 text-left text-sm font-medium text-foreground truncate cursor-pointer hover:text-primary transition-colors"
+                    disabled={!available}
+                    title={available ? name : `${name} (지금은 지도에서 찾을 수 없어요)`}
+                    className="flex-1 min-w-0 text-left text-sm font-medium text-foreground truncate cursor-pointer hover:text-primary transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:text-muted-foreground"
                   >
                     <MapPin size={12} className="inline mr-1 text-muted-foreground" />
-                    {item.name}
+                    {name}
+                    {!available && <span className="ml-1 text-[10px] text-muted-foreground">(정보 없음)</span>}
                   </button>
-                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {idx > 0 && (
-                      <button onClick={() => reorder(idx, idx - 1)} aria-label={`${item.name} 위로 이동`} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronUp size={14} /></button>
-                    )}
-                    {idx < favorites.length - 1 && (
-                      <button onClick={() => reorder(idx, idx + 1)} aria-label={`${item.name} 아래로 이동`} className="p-1 hover:bg-muted rounded cursor-pointer"><ChevronDown size={14} /></button>
-                    )}
-                    <button onClick={() => removeFavorite(item.id)} aria-label={`${item.name} 내 코스에서 빼기`} className="p-1 hover:bg-destructive/10 rounded text-destructive cursor-pointer"><Trash2 size={14} /></button>
+                  {/* Controls stay mounted and visible so touch users can reach them,
+                      and their positions never shift while reordering. */}
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <button
+                      onClick={() => reorder(idx, idx - 1)}
+                      disabled={idx === 0}
+                      aria-label={`${name} 위로 이동`}
+                      className="p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center hover:bg-muted rounded cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    ><ChevronUp size={14} /></button>
+                    <button
+                      onClick={() => reorder(idx, idx + 1)}
+                      disabled={idx === rows.length - 1}
+                      aria-label={`${name} 아래로 이동`}
+                      className="p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center hover:bg-muted rounded cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    ><ChevronDown size={14} /></button>
+                    <button
+                      onClick={() => removeFavorite(item.id)}
+                      aria-label={`${name} 내 코스에서 빼기`}
+                      className="p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center hover:bg-destructive/10 rounded text-destructive cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
+                    ><Trash2 size={14} /></button>
                   </div>
                 </div>
               ))}
             </div>
+
           )}
         </div>
 
