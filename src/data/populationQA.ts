@@ -95,17 +95,23 @@ function regionAliases(region: string): string[] {
 function findByRegion<T extends { region: string }>(list: T[], userInput: string): T | null {
   const q = normalize(userInput);
   const qs = normalizeStrict(userInput);
-  // 긴 이름부터 매칭(옥포2동이 옥포보다 먼저)
-  const sorted = [...list].sort((a, b) => b.region.length - a.region.length);
-  for (const item of sorted) {
+  // 가장 긴 별칭이 일치하는 항목을 선택(옥포1동/옥포2동 처럼 접두어가 같은 지역 오매칭 방지)
+  let best: T | null = null;
+  let bestLen = 0;
+  for (const item of list) {
     for (const alias of regionAliases(item.region)) {
       const na = normalize(alias);
       const nsa = normalizeStrict(alias);
-      if ((na && q.includes(na)) || (nsa && qs.includes(nsa))) return item;
+      const hit = (na && q.includes(na)) || (nsa && qs.includes(nsa));
+      if (hit && alias.length > bestLen) {
+        best = item;
+        bestLen = alias.length;
+      }
     }
   }
-  return null;
+  return best;
 }
+
 
 export function findGeojePopulation(userInput: string) {
   if (!hasPopulationIntent(userInput)) return null;
