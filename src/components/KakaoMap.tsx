@@ -420,11 +420,22 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
   if (error) {
     return (
-      <div className="map-container w-full h-full flex items-center justify-center">
-        <p className="text-destructive">{error}</p>
+      <div className="map-container w-full h-full flex flex-col items-center justify-center gap-3 p-6 text-center">
+        <MapPin size={40} className="text-muted-foreground" />
+        <p className="text-sm font-semibold text-foreground">지도를 불러오지 못했어요</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          인터넷 연결이 느리거나 잠시 끊겼을 수 있어요.<br />검색과 다른 메뉴는 그대로 사용할 수 있어요.
+        </p>
+        <button
+          onClick={() => { setError(null); setIsLoaded(false); loadKakaoSdk().then(() => setIsLoaded(true)).catch(() => setError('Kakao Maps SDK 로딩 실패')); }}
+          className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          다시 시도
+        </button>
       </div>
     );
   }
+
 
   return (
     <div className="w-full h-full relative">
