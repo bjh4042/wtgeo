@@ -61,7 +61,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   };
 
   const totalDistance = useMemo(() => {
-    if (routePlaces.length < 2) return 0;
+    if (routePlaces.length < 1) return 0;
     let total = getDistance(school.lat, school.lng, routePlaces[0].lat, routePlaces[0].lng);
     for (let i = 1; i < routePlaces.length; i++) {
       total += getDistance(routePlaces[i - 1].lat, routePlaces[i - 1].lng, routePlaces[i].lat, routePlaces[i].lng);
