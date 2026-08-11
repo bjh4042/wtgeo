@@ -71,6 +71,8 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   const [selectedSchool, setSelectedSchool] = useState<EditableSchool | null>(null);
   const [selectedContentItem, setSelectedContentItem] = useState<EditableContent | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  // 저장/삭제 중복 실행 방지
+  const [busy, setBusy] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [renderKey, setRenderKey] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
