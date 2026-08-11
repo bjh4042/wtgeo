@@ -366,3 +366,15 @@ export function findSchoolInfo(userInput: string): SchoolQA | undefined {
     (s) => input.includes(normalize(s.category)) && input.includes("초등학교"),
   );
 }
+
+/**
+ * 학교의 주소·홈페이지 '정본'은 지도 데이터(schools.ts) 하나로만 관리한다.
+ * schoolQA.ts에 들어 있던 주소/홈페이지는 지도 데이터와 전부 달랐고,
+ * 공식 출처(경남교육청 학교찾기·학교알리미)로 어느 쪽이 맞는지 확인할 수 없었다.
+ * → 확인되지 않은 값을 학생에게 보여주지 않기 위해, 정본이 있을 때만 안내한다.
+ */
+export function getSchoolFacts(qa: SchoolQA): { address?: string; website?: string } {
+  const canonical = schools.find((s) => normalize(s.name) === normalize(qa.school_name));
+  if (!canonical) return {};
+  return { address: canonical.address, website: canonical.website };
+}
