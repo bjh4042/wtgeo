@@ -38,6 +38,42 @@ const ZOOM_STAGES = [
   { level: 2, delay: 800 },
 ];
 
+// SDK 스크립트는 앱 전체에서 한 번만 로드한다(재진입 시 중복 <script> 삽입 방지).
+// 느린 교실 Wi-Fi에서 응답이 오지 않는 경우를 대비해 타임아웃을 둔다.
+const SDK_TIMEOUT_MS = 12000;
+let kakaoSdkPromise: Promise<void> | null = null;
+
+function loadKakaoSdk(): Promise<void> {
+  if (window.kakao?.maps) return Promise.resolve();
+  if (kakaoSdkPromise) return kakaoSdkPromise;
+
+  kakaoSdkPromise = new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&autoload=false`;
+    script.async = true;
+
+    const timeoutId = window.setTimeout(() => {
+      kakaoSdkPromise = null;
+      reject(new Error('KAKAO_SDK_TIMEOUT'));
+    }, SDK_TIMEOUT_MS);
+
+    script.onload = () => {
+      window.clearTimeout(timeoutId);
+      window.kakao.maps.load(() => resolve());
+    };
+    script.onerror = () => {
+      window.clearTimeout(timeoutId);
+      kakaoSdkPromise = null;
+      reject(new Error('KAKAO_SDK_LOAD_FAILED'));
+    };
+
+    document.head.appendChild(script);
+  });
+
+  return kakaoSdkPromise;
+}
+
+
 function getZoomMessage(stageIndex: number, district: string): string {
   switch (stageIndex) {
     case 0: return '대한민국';
