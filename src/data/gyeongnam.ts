@@ -14,6 +14,7 @@ export async function loadDetailedBoundaries(): Promise<void> {
 
 import { supabase } from '@/integrations/supabase/client';
 import { adminApi } from '@/lib/adminApi';
+import { getAppImageUrl } from "@/lib/imageUrl";
 
 export interface GyeongnamCity {
   id: string;
@@ -55,8 +56,8 @@ export async function loadGyeongnamEditsFromCloud(): Promise<void> {
       const edits: Record<string, Partial<GyeongnamCity>> = {};
       data.forEach((row: any) => {
         const edit: Partial<GyeongnamCity> = {};
-        if (row.logo_url) edit.logoUrl = row.logo_url;
-        if (row.mascot_image_url) edit.mascotImageUrl = row.mascot_image_url;
+        if (row.logo_url) edit.logoUrl = getAppImageUrl(row.logo_url);
+        if (row.mascot_image_url) edit.mascotImageUrl = getAppImageUrl(row.mascot_image_url);
         if (row.name) edit.name = row.name;
         if (row.name_hanja) edit.nameHanja = row.name_hanja;
         if (row.population != null) edit.population = row.population;

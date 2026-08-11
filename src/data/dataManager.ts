@@ -4,6 +4,7 @@ import { stories, placenames, heritages, pastPresent, natureContent, MapContent,
 import { schools as defaultSchools, School, getInitialConsonant } from './schools';
 import { supabase } from '@/integrations/supabase/client';
 import { adminApi } from '@/lib/adminApi';
+import { getAppImageUrl } from "@/lib/imageUrl";
 
 
 export const SCHOOLS_UPDATED_EVENT = 'geoje-schools-updated';
@@ -44,7 +45,7 @@ export async function loadAllDataFromCloud(): Promise<void> {
         if (row.lat != null) edit.lat = Number(row.lat);
         if (row.lng != null) edit.lng = Number(row.lng);
         if (row.category) edit.category = row.category;
-        if (row.image_url) edit.imageUrl = row.image_url;
+        if (row.image_url) edit.imageUrl = getAppImageUrl(row.image_url);
         if (row.origin) edit.origin = row.origin;
         if (row.reference_url) edit.referenceUrl = row.reference_url;
         if (row.youtube_url) edit.youtubeUrl = row.youtube_url;
@@ -65,7 +66,7 @@ export async function loadAllDataFromCloud(): Promise<void> {
         lat: Number(row.lat),
         lng: Number(row.lng),
         category: row.category as PlaceCategory,
-        imageUrl: row.image_url || undefined,
+        imageUrl: getAppImageUrl(row.image_url),
         origin: row.origin || undefined,
         referenceUrl: row.reference_url || undefined,
         youtubeUrl: row.youtube_url || undefined,
@@ -85,8 +86,8 @@ export async function loadAllDataFromCloud(): Promise<void> {
         if (row.lng != null) edit.lng = Number(row.lng);
         if (row.content_type) edit.contentType = row.content_type;
         if (row.icon) edit.icon = row.icon;
-        if (row.image_url) edit.imageUrl = row.image_url;
-        if (row.old_image_url) edit.oldImageUrl = row.old_image_url;
+        if (row.image_url) edit.imageUrl = getAppImageUrl(row.image_url);
+        if (row.old_image_url) edit.oldImageUrl = getAppImageUrl(row.old_image_url);
         if (row.old_image_caption) edit.oldImageCaption = row.old_image_caption;
         if (row.source) edit.source = row.source;
         if (row.reference_url) edit.referenceUrl = row.reference_url;
@@ -107,8 +108,8 @@ export async function loadAllDataFromCloud(): Promise<void> {
         lng: Number(row.lng),
         contentType: row.content_type as ContentCategory,
         icon: row.icon || '📍',
-        imageUrl: row.image_url || undefined,
-        oldImageUrl: row.old_image_url || undefined,
+        imageUrl: getAppImageUrl(row.image_url),
+        oldImageUrl: getAppImageUrl(row.old_image_url),
         oldImageCaption: row.old_image_caption || undefined,
         source: row.source || undefined,
         referenceUrl: row.reference_url || undefined,
