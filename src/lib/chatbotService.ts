@@ -34,12 +34,13 @@ function buildGrade3Context(): string {
     (q) => `- [${q.category}] Q: ${q.question} → A: ${q.answer.replace(/\s+/g, " ")}`,
   );
 
-  // 주소·홈페이지는 지도 데이터(schools.ts)를 정본으로 사용하고, 정본이 없으면 제공하지 않는다.
-  const schoolLines = schoolQA.map((s) => {
+  // 주소·전화·홈페이지는 지도 데이터(schools.ts, 거제교육지원청 2026-03-01 정본)만 사용한다.
+  const schoolLines = verifiedSchoolQA.map((s) => {
     const facts = getSchoolFacts(s);
     const addr = facts.address ? ` | 주소: ${facts.address}` : "";
     const site = facts.website ? ` | 홈페이지: ${facts.website}` : "";
-    return `- [학교/${s.category}] ${s.school_name} | 개교: ${s.established_year} | ${s.num_classes} · ${s.num_students}${addr}${site} | 설명: ${s.answer.replace(/\s+/g, " ")}`;
+    const tel = facts.teacherPhone ? ` | 교무실: ${facts.teacherPhone}` : "";
+    return `- [학교/${s.category}] ${s.school_name} | 개교: ${s.established_year} | ${s.num_classes} · ${s.num_students}${addr}${tel}${site} | 설명: ${s.answer.replace(/\s+/g, " ")}`;
   });
 
   const popLines = geojePopulation.map(
