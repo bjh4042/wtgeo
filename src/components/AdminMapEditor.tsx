@@ -102,11 +102,15 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   }, [allPlaces, activeFilters]);
 
   const searchResults = useMemo(() => {
-    if (!searchTerm.trim()) return { places: [] as Place[], schools: [] as (School & { index: number })[] };
-    const places = filteredPlaces.filter(p => p.name.includes(searchTerm) || p.address?.includes(searchTerm)).slice(0, 8);
-    const schools = allSchools.filter(s => s.name.includes(searchTerm) || s.address?.includes(searchTerm) || s.district?.includes(searchTerm)).slice(0, 8);
-    return { places, schools };
-  }, [filteredPlaces, allSchools, searchTerm]);
+    const empty = { places: [] as Place[], schools: [] as (School & { index: number })[], contents: [] as MapContent[] };
+    const q = searchTerm.trim();
+    if (!q) return empty;
+    // 학생 화면 최종 병합 데이터 전체를 대상으로 검색 (카테고리 필터에 묶이지 않음)
+    const places = allPlaces.filter(p => p.name.includes(q) || p.address?.includes(q)).slice(0, 8);
+    const schools = allSchools.filter(s => s.name.includes(q) || s.address?.includes(q) || s.district?.includes(q)).slice(0, 8);
+    const contents = allContent.filter(c => c.name.includes(q) || c.description?.includes(q)).slice(0, 8);
+    return { places, schools, contents };
+  }, [allPlaces, allSchools, allContent, searchTerm]);
 
   const toggleFilter = (cat: PlaceCategory) => {
     setActiveFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
