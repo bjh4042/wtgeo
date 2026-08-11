@@ -133,6 +133,8 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [reports, setReports] = useState<ErrorReport[]>([]);
   const [selectedReport, setSelectedReport] = useState<ErrorReport | null>(null);
   const [requests, setRequests] = useState<PlaceRequest[]>([]);
+  // 신청 → 장소 폼 prefill 시 원본 신청 ID를 기억한다. 실제 저장 성공 시에만 reviewed 처리한다.
+  const [importedRequestId, setImportedRequestId] = useState<string | null>(null);
   // 저장/삭제 요청이 진행 중인 동안 같은 동작이 중복 실행되지 않도록 막는다.
   const [busy, setBusy] = useState(false);
 
@@ -163,16 +165,15 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
     }
   };
 
-  const markRequestReviewed = async (req: PlaceRequest) => {
-    if (busy) return;
-    setBusy(true);
+  // ID 기준으로 단 한 건만 처리 완료로 변경한다. (busy 는 호출부에서 관리)
+  const markRequestReviewed = async (requestId: string) => {
     try {
-      await adminApi.update('place_requests', { status: 'reviewed' }, { match: { id: req.id } });
-      setRequests(prev => prev.map(r => (r.id === req.id ? { ...r, status: 'reviewed' } : r)));
+      await adminApi.update('place_requests', { status: 'reviewed' }, { match: { id: requestId } });
+      setRequests(prev => prev.map(r => (r.id === requestId ? { ...r, status: 'reviewed' } : r)));
+      return true;
     } catch (e) {
-      toast.error('처리하지 못했어요. 잠시 후 다시 시도해 주세요.');
-    } finally {
-      setBusy(false);
+      console.error(e);
+      return false;
     }
   };
 
@@ -189,8 +190,9 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       lng: 128.62,
       category,
     });
+    setImportedRequestId(req.id);
     setActiveTab('places');
-    toast.info('좌표와 내용을 확인한 뒤 저장해 주세요.');
+    toast.info('좌표와 내용을 확인한 뒤 저장해 주세요. 저장해야 신청이 처리 완료돼요.');
   };
 
   const loadReports = useCallback(async () => {
@@ -342,6 +344,14 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       const isDefault = defaultPlaces.some(p => p.id === parsed.id);
       if (isDefault) await savePlaceEdit(parsed.id, parsed as any);
       else await saveCustomPlace(parsed as any);
+      // 장소 저장이 성공한 뒤에만 원본 신청을 처리 완료로 변경한다.
+      if (importedRequestId) {
+        const ok = await markRequestReviewed(importedRequestId);
+        if (!ok) {
+          toast.warning('장소는 저장했지만 신청 상태 변경에 실패했어요. 신청 목록에서 직접 삭제/반려해 주세요.');
+        }
+        setImportedRequestId(null);
+      }
       setEditingPlace(null);
       forceUpdate(n => n + 1);
       toast.success('저장했습니다.');
@@ -684,7 +694,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
         {/* Place Editor */}
         {activeTab === 'places' && editingPlace && (
           <div className="space-y-2.5">
-            <button onClick={() => setEditingPlace(null)} className="text-xs text-primary cursor-pointer">← 목록으로</button>
+            <button onClick={() => { setEditingPlace(null); setImportedRequestId(null); }} className="text-xs text-primary cursor-pointer">← 목록으로</button>
             <div>
               <label className="text-[10px] font-semibold text-foreground">이름</label>
               <input value={editingPlace.name} onChange={e => setEditingPlace({ ...editingPlace, name: e.target.value })} className={inputClass} />
@@ -1284,7 +1294,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                     {r.phone && <p className="text-[11px] text-muted-foreground">☎ {r.phone}</p>}
                     {r.description && <p className="text-[11px] text-foreground whitespace-pre-wrap mt-1">{r.description}</p>}
                     <div className="flex gap-1.5 pt-1.5">
-                      <button onClick={() => { importRequestToPlace(r); markRequestReviewed(r); }} disabled={busy}
+                      <button onClick={() => importRequestToPlace(r)} disabled={busy}
                         className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-primary text-primary-foreground cursor-pointer">
                         <Plus size={10} /> 장소 추가로 가져오기
                       </button>
