@@ -33,7 +33,18 @@ export interface SiteInfo {
   devEmail: string;
 }
 
-type AdminTab = 'notice' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'quiz' | 'info' | 'stats' | 'reports';
+type AdminTab = 'notice' | 'requests' | 'places' | 'content' | 'schools' | 'gyeongnam' | 'quiz' | 'info' | 'stats' | 'reports';
+
+interface PlaceRequest {
+  id: string;
+  name: string;
+  address: string;
+  category: string;
+  phone: string | null;
+  description: string | null;
+  status: string;
+  created_at: string;
+}
 
 interface ErrorReport {
   id: string;
@@ -121,10 +132,66 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [showMapEditor, setShowMapEditor] = useState(false);
   const [reports, setReports] = useState<ErrorReport[]>([]);
   const [selectedReport, setSelectedReport] = useState<ErrorReport | null>(null);
+  const [requests, setRequests] = useState<PlaceRequest[]>([]);
   // 저장/삭제 요청이 진행 중인 동안 같은 동작이 중복 실행되지 않도록 막는다.
   const [busy, setBusy] = useState(false);
 
   const unreadCount = reports.filter(r => !r.is_read).length;
+  const pendingRequestCount = requests.filter(r => r.status === 'pending').length;
+
+  const loadRequests = useCallback(async () => {
+    try {
+      const res: any = await adminApi.select('place_requests', { order: { column: 'created_at', ascending: false } });
+      if (res?.data) setRequests(res.data as PlaceRequest[]);
+    } catch (e) {
+      console.error('Failed to load place requests', e);
+    }
+  }, []);
+
+  const deleteRequest = async (req: PlaceRequest) => {
+    if (busy) return;
+    if (!confirm(`'${req.name}' 장소 신청을 삭제할까요?`)) return;
+    setBusy(true);
+    try {
+      await adminApi.delete('place_requests', { match: { id: req.id } });
+      setRequests(prev => prev.filter(r => r.id !== req.id));
+      toast.success('신청을 삭제했어요.');
+    } catch (e) {
+      toast.error('삭제하지 못했어요. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const markRequestReviewed = async (req: PlaceRequest) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await adminApi.update('place_requests', { status: 'reviewed' }, { match: { id: req.id } });
+      setRequests(prev => prev.map(r => (r.id === req.id ? { ...r, status: 'reviewed' } : r)));
+    } catch (e) {
+      toast.error('처리하지 못했어요. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const importRequestToPlace = (req: PlaceRequest) => {
+    const category = (Object.keys(categoryLabels) as PlaceCategory[]).includes(req.category as PlaceCategory)
+      ? (req.category as PlaceCategory)
+      : 'tourism';
+    setEditingPlace({
+      id: `custom-p-${Date.now()}`,
+      name: req.name,
+      description: [req.description, req.phone ? `전화: ${req.phone}` : ''].filter(Boolean).join('\n'),
+      address: req.address,
+      lat: 34.88,
+      lng: 128.62,
+      category,
+    });
+    setActiveTab('places');
+    toast.info('좌표와 내용을 확인한 뒤 저장해 주세요.');
+  };
 
   const loadReports = useCallback(async () => {
     try {
@@ -493,6 +560,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const tabConfig: { key: AdminTab; label: string; badge?: number }[] = [
     { key: 'notice', label: '📢 공지' },
     { key: 'reports', label: '⚠️ 제보', badge: unreadCount },
+    { key: 'requests', label: '🙋 장소 신청', badge: pendingRequestCount },
     { key: 'places', label: '📍 장소' },
     { key: 'content', label: '📖 콘텐츠' },
     { key: 'schools', label: '🏫 학교' },
@@ -515,7 +583,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
         {/* Tabs */}
         <div className="flex gap-1 mb-3 overflow-x-auto no-scrollbar">
           {tabConfig.map(tab => (
-            <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearchTerm(''); setEditingSiteInfo(false); setPlaceCategoryFilter('all'); setContentTypeFilter('all'); if (tab.key === 'reports') loadReports(); }}
+            <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearchTerm(''); setEditingSiteInfo(false); setPlaceCategoryFilter('all'); setContentTypeFilter('all'); if (tab.key === 'reports') loadReports(); if (tab.key === 'requests') loadRequests(); }}
               className={`relative px-2.5 py-1.5 rounded-full text-[11px] font-bold cursor-pointer whitespace-nowrap ${activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
               {tab.label}
               {tab.badge != null && tab.badge > 0 && (
@@ -1187,6 +1255,50 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
         {/* Stats Tab */}
         {activeTab === 'stats' && (
           <VisitorDashboard />
+        )}
+
+        {/* Place Requests Tab */}
+        {activeTab === 'requests' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-foreground">장소 추가 신청 ({requests.length}건)</p>
+              <p className="text-[10px] text-muted-foreground">검토 후 ‘장소 추가로 가져오기’로 등록하세요</p>
+            </div>
+            {requests.length === 0 ? (
+              <p className="text-center text-xs text-muted-foreground py-8">신청이 없습니다</p>
+            ) : (
+              <div className="space-y-1.5 max-h-[50vh] overflow-auto">
+                {requests.map(r => (
+                  <div key={r.id} className={`p-2.5 rounded-lg border ${r.status === 'pending' ? 'bg-accent/10 border-accent/30' : 'bg-muted/30 border-muted'}`}>
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <span className="text-xs font-bold text-foreground truncate">
+                        {r.status === 'pending' && <span className="w-1.5 h-1.5 rounded-full bg-destructive inline-block mr-1" />}
+                        📍 {r.name}
+                        <span className="ml-1 text-[9px] font-normal px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          {categoryLabels[r.category as PlaceCategory] ?? r.category}
+                        </span>
+                      </span>
+                      <span className="text-[9px] text-muted-foreground flex-shrink-0">{new Date(r.created_at).toLocaleString('ko-KR')}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground break-words">{r.address}</p>
+                    {r.phone && <p className="text-[11px] text-muted-foreground">☎ {r.phone}</p>}
+                    {r.description && <p className="text-[11px] text-foreground whitespace-pre-wrap mt-1">{r.description}</p>}
+                    <div className="flex gap-1.5 pt-1.5">
+                      <button onClick={() => { importRequestToPlace(r); markRequestReviewed(r); }} disabled={busy}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-primary text-primary-foreground cursor-pointer">
+                        <Plus size={10} /> 장소 추가로 가져오기
+                      </button>
+                      <button onClick={() => deleteRequest(r)} disabled={busy}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20">
+                        <Trash2 size={10} /> 삭제/반려
+                      </button>
+                      <span className="text-[10px] text-muted-foreground self-center ml-auto">{r.status === 'pending' ? '대기' : '검토됨'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* Reports Tab */}
