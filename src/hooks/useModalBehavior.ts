@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * 공통 모달 동작 훅
@@ -27,6 +27,21 @@ export function useModalBehavior(onClose: () => void, enabled: boolean = true) {
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
+    };
+  }, [enabled]);
+
+  // 팝업을 열었던 버튼으로 포커스 복귀
+  const triggerRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!enabled) return;
+    const active = document.activeElement;
+    triggerRef.current = active instanceof HTMLElement ? active : null;
+    return () => {
+      const el = triggerRef.current;
+      if (el && document.contains(el)) {
+        // 렌더 정리 후 복귀
+        setTimeout(() => el.focus({ preventScroll: true }), 0);
+      }
     };
   }, [enabled]);
 }
