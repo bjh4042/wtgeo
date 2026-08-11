@@ -16,6 +16,7 @@ const ALLOWED_TABLES = new Set([
   "gyeongnam_edits",
   "quiz_questions",
   "error_reports",
+  "place_requests",
 ]);
 
 function json(body: unknown, status = 200) {

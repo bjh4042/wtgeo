@@ -332,6 +332,42 @@ export type Database = {
         }
         Relationships: []
       }
+      place_requests: {
+        Row: {
+          address: string
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quiz_questions: {
         Row: {
           answer: number

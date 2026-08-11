@@ -232,15 +232,4 @@ export const forbiddenWords: string[] = [
   "폭탄"
 ];
 
-// 공백/숫자/특수문자를 제거해 우회 표현까지 차단합니다.
-export function checkForbiddenWords(userInput: string): boolean {
-  const cleaned = (userInput || "").replace(/[^ㄱ-ㆎ가-힣a-zA-Z]/g, "").toLowerCase();
-  if (!cleaned) return false;
-  for (const word of forbiddenWords) {
-    const w = word.replace(/[^ㄱ-ㆎ가-힣a-zA-Z]/g, "").toLowerCase();
-    if (w && cleaned.includes(w)) return true;
-  }
-  return false;
-}
-
-export const FORBIDDEN_WORD_MESSAGE = "🚨 거제 탐험대 챗봇: 바르고 고운 말을 사용해 주세요! 말은 여러분의 얼굴입니다.";
+// 검사 로직은 공통 모듈 src/lib/contentFilter.ts 에 있습니다.
