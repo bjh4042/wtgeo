@@ -31,10 +31,12 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
     window.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
       if (timerRef.current) clearInterval(timerRef.current);
+      if (trigger && document.contains(trigger)) setTimeout(() => trigger.focus({ preventScroll: true }), 0);
     };
   }, [onClose]);
 
