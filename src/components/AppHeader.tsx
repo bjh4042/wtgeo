@@ -68,7 +68,7 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen, onAdminO
           <div className="bg-card rounded-2xl p-6 max-w-md mx-4 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-foreground">🧭 거제 탐험대 사용 방법</h2>
-              <button onClick={() => setShowGuide(false)} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={22} /></button>
+              <button onClick={() => setShowGuide(false)} aria-label="사용 방법 안내 닫기" className="text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"><X size={22} /></button>
             </div>
             <p className="text-sm text-muted-foreground mb-4">지도에서 거제시의 다양한 장소를 탐험해 보세요!</p>
             <div className="space-y-3 text-sm">
@@ -106,19 +106,21 @@ const AppHeader = ({ schoolName, onQuizOpen, onSourcesOpen, onInfoOpen, onAdminO
           <div className="bg-card rounded-2xl p-6 max-w-md mx-4 shadow-2xl animate-scale-in" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-foreground">안내 사항</h2>
-              <button onClick={() => setShowAbout(false)} className="text-muted-foreground hover:text-foreground cursor-pointer"><X size={22} /></button>
+              <button onClick={() => setShowAbout(false)} aria-label="안내 사항 닫기" className="text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"><X size={22} /></button>
             </div>
 
             {/* Tabs */}
             <div className="flex border-b mb-4">
               <button
                 onClick={() => setAboutTab('site')}
+                aria-pressed={aboutTab === 'site'}
                 className={`flex-1 py-2 text-sm font-semibold cursor-pointer transition-colors ${aboutTab === 'site' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'}`}
               >
                 웹사이트 정보
               </button>
               <button
                 onClick={() => setAboutTab('dev')}
+                aria-pressed={aboutTab === 'dev'}
                 className={`flex-1 py-2 text-sm font-semibold cursor-pointer transition-colors ${aboutTab === 'dev' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'}`}
               >
                 개발자 정보
