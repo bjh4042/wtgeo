@@ -69,9 +69,14 @@ const ChatBot = ({ grade }: ChatBotProps) => {
         "",
         hit.answer,
         "",
-        `- 개교: ${hit.established_year}`,
-        `- 규모: ${hit.num_classes} · ${hit.num_students}`,
+        `- 설립: ${hit.established_year}`,
       ];
+      if (hit.num_classes) {
+        lines.push(
+          `- 학급 수: ${hit.num_classes}${hit.num_classes_as_of ? ` (${hit.num_classes_as_of})` : ""}`,
+        );
+      }
+      if (hit.source) lines.push(`- 출처: ${hit.source}`);
       if (facts.address) lines.push(`- 주소: ${facts.address}`);
       if (facts.teacherPhone) lines.push(`- 교무실: ${facts.teacherPhone}`);
       if (facts.adminPhone) lines.push(`- 행정실: ${facts.adminPhone}`);
