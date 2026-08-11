@@ -7,6 +7,8 @@ import { stories, placenames, heritages, pastPresent, natureContent } from '@/da
 import { places as defaultPlaces } from '@/data/places';
 import { X, Save, Trash2, Plus, MapPin, Youtube, Search, ChevronDown, ChevronUp, Filter, GraduationCap, BookOpen, Move } from 'lucide-react';
 import { uploadImageToStorage } from '@/lib/uploadImage';
+import { toast } from 'sonner';
+import { parseCoords, trimText, isBlank, safeUrl, tooLong, MAX_NAME_LEN } from '@/lib/adminValidation';
 
 const KAKAO_API_KEY = 'e59d21f6d3e29ccff958317c0b44fcbb';
 
@@ -288,42 +290,96 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
     }
   }, [isLoaded, filteredPlaces, filteredContent, allSchools, selectedPlace, selectedSchool, selectedContentItem, isEditing, editorMode, showSchools, showContent]);
 
-  const handleSavePlace = useCallback(() => {
-    if (!selectedPlace || !selectedPlace.name.trim()) return;
-    const parsed = { ...selectedPlace, lat: parseFloat(String(selectedPlace.lat)) || 0, lng: parseFloat(String(selectedPlace.lng)) || 0 };
-    const isDefault = defaultPlaces.some(p => p.id === parsed.id);
-    if (isDefault) { savePlaceEdit(parsed.id, parsed as any); } else { saveCustomPlace(parsed as any); }
-    setIsEditing(false);
-    setRenderKey(n => n + 1);
-  }, [selectedPlace]);
+  /** 이름·좌표·URL 최소 검증 — 문제가 있으면 toast 후 null */
+  const validateBase = useCallback((name: string, lat: unknown, lng: unknown, urls: (string | undefined)[]) => {
+    const trimmedName = trimText(name);
+    if (isBlank(trimmedName)) { toast.error('이름을 입력해주세요.'); return null; }
+    if (tooLong(trimmedName, MAX_NAME_LEN)) { toast.error(`이름은 ${MAX_NAME_LEN}자 이내로 입력해주세요.`); return null; }
+    const coords = parseCoords(lat, lng);
+    if (!coords.ok) { toast.error(coords.error!); return null; }
+    for (const u of urls) {
+      if (u && u.trim() && !safeUrl(u)) { toast.error('링크는 http:// 또는 https:// 로 시작해야 합니다.'); return null; }
+    }
+    return { name: trimmedName, lat: coords.lat, lng: coords.lng };
+  }, []);
 
-  const handleDeletePlace = useCallback(() => {
-    if (!selectedPlace) return;
-    if (!confirm(`"${selectedPlace.name}" 장소를 삭제하시겠습니까?`)) return;
-    deletePlace(selectedPlace.id);
-    setSelectedPlace(null);
-    setIsEditing(false);
-    setRenderKey(n => n + 1);
-  }, [selectedPlace]);
+  const handleSavePlace = useCallback(async () => {
+    if (!selectedPlace || busy) return;
+    const base = validateBase(selectedPlace.name, selectedPlace.lat, selectedPlace.lng,
+      [selectedPlace.referenceUrl, selectedPlace.youtubeUrl, selectedPlace.imageUrl]);
+    if (!base) return;
+    const parsed = { ...selectedPlace, ...base, address: trimText(selectedPlace.address) };
+    setBusy(true);
+    try {
+      const isDefault = defaultPlaces.some(p => p.id === parsed.id);
+      if (isDefault) await savePlaceEdit(parsed.id, parsed as any);
+      else await saveCustomPlace(parsed as any);
+      setSelectedPlace(parsed);
+      setIsEditing(false);
+      setRenderKey(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
+  }, [selectedPlace, busy, validateBase]);
 
-  const handleSaveSchool = useCallback(() => {
-    if (!selectedSchool || !selectedSchool.name.trim()) return;
-    const parsed = { ...selectedSchool, lat: parseFloat(String(selectedSchool.lat)) || 0, lng: parseFloat(String(selectedSchool.lng)) || 0 };
-    const { index, ...schoolData } = parsed;
-    saveSchoolEdit(index, schoolData);
-    setIsEditing(false);
-    setRenderKey(n => n + 1);
-  }, [selectedSchool]);
+  const handleDeletePlace = useCallback(async () => {
+    if (!selectedPlace || busy) return;
+    if (!confirm(`'${selectedPlace.name}' 장소를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) return;
+    setBusy(true);
+    try {
+      await deletePlace(selectedPlace.id);
+      setSelectedPlace(null);
+      setIsEditing(false);
+      setRenderKey(n => n + 1);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
+  }, [selectedPlace, busy]);
 
-  const handleSaveContent = useCallback(() => {
-    if (!selectedContentItem || !selectedContentItem.name.trim()) return;
-    const parsed = { ...selectedContentItem, lat: parseFloat(String(selectedContentItem.lat)) || 0, lng: parseFloat(String(selectedContentItem.lng)) || 0 };
-    const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
-    const isDefault = allDefault.some(c => c.id === parsed.id);
-    if (isDefault) { saveContentEdit(parsed.id, parsed as any); } else { saveCustomContent(parsed as any); }
-    setIsEditing(false);
-    setRenderKey(n => n + 1);
-  }, [selectedContentItem]);
+  const handleSaveSchool = useCallback(async () => {
+    if (!selectedSchool || busy) return;
+    const base = validateBase(selectedSchool.name, selectedSchool.lat, selectedSchool.lng, [selectedSchool.website]);
+    if (!base) return;
+    const parsed = { ...selectedSchool, ...base };
+    setBusy(true);
+    try {
+      const { index, ...schoolData } = parsed;
+      await saveSchoolEdit(index, schoolData);
+      setSelectedSchool(parsed);
+      setIsEditing(false);
+      setRenderKey(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
+  }, [selectedSchool, busy, validateBase]);
+
+  const handleSaveContent = useCallback(async () => {
+    if (!selectedContentItem || busy) return;
+    const base = validateBase(selectedContentItem.name, selectedContentItem.lat, selectedContentItem.lng,
+      [selectedContentItem.referenceUrl, selectedContentItem.youtubeUrl, selectedContentItem.imageUrl, selectedContentItem.oldImageUrl]);
+    if (!base) return;
+    const parsed = { ...selectedContentItem, ...base };
+    setBusy(true);
+    try {
+      const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+      const isDefault = allDefault.some(c => c.id === parsed.id);
+      if (isDefault) await saveContentEdit(parsed.id, parsed as any);
+      else await saveCustomContent(parsed as any);
+      setSelectedContentItem(parsed);
+      setIsEditing(false);
+      setRenderKey(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
+  }, [selectedContentItem, busy, validateBase]);
 
   const handleImageFileToPlace = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file || !selectedPlace) return;
@@ -332,7 +388,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       setSelectedPlace(p => p ? { ...p, imageUrl: url } : p);
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
@@ -345,7 +401,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       setSelectedContentItem(c => c ? { ...c, imageUrl: url } : c);
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
@@ -358,20 +414,27 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       setSelectedContentItem(c => c ? { ...c, oldImageUrl: url } : c);
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
   }, [selectedContentItem]);
 
-  const handleDeleteContent = useCallback(() => {
-    if (!selectedContentItem) return;
-    if (!confirm(`"${selectedContentItem.name}" 콘텐츠를 삭제하시겠습니까?`)) return;
-    deleteContent(selectedContentItem.id);
-    setSelectedContentItem(null);
-    setIsEditing(false);
-    setRenderKey(n => n + 1);
-  }, [selectedContentItem]);
+  const handleDeleteContent = useCallback(async () => {
+    if (!selectedContentItem || busy) return;
+    if (!confirm(`'${selectedContentItem.name}' 콘텐츠를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) return;
+    setBusy(true);
+    try {
+      await deleteContent(selectedContentItem.id);
+      setSelectedContentItem(null);
+      setIsEditing(false);
+      setRenderKey(n => n + 1);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
+  }, [selectedContentItem, busy]);
 
   const handleSearchSelectPlace = useCallback((place: Place) => {
     setSelectedSchool(null);
@@ -609,7 +672,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                   </button>
                 )}
                 {(editorMode === 'place' || editorMode === 'content') && (
-                  <button onClick={editorMode === 'place' ? handleDeletePlace : handleDeleteContent}
+                  <button onClick={editorMode === 'place' ? handleDeletePlace : handleDeleteContent} disabled={busy}
                     className="p-1 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                 )}
                 <button onClick={() => { setSelectedPlace(null); setSelectedSchool(null); setSelectedContentItem(null); setIsEditing(false); }}
@@ -705,7 +768,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                       )}
                     </div>
                     <div className="flex gap-2 pt-1">
-                      <button onClick={handleSavePlace} disabled={!selectedPlace.name.trim()}
+                      <button onClick={handleSavePlace} disabled={busy || !selectedPlace.name.trim()}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">
                         <Save size={12} /> 저장
                       </button>
@@ -741,7 +804,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                     <div><label className="text-[10px] font-semibold text-foreground">전화</label><input value={selectedSchool.phone || ''} onChange={e => setSelectedSchool({ ...selectedSchool, phone: e.target.value })} className={inputClass} /></div>
                     <div><label className="text-[10px] font-semibold text-foreground">웹사이트</label><input value={selectedSchool.website || ''} onChange={e => setSelectedSchool({ ...selectedSchool, website: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div className="flex gap-2 pt-1">
-                      <button onClick={handleSaveSchool} disabled={!selectedSchool.name.trim()}
+                      <button onClick={handleSaveSchool} disabled={busy || !selectedSchool.name.trim()}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">
                         <Save size={12} /> 저장
                       </button>
@@ -834,7 +897,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
                     <div><label className="text-[10px] font-semibold text-foreground">참고 링크</label><input value={selectedContentItem.referenceUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, referenceUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div><label className="text-[10px] font-semibold text-foreground flex items-center gap-1"><Youtube size={10} className="text-destructive" /> 유튜브</label><input value={selectedContentItem.youtubeUrl || ''} onChange={e => setSelectedContentItem({ ...selectedContentItem, youtubeUrl: e.target.value })} className={inputClass} placeholder="https://..." /></div>
                     <div className="flex gap-2 pt-1">
-                      <button onClick={handleSaveContent} disabled={!selectedContentItem.name.trim()}
+                      <button onClick={handleSaveContent} disabled={busy || !selectedContentItem.name.trim()}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:opacity-90 disabled:opacity-50">
                         <Save size={12} /> 저장
                       </button>
