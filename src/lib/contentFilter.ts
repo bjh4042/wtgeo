@@ -3,6 +3,9 @@
  * - 챗봇 입력, 장소 추가 신청 등 모든 학생 입력에서 재사용합니다.
  * - 금칙어 원문은 절대 사용자에게 다시 보여주지 않습니다.
  * - 정상적인 지명/학교명/문화재명을 막지 않도록 보수적으로 판정합니다.
+ *
+ * IMPORTANT: supabase/functions/_shared/contentFilter.ts 의 사본과 항상 함께 수정하세요.
+ * (src/test/contentFilterSync.test.ts 가 두 구현의 불일치를 감지합니다.)
  */
 import { forbiddenWords } from "@/data/forbiddenWords";
 
