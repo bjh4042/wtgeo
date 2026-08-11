@@ -461,6 +461,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const handleSearchSelectSchool = useCallback((school: School & { index: number }) => {
     setSelectedPlace(null);
+    setSelectedContentItem(null);
     setEditorMode('school');
     setSelectedSchool({
       index: school.index, name: school.name, address: school.address,
@@ -473,6 +474,26 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
     }
   }, []);
+
+  const handleSearchSelectContent = useCallback((item: MapContent) => {
+    setSelectedPlace(null);
+    setSelectedSchool(null);
+    setEditorMode('content');
+    setShowContent(true);
+    setSelectedContentItem({
+      id: item.id, name: item.name, contentType: item.contentType,
+      description: item.description, lat: item.lat, lng: item.lng,
+      icon: item.icon, imageUrl: item.imageUrl, oldImageUrl: item.oldImageUrl,
+      oldImageCaption: item.oldImageCaption, source: item.source,
+      grade: item.grade, referenceUrl: item.referenceUrl, youtubeUrl: item.youtubeUrl,
+    });
+    setIsEditing(false); setShowSearch(false); setSearchTerm(''); setDetailsExpanded(false);
+    if (mapInstance.current) {
+      mapInstance.current.panTo(new window.kakao.maps.LatLng(item.lat, item.lng));
+      if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
+    }
+  }, []);
+
 
   useEffect(() => {
     const handler = () => setRenderKey(n => n + 1);
