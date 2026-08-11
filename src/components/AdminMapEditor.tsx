@@ -444,6 +444,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const handleSearchSelectPlace = useCallback((place: Place) => {
     setSelectedSchool(null);
+    setSelectedContentItem(null);
     setEditorMode('place');
     setSelectedPlace({
       id: place.id, name: place.name, description: place.description,
