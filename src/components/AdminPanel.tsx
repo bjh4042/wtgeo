@@ -16,6 +16,8 @@ import {
 import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent, parseExcelToGyeongnam, exportGyeongnamToExcel } from '@/data/excelSync';
 import { uploadImageToStorage } from '@/lib/uploadImage';
 import { setAdminPassword, clearAdminPassword, verifyAdminPassword, adminApi } from '@/lib/adminApi';
+import { toast } from 'sonner';
+import { parseCoords, trimText, isBlank, tooLong, safeUrl, MAX_NAME_LEN, MAX_ADDRESS_LEN, MAX_TEXT_LEN } from '@/lib/adminValidation';
 
 export interface SiteInfo {
   serviceName: string;
@@ -119,6 +121,8 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [showMapEditor, setShowMapEditor] = useState(false);
   const [reports, setReports] = useState<ErrorReport[]>([]);
   const [selectedReport, setSelectedReport] = useState<ErrorReport | null>(null);
+  // 저장/삭제 요청이 진행 중인 동안 같은 동작이 중복 실행되지 않도록 막는다.
+  const [busy, setBusy] = useState(false);
 
   const unreadCount = reports.filter(r => !r.is_read).length;
 
@@ -1112,7 +1116,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                 <button onClick={markAllRead} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer font-medium">
                   <span className="flex items-center gap-1"><CheckCircle size={10} />전체 읽음</span>
                 </button>
-                <button onClick={deleteAllReports} className="text-[10px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 cursor-pointer font-medium">
+                <button onClick={deleteAllReports} disabled={busy} className="text-[10px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 cursor-pointer font-medium">
                   <span className="flex items-center gap-1"><Trash2 size={10} />전체 삭제</span>
                 </button>
               </div>
@@ -1135,7 +1139,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                       <CheckCircle size={12} />확인
                     </button>
                   )}
-                  <button onClick={() => deleteReport(selectedReport.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer">
+                  <button onClick={() => deleteReport(selectedReport)} disabled={busy} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer">
                     <Trash2 size={12} />삭제
                   </button>
                 </div>
