@@ -1,20 +1,27 @@
+import { useEffect, useRef } from 'react';
 import { X, ExternalLink } from 'lucide-react';
 import { sources } from '@/data/content';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
 
 interface SourcesPopupProps {
   onClose: () => void;
 }
 
 const SourcesPopup = ({ onClose }: SourcesPopupProps) => {
+  useModalBehavior(onClose);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => { closeRef.current?.focus(); }, []);
+
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-card rounded-2xl p-6 max-w-md mx-4 shadow-2xl w-full max-h-[calc(100dvh-1.5rem)] overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div role="dialog" aria-modal="true" aria-labelledby="sources-title" className="bg-card rounded-2xl p-6 max-w-md mx-4 shadow-2xl w-full max-h-[calc(100dvh-1.5rem)] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-foreground">🔗 관련 누리집</h3>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
+          <h3 id="sources-title" className="text-lg font-bold text-foreground">🔗 관련 누리집</h3>
+          <button ref={closeRef} onClick={onClose} aria-label="관련 누리집 창 닫기" className="text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded">
             <X size={20} />
           </button>
         </div>
+
         <div className="flex flex-wrap gap-2">
           {sources.map((s) => (
             <a

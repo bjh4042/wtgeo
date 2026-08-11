@@ -64,15 +64,23 @@ const ContentCard = ({ content, onClose, isFavorite, onToggleFavorite }: Content
         </div>
         <button
           onClick={onClose}
-          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer ml-2 flex-shrink-0"
+          aria-label={`${content.name} 설명 닫기`}
+          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer ml-2 flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
         >
           <X size={20} />
         </button>
         {onToggleFavorite && (
-          <button onClick={() => onToggleFavorite(content)} className="cursor-pointer transition-colors ml-1 flex-shrink-0" title={isFavorite ? '즐겨찾기 해제' : '즐겨찾기'}>
+          <button
+            onClick={() => onToggleFavorite(content)}
+            className="cursor-pointer transition-colors ml-1 flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+            title={isFavorite ? '내 코스에서 빼기' : '내 코스에 담기'}
+            aria-label={isFavorite ? '내 코스에서 빼기' : '내 코스에 담기'}
+            aria-pressed={!!isFavorite}
+          >
             <Star size={18} className={isFavorite ? 'text-accent fill-accent' : 'text-muted-foreground hover:text-accent'} />
           </button>
         )}
+
       </div>
 
       <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
