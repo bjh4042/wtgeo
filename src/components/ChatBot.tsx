@@ -63,14 +63,21 @@ const ChatBot = ({ grade }: ChatBotProps) => {
     // 학교 정보 직답: 학교명 또는 '<동/면> + 초등학교' 매칭 시 AI 호출 없이 즉시 응답
     const hit = findSchoolInfo(q);
     if (hit) {
-      const answer =
-        `**${hit.school_name}** (${hit.category})\n\n` +
-        `${hit.answer}\n\n` +
-        `- 개교: ${hit.established_year}\n` +
-        `- 규모: ${hit.num_classes} · ${hit.num_students}\n` +
-        `- 주소: ${hit.address}\n` +
-        `- 전화: ${hit.phone}\n` +
-        `- 홈페이지: ${hit.website}`;
+      const facts = getSchoolFacts(hit);
+      const lines = [
+        `**${hit.school_name}** (${hit.category})`,
+        "",
+        hit.answer,
+        "",
+        `- 개교: ${hit.established_year}`,
+        `- 규모: ${hit.num_classes} · ${hit.num_students}`,
+      ];
+      if (facts.address) lines.push(`- 주소: ${facts.address}`);
+      if (facts.website) lines.push(`- 홈페이지: ${facts.website}`);
+      if (!facts.address && !facts.website) {
+        lines.push("", "※ 주소와 홈페이지는 확인 중이라 아직 알려줄 수 없어요.");
+      }
+      const answer = lines.join("\n");
       setMessages([
         ...next,
         {
