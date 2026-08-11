@@ -34,7 +34,7 @@ const SAFE_PHRASES = [
 ];
 
 /** 초성 욕설 (자모만 연속으로 등장할 때만 판정) */
-const JAMO_PATTERNS = ["ㅅㅂ", "ㅆㅂ", "ㅄ", "ㅂㅅ", "ㅈㄹ", "ㄲㅈ", "ㄷㅊ", "ㅁㅊ", "ㅗ"];
+const JAMO_PATTERNS = ["ㅅㅂ", "ㅆㅂ", "ㅄ", "ㅂㅅ", "ㅈㄹ", "ㄲㅈ", "ㄷㅊ", "ㅁㅊ"];
 
 /** 영문/로마자 우회 */
 const LATIN_PATTERNS = [
@@ -90,15 +90,17 @@ const tokenWords: string[] = (() => {
 export function containsBlockedWord(text: string): boolean {
   if (!text) return false;
   const norm = normalizeForModeration(text);
-  if (norm) {
-    for (const w of strongWords) if (norm.includes(w)) return true;
-    for (const w of LATIN_PATTERNS) if (norm.includes(w.toLowerCase())) return true;
+  const noDigits = norm.replace(/[0-9]/g, "");
+  for (const candidate of [norm, noDigits]) {
+    if (!candidate) continue;
+    for (const w of strongWords) if (candidate.includes(w)) return true;
+    for (const w of LATIN_PATTERNS) if (candidate.includes(w.toLowerCase())) return true;
   }
 
   // 초성 욕설: 자모만 연속으로 나열된 구간에서만 판정
-  const jamoRuns = (text.match(/[ㄱ-ㆎ]{2,}/g) ?? []).map((r) => r.replace(JAMO_ONLY, ""));
+  const jamoRuns = (text.match(/[ㄱ-ㆎ][ㄱ-ㆎ\s]*/g) ?? []).map((r) => r.replace(JAMO_ONLY, ""));
   for (const run of jamoRuns) {
-    for (const p of JAMO_PATTERNS) if (p.length >= 2 && run.includes(p)) return true;
+    for (const p of JAMO_PATTERNS) if (run.includes(p)) return true;
   }
 
   // 짧고 모호한 표현: 단어 단위 완전 일치일 때만 차단
