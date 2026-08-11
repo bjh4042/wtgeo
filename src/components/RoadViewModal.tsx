@@ -78,11 +78,11 @@ const RoadViewModal = ({ lat, lng, name, onClose }: RoadViewModalProps) => {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center p-3 sm:p-6 animate-fade-in"
+      className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center p-2 sm:p-4 animate-fade-in overflow-hidden"
       onClick={onClose}
     >
       <div
-        className="bg-card rounded-2xl shadow-2xl w-full max-w-4xl h-[80dvh] max-h-[calc(100dvh-1.5rem)] flex flex-col overflow-hidden"
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-[min(1200px,94vw)] max-h-[calc(100dvh-1rem)] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-2.5 border-b bg-muted/40 flex-shrink-0">
@@ -98,8 +98,9 @@ const RoadViewModal = ({ lat, lng, name, onClose }: RoadViewModalProps) => {
           </button>
         </div>
 
-        <div className="relative flex-1 bg-muted">
+        <div className="relative flex-1 bg-muted w-full min-h-[60dvh] sm:min-h-0 sm:aspect-video sm:max-h-[calc(100dvh-6rem)]">
           <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
 
           {loading && !error && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm">
