@@ -338,6 +338,19 @@ const normalize = (s: string) => s.replace(/\s+/g, "").trim();
 // 지도 데이터(schools.ts)의 정식 학교명 — 챗봇 데이터에 없는 학교까지 포함한 전체 목록
 const officialNames = schools.map((s) => normalize(s.name));
 
+/**
+ * 공식 정본(거제교육지원청 2026-03-01, 41개교)에 없는 챗봇 전용 학교명.
+ * 이름이 비슷하다는 이유만으로 다른 학교와 병합하지 않는다(추정 금지).
+ * → 현재 존재하는 학교처럼 안내하지 않도록 매칭·지식베이스에서 제외한다.
+ */
+export const UNVERIFIED_QA_SCHOOL_NAMES = ["고현초등학교", "상동초등학교", "지세포초등학교"];
+const isVerified = (qa: SchoolQA) =>
+  officialNames.includes(normalize(qa.school_name)) &&
+  !UNVERIFIED_QA_SCHOOL_NAMES.includes(qa.school_name);
+
+/** 공식 정본과 학교명이 일치하는 챗봇 데이터만 사용한다. */
+export const verifiedSchoolQA = schoolQA.filter(isVerified);
+
 export function findSchoolInfo(userInput: string): SchoolQA | undefined {
   if (!userInput) return undefined;
   // "계룡초" 같은 축약형을 정식 명칭으로 확장 (명확한 alias만)
@@ -349,32 +362,37 @@ export function findSchoolInfo(userInput: string): SchoolQA | undefined {
     .sort((a, b) => b.length - a.length)[0];
 
   if (longestOfficial) {
-    const exact = schoolQA.find((s) => normalize(s.school_name) === longestOfficial);
+    const exact = verifiedSchoolQA.find((s) => normalize(s.school_name) === longestOfficial);
     if (exact) return exact;
     // 지도에는 있으나 챗봇 데이터가 없는 학교 → 다른 학교로 오답하지 않도록 중단
     return undefined;
   }
 
-  // 2) 지도 데이터에 없는 학교명(챗봇 전용)도 가장 긴 이름 우선으로 매칭
-  const nameHits = schoolQA
-    .filter((s) => input.includes(normalize(s.school_name)))
-    .sort((a, b) => b.school_name.length - a.school_name.length);
-  if (nameHits.length > 0) return nameHits[0];
-
-  // 3) '<동/면> + 초등학교' 패턴
-  return schoolQA.find(
+  // 2) '<동/면> + 초등학교' 패턴 (정본 학교만)
+  return verifiedSchoolQA.find(
     (s) => input.includes(normalize(s.category)) && input.includes("초등학교"),
   );
 }
 
 /**
- * 학교의 주소·홈페이지 '정본'은 지도 데이터(schools.ts) 하나로만 관리한다.
- * schoolQA.ts에 들어 있던 주소/홈페이지는 지도 데이터와 전부 달랐고,
- * 공식 출처(경남교육청 학교찾기·학교알리미)로 어느 쪽이 맞는지 확인할 수 없었다.
- * → 확인되지 않은 값을 학생에게 보여주지 않기 위해, 정본이 있을 때만 안내한다.
+ * 학교의 주소·전화·홈페이지 '정본'은 지도 데이터(schools.ts) 하나로만 관리한다.
+ * 정본 출처: 경상남도거제교육지원청 「초등학교 학교현황」(2026-03-01).
+ * schoolQA.ts의 주소/전화/홈페이지 값은 사용하지 않는다.
  */
-export function getSchoolFacts(qa: SchoolQA): { address?: string; website?: string } {
+export function getSchoolFacts(qa: SchoolQA): {
+  address?: string;
+  website?: string;
+  teacherPhone?: string;
+  adminPhone?: string;
+  fax?: string;
+} {
   const canonical = schools.find((s) => normalize(s.name) === normalize(qa.school_name));
   if (!canonical) return {};
-  return { address: canonical.address, website: canonical.website };
+  return {
+    address: canonical.address,
+    website: canonical.website,
+    teacherPhone: canonical.teacherPhone ?? canonical.phone,
+    adminPhone: canonical.adminPhone,
+    fax: canonical.fax,
+  };
 }
