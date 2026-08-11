@@ -379,7 +379,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       }
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
@@ -393,7 +393,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       setEditingContent({ ...editingContent, oldImageUrl: url });
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
@@ -407,15 +407,23 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       setEditingCity({ ...editingCity, [field]: url });
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
   };
 
-  const handleSaveSiteInfo = () => {
-    saveSiteInfo(siteInfo);
-    setEditingSiteInfo(false);
+  const handleSaveSiteInfo = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await saveSiteInfo(siteInfo);
+      setEditingSiteInfo(false);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
   // Filtered places - use merged data so edits are visible
@@ -531,7 +539,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                     <p className="text-xs font-semibold text-foreground mb-1">📢 현재 공지</p>
                     <p className="text-xs text-muted-foreground">{currentNotice}</p>
                   </div>
-                  <button onClick={handleDeleteNotice} className="text-destructive hover:text-destructive/80 cursor-pointer flex-shrink-0"><Trash2 size={14} /></button>
+                  <button onClick={handleDeleteNotice} disabled={busy} aria-label="현재 공지 삭제" className="text-destructive hover:text-destructive/80 cursor-pointer flex-shrink-0"><Trash2 size={14} /></button>
                 </div>
               </div>
             )}
@@ -539,12 +547,12 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <textarea value={notice} onChange={e => setNotice(e.target.value)} placeholder="공지사항을 입력하세요... (비워두고 저장하면 공지가 삭제됩니다)"
                 className="w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary" rows={3} />
               <div className="mt-2 flex gap-2">
-                <button onClick={handleSaveNotice}
+                <button onClick={handleSaveNotice} disabled={busy}
                   className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
                   <Send size={14} /> 저장
                 </button>
                 {(currentNotice || notice) && (
-                  <button onClick={handleDeleteNotice}
+                  <button onClick={handleDeleteNotice} disabled={busy}
                     className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-destructive text-destructive-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
                     <Trash2 size={14} /> 삭제
                   </button>
@@ -596,7 +604,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                   <div className="flex gap-1 flex-shrink-0">
                     <button onClick={() => setEditingPlace({ id: p.id, name: p.name, description: p.description, address: p.address, lat: p.lat, lng: p.lng, category: p.category, imageUrl: p.imageUrl, origin: p.origin, referenceUrl: p.referenceUrl, youtubeUrl: p.youtubeUrl })}
                       className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
-                    <button onClick={() => { if (confirm(`\"${p.name}\" 장소를 삭제하시겠습니까?`)) { handleDeletePlace(p.id); } }}
+                    <button onClick={() => { if (!busy && confirm(`'${p.name}' 장소를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) { handleDeletePlace(p.id); } }}
                       className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                   </div>
                 </div>
@@ -667,7 +675,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                 <button type="button" onClick={() => setEditingPlace({ ...editingPlace, imageUrl: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">사진 제거</button>
               )}
             </div>
-            <button onClick={handleSavePlace} disabled={!editingPlace.name.trim()}
+            <button onClick={handleSavePlace} disabled={busy || !editingPlace.name.trim()}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer disabled:opacity-50">
               <Save size={14} /> 저장
             </button>
@@ -715,7 +723,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                   <div className="flex gap-1 flex-shrink-0">
                     <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, oldImageUrl: c.oldImageUrl, oldImageCaption: c.oldImageCaption, source: c.source, referenceUrl: c.referenceUrl, youtubeUrl: c.youtubeUrl })}
                       className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
-                    <button onClick={() => { if (confirm(`"${c.name}" 콘텐츠를 삭제하시겠습니까?`)) { handleDeleteContent(c.id); } }}
+                    <button onClick={() => { if (!busy && confirm(`'${c.name}' 콘텐츠를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) { handleDeleteContent(c.id); } }}
                       className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                   </div>
                 </div>
@@ -796,7 +804,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                 {editingContent.oldImageUrl && <button type="button" onClick={() => setEditingContent({ ...editingContent, oldImageUrl: '', oldImageCaption: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">옛날 사진 제거</button>}
               </div>
             )}
-            <button onClick={handleSaveContent} disabled={!editingContent.name.trim()}
+            <button onClick={handleSaveContent} disabled={busy || !editingContent.name.trim()}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer disabled:opacity-50">
               <Save size={14} /> 저장
             </button>
@@ -867,7 +875,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <label className="text-[10px] font-semibold text-foreground">웹사이트</label>
               <input value={editingSchool.website || ''} onChange={e => setEditingSchool({ ...editingSchool, website: e.target.value })} className={inputClass} placeholder="https://..." />
             </div>
-            <button onClick={handleSaveSchool}
+            <button onClick={handleSaveSchool} disabled={busy}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
               <Save size={14} /> 저장
             </button>
@@ -983,7 +991,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <label className="text-[10px] font-semibold text-foreground">대표 명소 (쉼표로 구분)</label>
               <input value={editingCity.highlights.join(', ')} onChange={e => setEditingCity({ ...editingCity, highlights: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} className={inputClass} />
             </div>
-            <button onClick={handleSaveCity}
+            <button onClick={handleSaveCity} disabled={busy}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
               <Save size={14} /> 저장
             </button>
@@ -1164,7 +1172,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <label className="text-[10px] font-semibold text-foreground">안내문</label>
               <textarea value={siteInfo.siteNotice} onChange={e => setSiteInfo({ ...siteInfo, siteNotice: e.target.value })} className={`${inputClass} resize-none`} rows={3} />
             </div>
-            <button onClick={handleSaveSiteInfo}
+            <button onClick={handleSaveSiteInfo} disabled={busy}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
               <Save size={14} /> 저장
             </button>
@@ -1187,7 +1195,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
             <div className="flex items-center justify-between">
               <p className="text-xs font-bold text-foreground">오류 제보 ({reports.length}건)</p>
               <div className="flex gap-1.5">
-                <button onClick={markAllRead} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer font-medium">
+                <button onClick={markAllRead} disabled={busy} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer font-medium">
                   <span className="flex items-center gap-1"><CheckCircle size={10} />전체 읽음</span>
                 </button>
                 <button onClick={deleteAllReports} disabled={busy} className="text-[10px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 cursor-pointer font-medium">
