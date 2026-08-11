@@ -213,84 +213,158 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   };
 
   const handleSaveNotice = async () => {
+    if (busy) return;
     const trimmed = notice.trim();
-    if (trimmed) {
-      await saveNotice(trimmed);
-      setCurrentNotice(trimmed);
-    } else {
-      // 빈 값으로 저장 = 공지 삭제 (메인화면 팝업 뜨지 않음)
-      await saveNotice(null);
-      setCurrentNotice(null);
-    }
+    if (tooLong(trimmed, MAX_TEXT_LEN)) { toast.error('공지가 너무 깁니다.'); return; }
+    setBusy(true);
+    try {
+      if (trimmed) {
+        await saveNotice(trimmed);
+        setCurrentNotice(trimmed);
+        toast.success('공지를 저장했습니다.');
+      } else {
+        // 빈 값으로 저장 = 공지 삭제 (메인화면 팝업 뜨지 않음)
+        await saveNotice(null);
+        setCurrentNotice(null);
+        toast.success('공지를 삭제했습니다.');
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
   const handleDeleteNotice = async () => {
-    await saveNotice(null);
-    setCurrentNotice(null);
-    setNotice('');
+    if (busy) return;
+    if (!confirm('현재 공지를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.')) return;
+    setBusy(true);
+    try {
+      await saveNotice(null);
+      setCurrentNotice(null);
+      setNotice('');
+      toast.success('공지를 삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleSavePlace = () => {
-    if (!editingPlace) return;
-    const parsed = { ...editingPlace, lat: parseFloat(String(editingPlace.lat)) || 0, lng: parseFloat(String(editingPlace.lng)) || 0 };
-    const isDefault = defaultPlaces.some(p => p.id === parsed.id);
-    if (isDefault) {
-      savePlaceEdit(parsed.id, parsed as any);
-    } else {
-      saveCustomPlace(parsed as any);
+  /** 이름·좌표·URL 공통 검증. 문제가 있으면 toast 후 null 반환. */
+  const validateBase = (name: string, lat: unknown, lng: unknown, urls: (string | undefined)[]) => {
+    const trimmedName = trimText(name);
+    if (isBlank(trimmedName)) { toast.error('이름을 입력해주세요.'); return null; }
+    if (tooLong(trimmedName, MAX_NAME_LEN)) { toast.error(`이름은 ${MAX_NAME_LEN}자 이내로 입력해주세요.`); return null; }
+    const coords = parseCoords(lat, lng);
+    if (!coords.ok) { toast.error(coords.error!); return null; }
+    for (const u of urls) {
+      if (u && u.trim() && !safeUrl(u)) { toast.error('링크는 http:// 또는 https:// 로 시작해야 합니다.'); return null; }
     }
-    setEditingPlace(null);
-    forceUpdate(n => n + 1);
+    return { name: trimmedName, lat: coords.lat, lng: coords.lng };
   };
 
-  const handleSaveContent = () => {
-    if (!editingContent) return;
-    const parsed = { ...editingContent, lat: parseFloat(String(editingContent.lat)) || 0, lng: parseFloat(String(editingContent.lng)) || 0 };
-    const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
-    const isDefault = allDefault.some(c => c.id === parsed.id);
-    if (isDefault) {
-      saveContentEdit(parsed.id, parsed as any);
-    } else {
-      saveCustomContent(parsed as any);
-    }
-    setEditingContent(null);
-    forceUpdate(n => n + 1);
+  const handleSavePlace = async () => {
+    if (!editingPlace || busy) return;
+    const base = validateBase(editingPlace.name, editingPlace.lat, editingPlace.lng,
+      [editingPlace.referenceUrl, editingPlace.youtubeUrl, editingPlace.imageUrl]);
+    if (!base) return;
+    const address = trimText(editingPlace.address);
+    if (tooLong(address, MAX_ADDRESS_LEN)) { toast.error('주소가 너무 깁니다.'); return; }
+    const parsed = { ...editingPlace, ...base, address };
+    setBusy(true);
+    try {
+      const isDefault = defaultPlaces.some(p => p.id === parsed.id);
+      if (isDefault) await savePlaceEdit(parsed.id, parsed as any);
+      else await saveCustomPlace(parsed as any);
+      setEditingPlace(null);
+      forceUpdate(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleSaveSchool = () => {
-    if (!editingSchool || editingSchoolIdx === null) return;
-    const parsed = { ...editingSchool, lat: parseFloat(String(editingSchool.lat)) || 0, lng: parseFloat(String(editingSchool.lng)) || 0 };
-    saveSchoolEdit(editingSchoolIdx, parsed);
-    setEditingSchool(null);
-    setEditingSchoolIdx(null);
-    forceUpdate(n => n + 1);
+  const handleSaveContent = async () => {
+    if (!editingContent || busy) return;
+    const base = validateBase(editingContent.name, editingContent.lat, editingContent.lng,
+      [editingContent.referenceUrl, editingContent.youtubeUrl, editingContent.imageUrl, editingContent.oldImageUrl]);
+    if (!base) return;
+    const parsed = { ...editingContent, ...base };
+    setBusy(true);
+    try {
+      const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+      const isDefault = allDefault.some(c => c.id === parsed.id);
+      if (isDefault) await saveContentEdit(parsed.id, parsed as any);
+      else await saveCustomContent(parsed as any);
+      setEditingContent(null);
+      forceUpdate(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleSaveCity = () => {
-    if (!editingCity) return;
+  const handleSaveSchool = async () => {
+    if (!editingSchool || editingSchoolIdx === null || busy) return;
+    const base = validateBase(editingSchool.name, editingSchool.lat, editingSchool.lng, [editingSchool.website]);
+    if (!base) return;
+    const parsed = { ...editingSchool, ...base, address: trimText(editingSchool.address), district: trimText(editingSchool.district) };
+    setBusy(true);
+    try {
+      await saveSchoolEdit(editingSchoolIdx, parsed);
+      setEditingSchool(null);
+      setEditingSchoolIdx(null);
+      forceUpdate(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
+  };
+
+  const handleSaveCity = async () => {
+    if (!editingCity || busy) return;
+    const base = validateBase(editingCity.name, editingCity.lat, editingCity.lng,
+      [editingCity.officialSite, editingCity.logoUrl, editingCity.mascotImageUrl]);
+    if (!base) return;
     const { boundary, ...editWithoutBoundary } = editingCity;
-    const toSave = {
-      ...editWithoutBoundary,
-      lat: parseFloat(String(editingCity.lat)) || 0,
-      lng: parseFloat(String(editingCity.lng)) || 0,
-    };
-    saveGyeongnamEdit(editingCity.id, toSave);
-    setEditingCity(null);
+    const toSave = { ...editWithoutBoundary, lat: base.lat, lng: base.lng };
+    setBusy(true);
+    try {
+      await saveGyeongnamEdit(editingCity.id, toSave);
+      setEditingCity(null);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleDeletePlace = (id: string) => {
-    deletePlace(id);
-    forceUpdate(n => n + 1);
+  const handleDeletePlace = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await deletePlace(id);
+      forceUpdate(n => n + 1);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleDeleteCustomContent = (id: string) => {
-    deleteCustomContent(id);
-    forceUpdate(n => n + 1);
-  };
-
-  const handleDeleteContent = (id: string) => {
-    deleteCustomContent(id);
-    forceUpdate(n => n + 1);
+  const handleDeleteContent = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await deleteCustomContent(id);
+      forceUpdate(n => n + 1);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'place' | 'content') => {
