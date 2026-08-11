@@ -11,7 +11,8 @@ import KakaoMap from '@/components/KakaoMap';
 import PlaceCard from '@/components/PlaceCard';
 import ContentCard from '@/components/ContentCard';
 import CategoryTabs from '@/components/CategoryTabs';
-import AdminPanel from '@/components/AdminPanel';
+// 관리자 패널은 학생 화면에서 쓰지 않으므로 초기 번들에서 분리한다(xlsx·지도 편집기 포함).
+const AdminPanel = lazy(() => import('@/components/AdminPanel'));
 import NoticePopup from '@/components/NoticePopup';
 import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
