@@ -270,7 +270,10 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       overlaysRef.current.forEach(o => o.setMap(null));
       overlaysRef.current = [];
     };
-  }, [isLoaded, school, grade]);
+    // 학교 객체가 새 참조로 갱신되어도(관리자 편집 동기화 등)
+    // 실제 위치·이름이 같으면 지도 인스턴스를 다시 만들지 않는다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, school.name, school.lat, school.lng, school.district, grade]);
 
   // Add markers for active categories - using merged data
   // Skip rendering markers while zoom animation is in progress
