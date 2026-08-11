@@ -132,26 +132,58 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   }, []);
 
   const markAsRead = async (id: string) => {
-    await adminApi.update('error_reports', { is_read: true }, { match: { id } });
-    setReports(prev => prev.map(r => r.id === id ? { ...r, is_read: true } : r));
-    if (selectedReport?.id === id) setSelectedReport(prev => prev ? { ...prev, is_read: true } : null);
+    try {
+      await adminApi.update('error_reports', { is_read: true }, { match: { id } });
+      setReports(prev => prev.map(r => r.id === id ? { ...r, is_read: true } : r));
+      if (selectedReport?.id === id) setSelectedReport(prev => prev ? { ...prev, is_read: true } : null);
+    } catch (e) {
+      console.error(e);
+      toast.error('처리하지 못했어요. 다시 시도해주세요.');
+    }
   };
 
   const markAllRead = async () => {
-    await adminApi.update('error_reports', { is_read: true }, { match: { is_read: false } });
-    setReports(prev => prev.map(r => ({ ...r, is_read: true })));
+    try {
+      await adminApi.update('error_reports', { is_read: true }, { match: { is_read: false } });
+      setReports(prev => prev.map(r => ({ ...r, is_read: true })));
+    } catch (e) {
+      console.error(e);
+      toast.error('처리하지 못했어요. 다시 시도해주세요.');
+    }
   };
 
-  const deleteReport = async (id: string) => {
-    await adminApi.delete('error_reports', { match: { id } });
-    setReports(prev => prev.filter(r => r.id !== id));
-    setSelectedReport(null);
+  const deleteReport = async (report: ErrorReport) => {
+    if (busy) return;
+    if (!confirm(`'${report.place_name}' 제보를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) return;
+    setBusy(true);
+    try {
+      await adminApi.delete('error_reports', { match: { id: report.id } });
+      setReports(prev => prev.filter(r => r.id !== report.id));
+      setSelectedReport(null);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   const deleteAllReports = async () => {
-    await adminApi.delete('error_reports', { matchNeq: { id: '' } });
-    setReports([]);
-    setSelectedReport(null);
+    if (busy) return;
+    if (!confirm(`오류 제보 ${reports.length}건을 모두 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) return;
+    setBusy(true);
+    try {
+      await adminApi.delete('error_reports', { matchNeq: { id: '' } });
+      setReports([]);
+      setSelectedReport(null);
+      toast.success('모두 삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   useEffect(() => {
