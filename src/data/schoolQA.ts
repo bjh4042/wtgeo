@@ -1,4 +1,5 @@
 // 학교 정보 챗봇 데이터 — 이 파일만 수정해 관리하세요.
+import { schools } from "./schools";
 export interface SchoolQA {
   id: number;
   school_name: string;
