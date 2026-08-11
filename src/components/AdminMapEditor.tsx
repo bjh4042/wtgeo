@@ -591,28 +591,42 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         <div className="px-3 py-2 bg-card border-b z-10 flex-shrink-0">
           <div className="relative">
             <Search size={14} className="absolute left-2.5 top-2 text-muted-foreground" />
-            <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="장소명, 학교명 또는 주소 검색..."
+            <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="장소명, 학교명, 콘텐츠명 또는 주소 검색..."
               className="w-full pl-8 pr-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary" autoFocus />
           </div>
-          {(searchResults.places.length > 0 || searchResults.schools.length > 0) && (
+          {(searchResults.places.length > 0 || searchResults.schools.length > 0 || searchResults.contents.length > 0) && (
             <div className="mt-1 max-h-48 overflow-auto rounded-lg border bg-card">
+              {searchResults.places.length > 0 && (
+                <div className="px-3 py-1 text-[9px] text-muted-foreground font-bold bg-muted/30">📍 장소</div>
+              )}
               {searchResults.places.map(p => (
-                <button key={p.id} onClick={() => handleSearchSelectPlace(p)}
+                <button key={`place-${p.id}`} onClick={() => handleSearchSelectPlace(p)}
                   className="w-full text-left px-3 py-1.5 text-xs hover:bg-muted/50 cursor-pointer border-b last:border-b-0 flex items-center gap-2">
                   <span>{categoryIcons[p.category]}</span>
                   <span className="font-medium truncate">{p.name}</span>
                   <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-[40%]">{p.address}</span>
                 </button>
               ))}
-              {searchResults.schools.length > 0 && searchResults.places.length > 0 && (
+              {searchResults.schools.length > 0 && (
                 <div className="px-3 py-1 text-[9px] text-muted-foreground font-bold bg-muted/30">🏫 학교</div>
               )}
               {searchResults.schools.map(s => (
-                <button key={s.index} onClick={() => handleSearchSelectSchool(s)}
+                <button key={`school-${s.index}`} onClick={() => handleSearchSelectSchool(s)}
                   className="w-full text-left px-3 py-1.5 text-xs hover:bg-muted/50 cursor-pointer border-b last:border-b-0 flex items-center gap-2">
                   <span>🏫</span>
                   <span className="font-medium truncate">{s.name}</span>
                   <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-[40%]">{s.district}</span>
+                </button>
+              ))}
+              {searchResults.contents.length > 0 && (
+                <div className="px-3 py-1 text-[9px] text-muted-foreground font-bold bg-muted/30">📚 콘텐츠</div>
+              )}
+              {searchResults.contents.map(c => (
+                <button key={`content-${c.id}`} onClick={() => handleSearchSelectContent(c)}
+                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-muted/50 cursor-pointer border-b last:border-b-0 flex items-center gap-2">
+                  <span>{c.icon || contentCategoryIcons[c.contentType]}</span>
+                  <span className="font-medium truncate">{c.name}</span>
+                  <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-[40%]">{contentCategoryLabels[c.contentType]}</span>
                 </button>
               ))}
             </div>
