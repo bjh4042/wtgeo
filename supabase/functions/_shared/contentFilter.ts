@@ -4,7 +4,8 @@
  * - 금칙어 원문은 절대 사용자에게 다시 보여주지 않습니다.
  * - 정상적인 지명/학교명/문화재명을 막지 않도록 보수적으로 판정합니다.
  */
-// 자동 생성: src/lib/contentFilter.ts + src/data/forbiddenWords.ts 와 동일한 규칙을 유지하세요.
+// IMPORTANT: src/lib/contentFilter.ts + src/data/forbiddenWords.ts 의 사본입니다.
+// 한쪽만 수정하지 말고 항상 함께 수정하세요. (src/test/contentFilterSync.test.ts 가 불일치를 감지)
 const forbiddenWords: string[] = [
   "시발",
   "씨발",
