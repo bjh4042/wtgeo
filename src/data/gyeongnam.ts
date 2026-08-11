@@ -115,6 +115,7 @@ export async function saveGyeongnamEdit(id: string, edit: Partial<GyeongnamCity>
     await adminApi.upsert('gyeongnam_edits', row, 'city_id');
   } catch (e) {
     console.error('Failed to save gyeongnam edit to cloud:', e);
+    throw e;
   }
 
   window.dispatchEvent(new Event(GYEONGNAM_UPDATED_EVENT));

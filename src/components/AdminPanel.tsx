@@ -16,6 +16,8 @@ import {
 import { parseExcelToPlaces, exportPlacesToExcel, parseExcelToContent, exportContentToExcel, deduplicatePlaces, deduplicateContent, parseExcelToGyeongnam, exportGyeongnamToExcel } from '@/data/excelSync';
 import { uploadImageToStorage } from '@/lib/uploadImage';
 import { setAdminPassword, clearAdminPassword, verifyAdminPassword, adminApi } from '@/lib/adminApi';
+import { toast } from 'sonner';
+import { parseCoords, trimText, isBlank, tooLong, safeUrl, MAX_NAME_LEN, MAX_ADDRESS_LEN, MAX_TEXT_LEN } from '@/lib/adminValidation';
 
 export interface SiteInfo {
   serviceName: string;
@@ -119,6 +121,8 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [showMapEditor, setShowMapEditor] = useState(false);
   const [reports, setReports] = useState<ErrorReport[]>([]);
   const [selectedReport, setSelectedReport] = useState<ErrorReport | null>(null);
+  // 저장/삭제 요청이 진행 중인 동안 같은 동작이 중복 실행되지 않도록 막는다.
+  const [busy, setBusy] = useState(false);
 
   const unreadCount = reports.filter(r => !r.is_read).length;
 
@@ -132,26 +136,58 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   }, []);
 
   const markAsRead = async (id: string) => {
-    await adminApi.update('error_reports', { is_read: true }, { match: { id } });
-    setReports(prev => prev.map(r => r.id === id ? { ...r, is_read: true } : r));
-    if (selectedReport?.id === id) setSelectedReport(prev => prev ? { ...prev, is_read: true } : null);
+    try {
+      await adminApi.update('error_reports', { is_read: true }, { match: { id } });
+      setReports(prev => prev.map(r => r.id === id ? { ...r, is_read: true } : r));
+      if (selectedReport?.id === id) setSelectedReport(prev => prev ? { ...prev, is_read: true } : null);
+    } catch (e) {
+      console.error(e);
+      toast.error('처리하지 못했어요. 다시 시도해주세요.');
+    }
   };
 
   const markAllRead = async () => {
-    await adminApi.update('error_reports', { is_read: true }, { match: { is_read: false } });
-    setReports(prev => prev.map(r => ({ ...r, is_read: true })));
+    try {
+      await adminApi.update('error_reports', { is_read: true }, { match: { is_read: false } });
+      setReports(prev => prev.map(r => ({ ...r, is_read: true })));
+    } catch (e) {
+      console.error(e);
+      toast.error('처리하지 못했어요. 다시 시도해주세요.');
+    }
   };
 
-  const deleteReport = async (id: string) => {
-    await adminApi.delete('error_reports', { match: { id } });
-    setReports(prev => prev.filter(r => r.id !== id));
-    setSelectedReport(null);
+  const deleteReport = async (report: ErrorReport) => {
+    if (busy) return;
+    if (!confirm(`'${report.place_name}' 제보를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) return;
+    setBusy(true);
+    try {
+      await adminApi.delete('error_reports', { match: { id: report.id } });
+      setReports(prev => prev.filter(r => r.id !== report.id));
+      setSelectedReport(null);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   const deleteAllReports = async () => {
-    await adminApi.delete('error_reports', { matchNeq: { id: '' } });
-    setReports([]);
-    setSelectedReport(null);
+    if (busy) return;
+    if (!confirm(`오류 제보 ${reports.length}건을 모두 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) return;
+    setBusy(true);
+    try {
+      await adminApi.delete('error_reports', { matchNeq: { id: '' } });
+      setReports([]);
+      setSelectedReport(null);
+      toast.success('모두 삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   useEffect(() => {
@@ -177,84 +213,158 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   };
 
   const handleSaveNotice = async () => {
+    if (busy) return;
     const trimmed = notice.trim();
-    if (trimmed) {
-      await saveNotice(trimmed);
-      setCurrentNotice(trimmed);
-    } else {
-      // 빈 값으로 저장 = 공지 삭제 (메인화면 팝업 뜨지 않음)
-      await saveNotice(null);
-      setCurrentNotice(null);
-    }
+    if (tooLong(trimmed, MAX_TEXT_LEN)) { toast.error('공지가 너무 깁니다.'); return; }
+    setBusy(true);
+    try {
+      if (trimmed) {
+        await saveNotice(trimmed);
+        setCurrentNotice(trimmed);
+        toast.success('공지를 저장했습니다.');
+      } else {
+        // 빈 값으로 저장 = 공지 삭제 (메인화면 팝업 뜨지 않음)
+        await saveNotice(null);
+        setCurrentNotice(null);
+        toast.success('공지를 삭제했습니다.');
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
   const handleDeleteNotice = async () => {
-    await saveNotice(null);
-    setCurrentNotice(null);
-    setNotice('');
+    if (busy) return;
+    if (!confirm('현재 공지를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.')) return;
+    setBusy(true);
+    try {
+      await saveNotice(null);
+      setCurrentNotice(null);
+      setNotice('');
+      toast.success('공지를 삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleSavePlace = () => {
-    if (!editingPlace) return;
-    const parsed = { ...editingPlace, lat: parseFloat(String(editingPlace.lat)) || 0, lng: parseFloat(String(editingPlace.lng)) || 0 };
-    const isDefault = defaultPlaces.some(p => p.id === parsed.id);
-    if (isDefault) {
-      savePlaceEdit(parsed.id, parsed as any);
-    } else {
-      saveCustomPlace(parsed as any);
+  /** 이름·좌표·URL 공통 검증. 문제가 있으면 toast 후 null 반환. */
+  const validateBase = (name: string, lat: unknown, lng: unknown, urls: (string | undefined)[]) => {
+    const trimmedName = trimText(name);
+    if (isBlank(trimmedName)) { toast.error('이름을 입력해주세요.'); return null; }
+    if (tooLong(trimmedName, MAX_NAME_LEN)) { toast.error(`이름은 ${MAX_NAME_LEN}자 이내로 입력해주세요.`); return null; }
+    const coords = parseCoords(lat, lng);
+    if (!coords.ok) { toast.error(coords.error!); return null; }
+    for (const u of urls) {
+      if (u && u.trim() && !safeUrl(u)) { toast.error('링크는 http:// 또는 https:// 로 시작해야 합니다.'); return null; }
     }
-    setEditingPlace(null);
-    forceUpdate(n => n + 1);
+    return { name: trimmedName, lat: coords.lat, lng: coords.lng };
   };
 
-  const handleSaveContent = () => {
-    if (!editingContent) return;
-    const parsed = { ...editingContent, lat: parseFloat(String(editingContent.lat)) || 0, lng: parseFloat(String(editingContent.lng)) || 0 };
-    const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
-    const isDefault = allDefault.some(c => c.id === parsed.id);
-    if (isDefault) {
-      saveContentEdit(parsed.id, parsed as any);
-    } else {
-      saveCustomContent(parsed as any);
-    }
-    setEditingContent(null);
-    forceUpdate(n => n + 1);
+  const handleSavePlace = async () => {
+    if (!editingPlace || busy) return;
+    const base = validateBase(editingPlace.name, editingPlace.lat, editingPlace.lng,
+      [editingPlace.referenceUrl, editingPlace.youtubeUrl, editingPlace.imageUrl]);
+    if (!base) return;
+    const address = trimText(editingPlace.address);
+    if (tooLong(address, MAX_ADDRESS_LEN)) { toast.error('주소가 너무 깁니다.'); return; }
+    const parsed = { ...editingPlace, ...base, address };
+    setBusy(true);
+    try {
+      const isDefault = defaultPlaces.some(p => p.id === parsed.id);
+      if (isDefault) await savePlaceEdit(parsed.id, parsed as any);
+      else await saveCustomPlace(parsed as any);
+      setEditingPlace(null);
+      forceUpdate(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleSaveSchool = () => {
-    if (!editingSchool || editingSchoolIdx === null) return;
-    const parsed = { ...editingSchool, lat: parseFloat(String(editingSchool.lat)) || 0, lng: parseFloat(String(editingSchool.lng)) || 0 };
-    saveSchoolEdit(editingSchoolIdx, parsed);
-    setEditingSchool(null);
-    setEditingSchoolIdx(null);
-    forceUpdate(n => n + 1);
+  const handleSaveContent = async () => {
+    if (!editingContent || busy) return;
+    const base = validateBase(editingContent.name, editingContent.lat, editingContent.lng,
+      [editingContent.referenceUrl, editingContent.youtubeUrl, editingContent.imageUrl, editingContent.oldImageUrl]);
+    if (!base) return;
+    const parsed = { ...editingContent, ...base };
+    setBusy(true);
+    try {
+      const allDefault = [...stories, ...placenames, ...heritages, ...pastPresent, ...natureContent];
+      const isDefault = allDefault.some(c => c.id === parsed.id);
+      if (isDefault) await saveContentEdit(parsed.id, parsed as any);
+      else await saveCustomContent(parsed as any);
+      setEditingContent(null);
+      forceUpdate(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleSaveCity = () => {
-    if (!editingCity) return;
+  const handleSaveSchool = async () => {
+    if (!editingSchool || editingSchoolIdx === null || busy) return;
+    const base = validateBase(editingSchool.name, editingSchool.lat, editingSchool.lng, [editingSchool.website]);
+    if (!base) return;
+    const parsed = { ...editingSchool, ...base, address: trimText(editingSchool.address), district: trimText(editingSchool.district) };
+    setBusy(true);
+    try {
+      await saveSchoolEdit(editingSchoolIdx, parsed);
+      setEditingSchool(null);
+      setEditingSchoolIdx(null);
+      forceUpdate(n => n + 1);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
+  };
+
+  const handleSaveCity = async () => {
+    if (!editingCity || busy) return;
+    const base = validateBase(editingCity.name, editingCity.lat, editingCity.lng,
+      [editingCity.officialSite, editingCity.logoUrl, editingCity.mascotImageUrl]);
+    if (!base) return;
     const { boundary, ...editWithoutBoundary } = editingCity;
-    const toSave = {
-      ...editWithoutBoundary,
-      lat: parseFloat(String(editingCity.lat)) || 0,
-      lng: parseFloat(String(editingCity.lng)) || 0,
-    };
-    saveGyeongnamEdit(editingCity.id, toSave);
-    setEditingCity(null);
+    const toSave = { ...editWithoutBoundary, lat: base.lat, lng: base.lng };
+    setBusy(true);
+    try {
+      await saveGyeongnamEdit(editingCity.id, toSave);
+      setEditingCity(null);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleDeletePlace = (id: string) => {
-    deletePlace(id);
-    forceUpdate(n => n + 1);
+  const handleDeletePlace = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await deletePlace(id);
+      forceUpdate(n => n + 1);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
-  const handleDeleteCustomContent = (id: string) => {
-    deleteCustomContent(id);
-    forceUpdate(n => n + 1);
-  };
-
-  const handleDeleteContent = (id: string) => {
-    deleteCustomContent(id);
-    forceUpdate(n => n + 1);
+  const handleDeleteContent = async (id: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await deleteCustomContent(id);
+      forceUpdate(n => n + 1);
+      toast.success('삭제했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('삭제하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'place' | 'content') => {
@@ -269,7 +379,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       }
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
@@ -283,7 +393,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       setEditingContent({ ...editingContent, oldImageUrl: url });
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
@@ -297,15 +407,23 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
       setEditingCity({ ...editingCity, [field]: url });
     } catch (err) {
       console.error(err);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      toast.error('이미지를 올리지 못했어요. 다시 시도해주세요.');
     } finally {
       e.target.value = '';
     }
   };
 
-  const handleSaveSiteInfo = () => {
-    saveSiteInfo(siteInfo);
-    setEditingSiteInfo(false);
+  const handleSaveSiteInfo = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await saveSiteInfo(siteInfo);
+      setEditingSiteInfo(false);
+      toast.success('저장했습니다.');
+    } catch (e) {
+      console.error(e);
+      toast.error('저장하지 못했어요. 다시 시도해주세요.');
+    } finally { setBusy(false); }
   };
 
   // Filtered places - use merged data so edits are visible
@@ -421,7 +539,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                     <p className="text-xs font-semibold text-foreground mb-1">📢 현재 공지</p>
                     <p className="text-xs text-muted-foreground">{currentNotice}</p>
                   </div>
-                  <button onClick={handleDeleteNotice} className="text-destructive hover:text-destructive/80 cursor-pointer flex-shrink-0"><Trash2 size={14} /></button>
+                  <button onClick={handleDeleteNotice} disabled={busy} aria-label="현재 공지 삭제" className="text-destructive hover:text-destructive/80 cursor-pointer flex-shrink-0"><Trash2 size={14} /></button>
                 </div>
               </div>
             )}
@@ -429,12 +547,12 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <textarea value={notice} onChange={e => setNotice(e.target.value)} placeholder="공지사항을 입력하세요... (비워두고 저장하면 공지가 삭제됩니다)"
                 className="w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary" rows={3} />
               <div className="mt-2 flex gap-2">
-                <button onClick={handleSaveNotice}
+                <button onClick={handleSaveNotice} disabled={busy}
                   className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
                   <Send size={14} /> 저장
                 </button>
                 {(currentNotice || notice) && (
-                  <button onClick={handleDeleteNotice}
+                  <button onClick={handleDeleteNotice} disabled={busy}
                     className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-destructive text-destructive-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
                     <Trash2 size={14} /> 삭제
                   </button>
@@ -486,7 +604,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                   <div className="flex gap-1 flex-shrink-0">
                     <button onClick={() => setEditingPlace({ id: p.id, name: p.name, description: p.description, address: p.address, lat: p.lat, lng: p.lng, category: p.category, imageUrl: p.imageUrl, origin: p.origin, referenceUrl: p.referenceUrl, youtubeUrl: p.youtubeUrl })}
                       className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
-                    <button onClick={() => { if (confirm(`\"${p.name}\" 장소를 삭제하시겠습니까?`)) { handleDeletePlace(p.id); } }}
+                    <button onClick={() => { if (!busy && confirm(`'${p.name}' 장소를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) { handleDeletePlace(p.id); } }}
                       className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                   </div>
                 </div>
@@ -557,7 +675,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                 <button type="button" onClick={() => setEditingPlace({ ...editingPlace, imageUrl: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">사진 제거</button>
               )}
             </div>
-            <button onClick={handleSavePlace} disabled={!editingPlace.name.trim()}
+            <button onClick={handleSavePlace} disabled={busy || !editingPlace.name.trim()}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer disabled:opacity-50">
               <Save size={14} /> 저장
             </button>
@@ -605,7 +723,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                   <div className="flex gap-1 flex-shrink-0">
                     <button onClick={() => setEditingContent({ id: c.id, name: c.name, description: c.description, lat: c.lat, lng: c.lng, contentType: c.contentType, icon: c.icon, imageUrl: c.imageUrl, oldImageUrl: c.oldImageUrl, oldImageCaption: c.oldImageCaption, source: c.source, referenceUrl: c.referenceUrl, youtubeUrl: c.youtubeUrl })}
                       className="p-1.5 rounded bg-muted cursor-pointer"><Edit3 size={12} /></button>
-                    <button onClick={() => { if (confirm(`"${c.name}" 콘텐츠를 삭제하시겠습니까?`)) { handleDeleteContent(c.id); } }}
+                    <button onClick={() => { if (!busy && confirm(`'${c.name}' 콘텐츠를 삭제할까요?\n삭제한 데이터는 되돌릴 수 없습니다.`)) { handleDeleteContent(c.id); } }}
                       className="p-1.5 rounded bg-destructive/10 text-destructive cursor-pointer hover:bg-destructive/20"><Trash2 size={12} /></button>
                   </div>
                 </div>
@@ -686,7 +804,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                 {editingContent.oldImageUrl && <button type="button" onClick={() => setEditingContent({ ...editingContent, oldImageUrl: '', oldImageCaption: '' })} className="text-[10px] text-destructive hover:underline mt-1 cursor-pointer">옛날 사진 제거</button>}
               </div>
             )}
-            <button onClick={handleSaveContent} disabled={!editingContent.name.trim()}
+            <button onClick={handleSaveContent} disabled={busy || !editingContent.name.trim()}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer disabled:opacity-50">
               <Save size={14} /> 저장
             </button>
@@ -757,7 +875,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <label className="text-[10px] font-semibold text-foreground">웹사이트</label>
               <input value={editingSchool.website || ''} onChange={e => setEditingSchool({ ...editingSchool, website: e.target.value })} className={inputClass} placeholder="https://..." />
             </div>
-            <button onClick={handleSaveSchool}
+            <button onClick={handleSaveSchool} disabled={busy}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
               <Save size={14} /> 저장
             </button>
@@ -873,7 +991,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <label className="text-[10px] font-semibold text-foreground">대표 명소 (쉼표로 구분)</label>
               <input value={editingCity.highlights.join(', ')} onChange={e => setEditingCity({ ...editingCity, highlights: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} className={inputClass} />
             </div>
-            <button onClick={handleSaveCity}
+            <button onClick={handleSaveCity} disabled={busy}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
               <Save size={14} /> 저장
             </button>
@@ -1054,7 +1172,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               <label className="text-[10px] font-semibold text-foreground">안내문</label>
               <textarea value={siteInfo.siteNotice} onChange={e => setSiteInfo({ ...siteInfo, siteNotice: e.target.value })} className={`${inputClass} resize-none`} rows={3} />
             </div>
-            <button onClick={handleSaveSiteInfo}
+            <button onClick={handleSaveSiteInfo} disabled={busy}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 cursor-pointer">
               <Save size={14} /> 저장
             </button>
@@ -1077,10 +1195,10 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
             <div className="flex items-center justify-between">
               <p className="text-xs font-bold text-foreground">오류 제보 ({reports.length}건)</p>
               <div className="flex gap-1.5">
-                <button onClick={markAllRead} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer font-medium">
+                <button onClick={markAllRead} disabled={busy} className="text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer font-medium">
                   <span className="flex items-center gap-1"><CheckCircle size={10} />전체 읽음</span>
                 </button>
-                <button onClick={deleteAllReports} className="text-[10px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 cursor-pointer font-medium">
+                <button onClick={deleteAllReports} disabled={busy} className="text-[10px] px-2 py-1 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 cursor-pointer font-medium">
                   <span className="flex items-center gap-1"><Trash2 size={10} />전체 삭제</span>
                 </button>
               </div>
@@ -1103,7 +1221,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
                       <CheckCircle size={12} />확인
                     </button>
                   )}
-                  <button onClick={() => deleteReport(selectedReport.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer">
+                  <button onClick={() => deleteReport(selectedReport)} disabled={busy} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-destructive text-destructive-foreground hover:opacity-90 cursor-pointer">
                     <Trash2 size={12} />삭제
                   </button>
                 </div>

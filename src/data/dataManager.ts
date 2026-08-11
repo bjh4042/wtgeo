@@ -208,7 +208,11 @@ export async function savePlaceEdit(placeId: string, edit: Partial<Place>): Prom
     if (merged.subCategory) row.sub_category = merged.subCategory;
     if (merged.grade != null) row.grade = String(merged.grade);
     await adminApi.upsert('place_edits', row, 'place_id');
-  } catch (e) { console.error('Failed to save place edit:', e); }
+  } catch (e) {
+    console.error('Failed to save place edit:', e);
+    window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
+    throw e;
+  }
   window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
 }
 
@@ -233,7 +237,11 @@ export async function saveCustomPlace(place: Place): Promise<void> {
       sub_category: (place as any).subCategory || null,
       grade: String(place.grade || 'all'),
     }, 'place_id');
-  } catch (e) { console.error('Failed to save custom place:', e); }
+  } catch (e) {
+    console.error('Failed to save custom place:', e);
+    window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
+    throw e;
+  }
   window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
 }
 
@@ -245,7 +253,11 @@ export async function deletePlace(placeId: string): Promise<void> {
     localStorage.setItem('geoje-custom-places', JSON.stringify(customPlacesCache));
     try {
       await adminApi.delete('custom_places', { match: { place_id: placeId } });
-    } catch (e) { console.error('Failed to delete custom place:', e); }
+    } catch (e) {
+      console.error('Failed to delete custom place:', e);
+      window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
+      throw e;
+    }
     window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
     return;
   }
@@ -264,7 +276,11 @@ export async function deletePlace(placeId: string): Promise<void> {
         updated_at: new Date().toISOString(),
       }, 'key'),
     ]);
-  } catch (e) { console.error('Failed to delete place:', e); }
+  } catch (e) {
+    console.error('Failed to delete place:', e);
+    window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
+    throw e;
+  }
 
   window.dispatchEvent(new Event(PLACES_UPDATED_EVENT));
 }
@@ -310,7 +326,11 @@ export async function saveContentEdit(contentId: string, edit: Partial<MapConten
     if (merged.youtubeUrl) row.youtube_url = merged.youtubeUrl;
     if (merged.grade != null) row.grade = String(merged.grade);
     await adminApi.upsert('content_edits', row, 'content_id');
-  } catch (e) { console.error('Failed to save content edit:', e); }
+  } catch (e) {
+    console.error('Failed to save content edit:', e);
+    window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
+    throw e;
+  }
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
 }
 
@@ -337,7 +357,11 @@ export async function saveCustomContent(content: MapContent): Promise<void> {
       grade: String(content.grade || 'all'),
     };
     await adminApi.upsert('custom_content', row, 'content_id');
-  } catch (e) { console.error('Failed to save custom content:', e); }
+  } catch (e) {
+    console.error('Failed to save custom content:', e);
+    window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
+    throw e;
+  }
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
 }
 
@@ -351,7 +375,11 @@ export async function deleteContent(contentId: string): Promise<void> {
     localStorage.setItem('geoje-custom-content', JSON.stringify(customContentCache));
     try {
       await adminApi.delete('custom_content', { match: { content_id: contentId } });
-    } catch (e) { console.error('Failed to delete custom content:', e); }
+    } catch (e) {
+      console.error('Failed to delete custom content:', e);
+      window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
+      throw e;
+    }
     window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
     return;
   }
@@ -376,7 +404,11 @@ export async function deleteContent(contentId: string): Promise<void> {
         updated_at: new Date().toISOString(),
       }, 'key'),
     ]);
-  } catch (e) { console.error('Failed to delete content:', e); }
+  } catch (e) {
+    console.error('Failed to delete content:', e);
+    window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
+    throw e;
+  }
 
   window.dispatchEvent(new Event(CONTENT_UPDATED_EVENT));
 }
@@ -415,7 +447,11 @@ export async function saveSchoolEdit(index: number, edit: Partial<School>): Prom
     if (merged.district) row.district = merged.district;
     if (merged.website) row.website = merged.website;
     await adminApi.upsert('school_edits', row, 'school_index');
-  } catch (e) { console.error('Failed to save school edit:', e); }
+  } catch (e) {
+    console.error('Failed to save school edit:', e);
+    window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
+    throw e;
+  }
   window.dispatchEvent(new Event(SCHOOLS_UPDATED_EVENT));
 }
 
@@ -455,7 +491,7 @@ export async function saveNotice(notice: string | null): Promise<void> {
     } else {
       await adminApi.delete('site_settings', { match: { key: 'notice' } });
     }
-  } catch (e) { console.error('Failed to save notice:', e); }
+  } catch (e) { console.error('Failed to save notice:', e); throw e; }
 }
 
 export function getSiteInfo(): { serviceName: string; version: string; devTool: string; mapApi: string; dataSource: string; siteNotice: string; devName: string; devTitle1: string; devTitle2: string; devTitle3: string; devEmail: string } {
@@ -479,7 +515,7 @@ export async function saveSiteInfo(info: any): Promise<void> {
   localStorage.setItem('geoje-site-info', JSON.stringify(info));
   try {
     await adminApi.upsert('site_settings', { key: 'site_info', value: info, updated_at: new Date().toISOString() }, 'key');
-  } catch (e) { console.error('Failed to save site info:', e); }
+  } catch (e) { console.error('Failed to save site info:', e); throw e; }
 }
 
 export function getVisitorCount(): number {
