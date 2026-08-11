@@ -31,10 +31,12 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
     window.addEventListener('keydown', onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
       if (timerRef.current) clearInterval(timerRef.current);
+      if (trigger && document.contains(trigger)) setTimeout(() => trigger.focus({ preventScroll: true }), 0);
     };
   }, [onClose]);
 
@@ -114,7 +116,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-card rounded-2xl p-5 max-w-md mx-4 shadow-2xl w-full max-h-[calc(100dvh-1.5rem)] overflow-auto" onClick={e => e.stopPropagation()}>
+      <div role="dialog" aria-modal="true" className="bg-card rounded-2xl p-5 max-w-md mx-4 shadow-2xl w-full max-h-[calc(100dvh-1.5rem)] overflow-auto" onClick={e => e.stopPropagation()}>
         {state === 'intro' && (
           <>
             <div className="flex items-center justify-between mb-4">
@@ -159,7 +161,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
             </div>
 
             <div className="p-4 rounded-lg bg-muted/30 border-l-4 border-primary mb-4">
-              <p className="text-sm font-medium text-foreground leading-relaxed">{q.question}</p>
+              <h4 className="text-sm font-medium text-foreground leading-relaxed">{q.question}</h4>
             </div>
 
             <div className="space-y-2">
@@ -169,7 +171,8 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
                   <button
                     key={i}
                     onClick={() => selectAnswer(i)}
-                    className="w-full text-left p-3 rounded-lg border-2 transition-all cursor-pointer text-sm font-medium"
+                    aria-pressed={selected}
+                    className="w-full text-left p-3 rounded-lg border-2 transition-all cursor-pointer text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     style={{
                       borderColor: selected ? 'hsl(var(--primary))' : 'hsl(var(--border))',
                       backgroundColor: selected ? 'hsl(var(--primary) / 0.1)' : 'transparent',
@@ -177,6 +180,7 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
                     }}
                   >
                     {q.type === 'choice' ? `${i + 1}) ` : ''}{opt}
+                    {selected && <span className="ml-1 font-bold">✓ (선택함)</span>}
                   </button>
                 );
               })}
@@ -196,7 +200,9 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
                   <button
                     key={i}
                     onClick={() => setCurrentQ(i)}
-                    className="w-5 h-5 rounded-full text-[10px] font-bold cursor-pointer"
+                    aria-label={`${i + 1}번 문제로 이동${answers[i] !== null ? ' (답 고름)' : ' (아직 안 고름)'}`}
+                    aria-current={i === currentQ}
+                    className="w-5 h-5 rounded-full text-[10px] font-bold cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     style={{
                       backgroundColor: answers[i] !== null ? 'hsl(var(--primary))' : i === currentQ ? 'hsl(var(--accent))' : 'hsl(var(--muted))',
                       color: answers[i] !== null ? 'white' : 'hsl(var(--foreground))',
@@ -238,7 +244,8 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
                 className="inline-flex items-center justify-center w-20 h-20 rounded-full text-3xl font-black mb-2"
                 style={{ backgroundColor: getGrade().color + '20', color: getGrade().color }}
               >
-                {getGrade().grade}
+                <span aria-hidden="true">{getGrade().grade}</span>
+                <span className="sr-only">{getGrade().grade} 등급</span>
               </div>
               <p className="text-sm text-muted-foreground">{getGrade().emoji} {getGrade().label}</p>
             </div>
@@ -264,7 +271,8 @@ const QuizPopup = ({ onClose, grade = 3 }: QuizPopupProps) => {
                 return (
                   <div key={q.id} className={`p-2.5 rounded-lg border text-xs ${correct ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                     <div className="flex items-start gap-1.5">
-                      {correct ? <CheckCircle size={14} className="text-green-600 flex-shrink-0 mt-0.5" /> : <XCircle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />}
+                      {correct ? <CheckCircle size={14} aria-hidden="true" className="text-green-600 flex-shrink-0 mt-0.5" /> : <XCircle size={14} aria-hidden="true" className="text-red-500 flex-shrink-0 mt-0.5" />}
+                      <span className="sr-only">{correct ? '정답' : '오답'}</span>
                       <div>
                         <p className="font-medium text-foreground">{q.question}</p>
                         {!correct && <p className="text-red-600 mt-0.5">정답: {q.options[q.answer]}</p>}

@@ -134,6 +134,7 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder="장소 검색..."
+          aria-label="장소 검색"
           className="w-full pl-8 pr-8 py-2 sm:py-1.5 rounded-full border bg-background text-foreground text-base sm:text-[11px] md:text-xs focus:outline-none focus:ring-2 focus:ring-primary"
         />
         {(query || expanded) && (
@@ -151,11 +152,11 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
       {open && query.trim() && (
         <div className="absolute right-0 mt-1 w-72 sm:w-80 max-h-80 overflow-auto rounded-lg border bg-popover text-popover-foreground shadow-xl z-50">
           {results.length === 0 ? (
-            <div className="px-3 py-5 text-xs text-muted-foreground text-center leading-relaxed">
+            <div role="status" className="px-3 py-5 text-xs text-muted-foreground text-center leading-relaxed">
               찾은 장소가 없어요.<br />다른 이름이나 장소 종류로 다시 찾아보세요.
             </div>
           ) : (
-            <ul className="py-1">
+            <ul className="py-1" aria-label="검색 결과">
               {results.map((r, idx) => {
                 let color: string;
                 let label: string;
@@ -183,7 +184,7 @@ const PlaceSearchBar = ({ grade, onPlaceSelect, onContentSelect, onSchoolSelect 
                       type="button"
                       onMouseEnter={() => setHighlight(idx)}
                       onClick={() => pick(r)}
-                      className={`w-full text-left px-3 py-2 flex items-start gap-2 transition-colors ${idx === highlight ? 'bg-accent/30' : 'hover:bg-accent/20'}`}
+                      className={`w-full text-left px-3 py-2 flex items-start gap-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary ${idx === highlight ? 'bg-accent/30' : 'hover:bg-accent/20'}`}
                     >
                       <span className="mt-1 inline-block w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
                       <span className="flex-1 min-w-0">
