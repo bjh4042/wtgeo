@@ -112,13 +112,19 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   useEffect(() => {
     if (window.kakao?.maps) { setIsLoaded(true); return; }
     if (!KAKAO_API_KEY) { setError('API_KEY_MISSING'); return; }
-    const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&autoload=false`;
-    script.async = true;
-    script.onload = () => { window.kakao.maps.load(() => setIsLoaded(true)); };
-    script.onerror = () => setError('Kakao Maps SDK 로딩 실패');
-    document.head.appendChild(script);
+    let cancelled = false;
+    loadKakaoSdk()
+      .then(() => { if (!cancelled) setIsLoaded(true); })
+      .catch(() => { if (!cancelled) setError('Kakao Maps SDK 로딩 실패'); });
+    return () => { cancelled = true; };
   }, []);
+
+  // 지도 SDK를 못 불러온 경우에도 확대 연출을 끝내서
+  // 헤더·검색·카테고리 UI가 계속 숨겨진 상태로 남지 않게 한다.
+  useEffect(() => {
+    if (error) onZoomComplete?.();
+  }, [error, onZoomComplete]);
+
 
   const updateScale = useCallback(() => {
     if (!mapInstance.current || !scaleRef.current) return;
