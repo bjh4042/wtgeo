@@ -3,12 +3,21 @@ export interface School {
   address: string;
   lat: number;
   lng: number;
+  /** 대표 전화(교무실 번호와 동일) — 기존 코드 호환용 */
   phone?: string;
+  /** 교무실 전화 */
+  teacherPhone?: string;
+  /** 행정실 전화 */
+  adminPhone?: string;
+  /** 팩스 */
+  fax?: string;
   district: string;
   website?: string;
 }
 
-// 거제시 초등학교 목록 (41개교, 분교 포함) - 2026년 4월 기준
+// 거제시 초등학교 정본 목록 (41개교: 공립 본교 39, 공립 분교 1, 사립 1)
+// 주소·전화·팩스·홈페이지 정본: 경상남도거제교육지원청 「초등학교 학교현황」(기준일 2026-03-01)
+// 좌표(lat/lng)·district는 기존 지도 값 유지 — 이번 정본 데이터셋의 검증 대상이 아님
 export const schools: School[] = [
   { name: "거제고현초등학교", address: "경상남도 거제시 계룡로 25", lat: 34.8733, lng: 128.6289, district: "고현동", website: "https://gjgohyeon-p.gne.go.kr", phone: "055-638-4631", teacherPhone: "055-638-4631", adminPhone: "055-638-4632", fax: "055-638-5859" },
   { name: "거제양정초등학교", address: "경상남도 거제시 양정2길 15", lat: 34.8712, lng: 128.6511, district: "양정동", website: "https://gjyangjeong-p.gne.go.kr", phone: "055-638-0054", teacherPhone: "055-638-0054", adminPhone: "055-638-0056", fax: "055-638-0017" },
