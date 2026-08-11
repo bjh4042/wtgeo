@@ -90,8 +90,19 @@ const PlaceRequestModal = ({ onClose }: PlaceRequestModalProps) => {
           description: descCheck.value,
         },
       });
-      const errMsg = (error as any)?.message || (data as any)?.error;
-      if (errMsg) throw new Error(String(errMsg));
+      if (error) {
+        // 중복 신청(409)은 오류가 아니라 자연스러운 안내로 처리한다.
+        const res = (error as any)?.context;
+        const status = res?.status;
+        if (status === 409) {
+          rememberSubmission(hash);
+          setDone(true);
+          toast.success('이미 신청된 장소예요. 확인 후 지도에 추가할게요. 😊');
+          return;
+        }
+        throw new Error(String((error as any)?.message ?? 'failed'));
+      }
+      if ((data as any)?.error) throw new Error(String((data as any).error));
       rememberSubmission(hash);
       setDone(true);
       toast.success('신청했어요! 확인 후 지도에 추가할게요. 😊');
