@@ -382,7 +382,11 @@ const ExplorerPage = () => {
         </main>
       )}
 
-      <AdminPanel isOpen={showAdmin} onClose={() => setShowAdmin(false)} />
+      {showAdmin && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"><div className="text-white text-sm">관리자 화면을 불러오는 중...</div></div>}>
+          <AdminPanel isOpen onClose={() => setShowAdmin(false)} />
+        </Suspense>
+      )}
 
       {step === 'explore' && selectedGrade && !isZooming && (
         <ChatBot grade={selectedGrade} />
