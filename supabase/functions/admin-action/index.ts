@@ -80,12 +80,10 @@ Deno.serve(async (req) => {
         upsert: false,
       });
       if (error) return json({ error: error.message }, 500);
-      // Bucket is private; return a long-lived signed URL (~10 years).
-      const { data: signed, error: signErr } = await admin.storage
-        .from("app-images")
-        .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
-      if (signErr) return json({ error: signErr.message }, 500);
-      return json({ url: signed.signedUrl });
+      // Bucket stays private; serve the object through the read-only
+      // `app-image` edge function so the URL never expires.
+      const base = Deno.env.get("SUPABASE_URL")!;
+      return json({ url: `${base}/functions/v1/app-image?path=${encodeURIComponent(path)}` });
     }
 
     const table = String(body.table || "");

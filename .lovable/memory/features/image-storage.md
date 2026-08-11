@@ -1,11 +1,13 @@
 ---
 name: image-storage
-description: 관리자 모드 업로드 이미지는 Supabase Storage(app-images 공개 버킷)에 저장하여 영구 공개 URL을 사용. base64/DataURL 사용 금지.
+description: 관리자 업로드 이미지는 비공개 Supabase Storage(app-images)에 저장하고, 조회는 app-image 엣지 함수 프록시 URL로만 한다. base64/공개버킷/서명URL 저장 금지.
 type: feature
 ---
-관리자 모드(장소·콘텐츠·옛날사진·경남 시군 마스코트/로고·AdminMapEditor)에서 이미지 파일을 업로드하면, base64 DataURL이 아닌 Supabase Storage `app-images` 버킷에 업로드하고 public URL을 DB에 저장한다.
+관리자 모드(장소·콘텐츠·옛날사진·경남 시군 마스코트/로고·AdminMapEditor) 업로드 이미지 규칙:
 
-- 헬퍼: `src/lib/uploadImage.ts` → `uploadImageToStorage(file, folder)`
-- 버킷: `app-images` (public, 누구나 read/insert/update/delete)
-- 폴더 구분: `places`, `content`, `content-old`, `city-logos`, `city-mascots`
-- 효과: 새로고침/다른 브라우저/다른 사용자에게도 이미지가 영구적으로 보임. DB row 크기도 작게 유지됨.
+- 저장소: `app-images` 버킷 (**비공개 유지** — 보안 스캔 조치. 절대 public으로 되돌리지 말 것)
+- 업로드: `src/lib/uploadImage.ts` → `adminApi.uploadImage()` → `admin-action` 엣지 함수(service_role)
+- 조회 URL: `${SUPABASE_URL}/functions/v1/app-image?path=<folder>/<file>` (읽기 전용 공개 프록시, 만료 없음)
+- 정규화: `src/lib/imageUrl.ts`의 `getAppImageUrl()`이 레거시 `/object/public/app-images/...` 및 만료된 서명 URL을 프록시 URL로 변환. DB에서 읽어오는 모든 이미지 필드에 적용(`dataManager.ts`, `gyeongnam.ts`).
+- 금지: base64 DataURL, 공개 버킷, DB에 서명 URL 저장(만료됨)
+- 폴더: `places`, `content`, `content-old`, `city-logos`, `city-mascots`

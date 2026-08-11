@@ -1,4 +1,5 @@
 // 학교 정보 챗봇 데이터 — 이 파일만 수정해 관리하세요.
+import { schools } from "./schools";
 export interface SchoolQA {
   id: number;
   school_name: string;
@@ -330,15 +331,50 @@ export const schoolQA: SchoolQA[] = [
 ];
 
 // 학교명 또는 '<동/면> + 초등학교' 패턴으로 학교 정보 매칭
+// 안전 규칙: 부분일치로 다른 학교가 답변되지 않도록 가장 긴 정식 학교명을 우선한다.
+// 예) "거제고현초등학교" 질문에 "고현초등학교" 정보를 주지 않는다.
+const normalize = (s: string) => s.replace(/\s+/g, "").trim();
+
+// 지도 데이터(schools.ts)의 정식 학교명 — 챗봇 데이터에 없는 학교까지 포함한 전체 목록
+const officialNames = schools.map((s) => normalize(s.name));
+
 export function findSchoolInfo(userInput: string): SchoolQA | undefined {
   if (!userInput) return undefined;
-  const input = userInput.replace(/\s+/g, "");
-  return schoolQA.find((school) => {
-    const name = school.school_name.replace(/\s+/g, "");
-    const cat = school.category.replace(/\s+/g, "");
-    return (
-      input.includes(name) ||
-      (input.includes(cat) && input.includes("초등학교"))
-    );
-  });
+  // "계룡초" 같은 축약형을 정식 명칭으로 확장 (명확한 alias만)
+  const input = normalize(userInput).replace(/초(?!등학교)/g, "초등학교");
+
+  // 1) 입력에 포함된 정식 학교명 중 가장 긴 것을 찾는다.
+  const longestOfficial = officialNames
+    .filter((n) => input.includes(n))
+    .sort((a, b) => b.length - a.length)[0];
+
+  if (longestOfficial) {
+    const exact = schoolQA.find((s) => normalize(s.school_name) === longestOfficial);
+    if (exact) return exact;
+    // 지도에는 있으나 챗봇 데이터가 없는 학교 → 다른 학교로 오답하지 않도록 중단
+    return undefined;
+  }
+
+  // 2) 지도 데이터에 없는 학교명(챗봇 전용)도 가장 긴 이름 우선으로 매칭
+  const nameHits = schoolQA
+    .filter((s) => input.includes(normalize(s.school_name)))
+    .sort((a, b) => b.school_name.length - a.school_name.length);
+  if (nameHits.length > 0) return nameHits[0];
+
+  // 3) '<동/면> + 초등학교' 패턴
+  return schoolQA.find(
+    (s) => input.includes(normalize(s.category)) && input.includes("초등학교"),
+  );
+}
+
+/**
+ * 학교의 주소·홈페이지 '정본'은 지도 데이터(schools.ts) 하나로만 관리한다.
+ * schoolQA.ts에 들어 있던 주소/홈페이지는 지도 데이터와 전부 달랐고,
+ * 공식 출처(경남교육청 학교찾기·학교알리미)로 어느 쪽이 맞는지 확인할 수 없었다.
+ * → 확인되지 않은 값을 학생에게 보여주지 않기 위해, 정본이 있을 때만 안내한다.
+ */
+export function getSchoolFacts(qa: SchoolQA): { address?: string; website?: string } {
+  const canonical = schools.find((s) => normalize(s.name) === normalize(qa.school_name));
+  if (!canonical) return {};
+  return { address: canonical.address, website: canonical.website };
 }

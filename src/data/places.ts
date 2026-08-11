@@ -1252,7 +1252,7 @@ export const places: Place[] = [
     id: 'p4-culture-surowangreung', name: '수로왕릉', category: 'culture',
     description: '가야의 시조 김수로왕의 무덤으로 전해지는 사적입니다. 금관가야의 건국 신화와 허황후 도래 전설이 깃든 역사 유적지입니다.',
     address: '경상남도 김해시 가락로93번길 26', lat: 35.236102, lng: 128.875323, grade: 4,
-    referenceUrl: 'https://www.gimhae.go.kr/04242/04310.web',
+    referenceUrl: 'https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaKdcd=13&ccbaAsno=00730000&ccbaCtcd=38&pageNo=1_1_1_1',
   },
   {
     id: 'p4-culture-gimhaemuseum', name: '국립김해박물관', category: 'culture',
