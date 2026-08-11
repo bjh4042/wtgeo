@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { askChatbot, SUGGESTED_QUESTIONS, type ChatTurn } from "@/lib/chatbotService";
-import { checkForbiddenWords, FORBIDDEN_WORD_MESSAGE } from "@/data/forbiddenWords";
+import { containsBlockedWord, BLOCKED_WORD_MESSAGE_CHAT } from "@/lib/contentFilter";
 import { findSchoolInfo, getSchoolFacts } from "@/data/schoolQA";
 import {
   findGeojePopulation,
@@ -47,11 +47,15 @@ const ChatBot = ({ grade }: ChatBotProps) => {
     const q = text.trim();
     if (!q || loading) return;
     setError(null);
-    if (checkForbiddenWords(q)) {
+    if (q.length > 500) {
+      setError("질문이 너무 길어요. 조금 짧게 적어 주세요.");
+      return;
+    }
+    if (containsBlockedWord(q)) {
       setMessages([
         ...messages,
         { role: "user", content: q },
-        { role: "assistant", content: FORBIDDEN_WORD_MESSAGE },
+        { role: "assistant", content: BLOCKED_WORD_MESSAGE_CHAT },
       ]);
       setInput("");
       return;

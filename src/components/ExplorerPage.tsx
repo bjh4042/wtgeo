@@ -16,6 +16,7 @@ const AdminPanel = lazy(() => import('@/components/AdminPanel'));
 import NoticePopup from '@/components/NoticePopup';
 import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
+import PlaceRequestModal from '@/components/PlaceRequestModal';
 const GyeongnamExplorer = lazy(() => import('@/components/GyeongnamExplorer'));
 import RouteExplorer from '@/components/RouteExplorer';
 import PlaceNameOrigins from '@/components/PlaceNameOrigins';
@@ -25,7 +26,7 @@ import ChatBot from '@/components/ChatBot';
 import { useFavorites } from '@/hooks/useFavorites';
 import { incrementVisitorCount, getMergedSchoolByName, SCHOOLS_UPDATED_EVENT, PLACES_UPDATED_EVENT, CONTENT_UPDATED_EVENT, getMergedPlaces, getMergedContent, loadAllDataFromCloud, getVisitorCount, getTodayVisitorCount } from '@/data/dataManager';
 import { recordVisit } from '@/data/visitorStats';
-import { Home, Map, Route, MapPin, Star } from 'lucide-react';
+import { Home, Map, Route, MapPin, Star, MapPinPlus } from 'lucide-react';
 
 type Step = 'consonant' | 'school' | 'grade' | 'explore';
 
@@ -45,6 +46,7 @@ const ExplorerPage = () => {
   
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSources, setShowSources] = useState(false);
+  const [showPlaceRequest, setShowPlaceRequest] = useState(false);
   const [showGyeongnam, setShowGyeongnam] = useState(false);
   const [showRouteExplorer, setShowRouteExplorer] = useState(false);
   const [showPlaceNameOrigins, setShowPlaceNameOrigins] = useState(false);
@@ -197,6 +199,7 @@ const ExplorerPage = () => {
       <NoticePopup />
       {showQuiz && <QuizPopup onClose={() => setShowQuiz(false)} grade={selectedGrade} />}
       {showSources && <SourcesPopup onClose={() => setShowSources(false)} />}
+      {showPlaceRequest && <PlaceRequestModal onClose={() => setShowPlaceRequest(false)} />}
       {showGyeongnam && <Suspense fallback={<div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"><div className="text-white">로딩 중...</div></div>}><GyeongnamExplorer onClose={() => setShowGyeongnam(false)} /></Suspense>}
       {showRouteExplorer && selectedSchool && selectedGrade && (
         <RouteExplorer grade={selectedGrade} school={selectedSchool} onClose={() => setShowRouteExplorer(false)} onPlaceSelect={(p) => { handlePlaceSelect(p); setShowRouteExplorer(false); }} />
@@ -282,6 +285,15 @@ const ExplorerPage = () => {
                       <span className="sm:hidden">지명</span>
                     </button>
                   )}
+                  <button
+                    onClick={() => setShowPlaceRequest(true)}
+                    aria-label="장소 추가 신청"
+                    title="지도에 없는 장소를 알려주세요"
+                    className="flex items-center gap-1 px-2 sm:px-2.5 md:px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium cursor-pointer bg-muted text-muted-foreground hover:bg-muted/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    <MapPinPlus size={12} className="md:w-3.5 md:h-3.5" />
+                    <span className="hidden md:inline">장소 신청</span>
+                  </button>
                   {selectedGrade === 4 && (
                     <button
                       onClick={() => setShowGyeongnam(true)}
