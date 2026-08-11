@@ -35,13 +35,19 @@ function buildGrade3Context(): string {
   );
 
   // 주소·전화·홈페이지는 지도 데이터(schools.ts, 거제교육지원청 2026-03-01 정본)만 사용한다.
+  // 개교(설립)일·학급수는 교육부 NEIS 공식값만 사용하고, 학생수는 공식 근거가 없으므로 제공하지 않는다.
   const schoolLines = verifiedSchoolQA.map((s) => {
     const facts = getSchoolFacts(s);
     const addr = facts.address ? ` | 주소: ${facts.address}` : "";
     const site = facts.website ? ` | 홈페이지: ${facts.website}` : "";
     const tel = facts.teacherPhone ? ` | 교무실: ${facts.teacherPhone}` : "";
-    return `- [학교/${s.category}] ${s.school_name} | 개교: ${s.established_year} | ${s.num_classes} · ${s.num_students}${addr}${tel}${site} | 설명: ${s.answer.replace(/\s+/g, " ")}`;
+    const classes = s.num_classes
+      ? ` | 학급수: ${s.num_classes}${s.num_classes_as_of ? ` (${s.num_classes_as_of})` : ""}`
+      : "";
+    const src = s.source ? ` | 출처: ${s.source}` : "";
+    return `- [학교/${s.category}] ${s.school_name} | 설립: ${s.established_year}${classes}${addr}${tel}${site}${src} | 설명: ${s.answer.replace(/\s+/g, " ")}`;
   });
+
 
   const popLines = geojePopulation.map(
     (p) => `- [인구/거제시] ${p.region}: ${p.population} — ${p.description}`,
