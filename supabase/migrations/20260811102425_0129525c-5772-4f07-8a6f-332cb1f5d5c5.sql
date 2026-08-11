@@ -1,0 +1,1 @@
+update public.gyeongnam_edits set name = '창원특례시', updated_at = now() where city_id = 'changwon' and name = '창원시';
