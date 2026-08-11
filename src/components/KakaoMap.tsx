@@ -38,6 +38,42 @@ const ZOOM_STAGES = [
   { level: 2, delay: 800 },
 ];
 
+// SDK 스크립트는 앱 전체에서 한 번만 로드한다(재진입 시 중복 <script> 삽입 방지).
+// 느린 교실 Wi-Fi에서 응답이 오지 않는 경우를 대비해 타임아웃을 둔다.
+const SDK_TIMEOUT_MS = 12000;
+let kakaoSdkPromise: Promise<void> | null = null;
+
+function loadKakaoSdk(): Promise<void> {
+  if (window.kakao?.maps) return Promise.resolve();
+  if (kakaoSdkPromise) return kakaoSdkPromise;
+
+  kakaoSdkPromise = new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&autoload=false`;
+    script.async = true;
+
+    const timeoutId = window.setTimeout(() => {
+      kakaoSdkPromise = null;
+      reject(new Error('KAKAO_SDK_TIMEOUT'));
+    }, SDK_TIMEOUT_MS);
+
+    script.onload = () => {
+      window.clearTimeout(timeoutId);
+      window.kakao.maps.load(() => resolve());
+    };
+    script.onerror = () => {
+      window.clearTimeout(timeoutId);
+      kakaoSdkPromise = null;
+      reject(new Error('KAKAO_SDK_LOAD_FAILED'));
+    };
+
+    document.head.appendChild(script);
+  });
+
+  return kakaoSdkPromise;
+}
+
+
 function getZoomMessage(stageIndex: number, district: string): string {
   switch (stageIndex) {
     case 0: return '대한민국';
@@ -76,13 +112,19 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
   useEffect(() => {
     if (window.kakao?.maps) { setIsLoaded(true); return; }
     if (!KAKAO_API_KEY) { setError('API_KEY_MISSING'); return; }
-    const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&autoload=false`;
-    script.async = true;
-    script.onload = () => { window.kakao.maps.load(() => setIsLoaded(true)); };
-    script.onerror = () => setError('Kakao Maps SDK 로딩 실패');
-    document.head.appendChild(script);
+    let cancelled = false;
+    loadKakaoSdk()
+      .then(() => { if (!cancelled) setIsLoaded(true); })
+      .catch(() => { if (!cancelled) setError('Kakao Maps SDK 로딩 실패'); });
+    return () => { cancelled = true; };
   }, []);
+
+  // 지도 SDK를 못 불러온 경우에도 확대 연출을 끝내서
+  // 헤더·검색·카테고리 UI가 계속 숨겨진 상태로 남지 않게 한다.
+  useEffect(() => {
+    if (error) onZoomComplete?.();
+  }, [error, onZoomComplete]);
+
 
   const updateScale = useCallback(() => {
     if (!mapInstance.current || !scaleRef.current) return;
@@ -228,7 +270,10 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
       overlaysRef.current.forEach(o => o.setMap(null));
       overlaysRef.current = [];
     };
-  }, [isLoaded, school, grade]);
+    // 학교 객체가 새 참조로 갱신되어도(관리자 편집 동기화 등)
+    // 실제 위치·이름이 같으면 지도 인스턴스를 다시 만들지 않는다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, school.name, school.lat, school.lng, school.district, grade]);
 
   // Add markers for active categories - using merged data
   // Skip rendering markers while zoom animation is in progress
@@ -378,11 +423,22 @@ const KakaoMap = ({ school, grade, selectedPlace, onPlaceSelect, selectedContent
 
   if (error) {
     return (
-      <div className="map-container w-full h-full flex items-center justify-center">
-        <p className="text-destructive">{error}</p>
+      <div className="map-container w-full h-full flex flex-col items-center justify-center gap-3 p-6 text-center">
+        <MapPin size={40} className="text-muted-foreground" />
+        <p className="text-sm font-semibold text-foreground">지도를 불러오지 못했어요</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          인터넷 연결이 느리거나 잠시 끊겼을 수 있어요.<br />검색과 다른 메뉴는 그대로 사용할 수 있어요.
+        </p>
+        <button
+          onClick={() => { setError(null); setIsLoaded(false); loadKakaoSdk().then(() => setIsLoaded(true)).catch(() => setError('Kakao Maps SDK 로딩 실패')); }}
+          className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold cursor-pointer hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          다시 시도
+        </button>
       </div>
     );
   }
+
 
   return (
     <div className="w-full h-full relative">

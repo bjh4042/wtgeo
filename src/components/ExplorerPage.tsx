@@ -11,7 +11,8 @@ import KakaoMap from '@/components/KakaoMap';
 import PlaceCard from '@/components/PlaceCard';
 import ContentCard from '@/components/ContentCard';
 import CategoryTabs from '@/components/CategoryTabs';
-import AdminPanel from '@/components/AdminPanel';
+// 관리자 패널은 학생 화면에서 쓰지 않으므로 초기 번들에서 분리한다(xlsx·지도 편집기 포함).
+const AdminPanel = lazy(() => import('@/components/AdminPanel'));
 import NoticePopup from '@/components/NoticePopup';
 import QuizPopup from '@/components/QuizPopup';
 import SourcesPopup from '@/components/SourcesPopup';
@@ -381,7 +382,11 @@ const ExplorerPage = () => {
         </main>
       )}
 
-      <AdminPanel isOpen={showAdmin} onClose={() => setShowAdmin(false)} />
+      {showAdmin && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"><div className="text-white text-sm">관리자 화면을 불러오는 중...</div></div>}>
+          <AdminPanel isOpen onClose={() => setShowAdmin(false)} />
+        </Suspense>
+      )}
 
       {step === 'explore' && selectedGrade && !isZooming && (
         <ChatBot grade={selectedGrade} />
