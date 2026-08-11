@@ -73,6 +73,9 @@ const ChatBot = ({ grade }: ChatBotProps) => {
         `- 규모: ${hit.num_classes} · ${hit.num_students}`,
       ];
       if (facts.address) lines.push(`- 주소: ${facts.address}`);
+      if (facts.teacherPhone) lines.push(`- 교무실: ${facts.teacherPhone}`);
+      if (facts.adminPhone) lines.push(`- 행정실: ${facts.adminPhone}`);
+      if (facts.fax) lines.push(`- 팩스: ${facts.fax}`);
       if (facts.website) lines.push(`- 홈페이지: ${facts.website}`);
       if (!facts.address && !facts.website) {
         lines.push("", "※ 주소와 홈페이지는 확인 중이라 아직 알려줄 수 없어요.");
