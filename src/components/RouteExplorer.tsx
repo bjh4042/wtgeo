@@ -61,7 +61,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
   };
 
   const totalDistance = useMemo(() => {
-    if (routePlaces.length < 2) return 0;
+    if (routePlaces.length < 1) return 0;
     let total = getDistance(school.lat, school.lng, routePlaces[0].lat, routePlaces[0].lng);
     for (let i = 1; i < routePlaces.length; i++) {
       total += getDistance(routePlaces[i - 1].lat, routePlaces[i - 1].lng, routePlaces[i].lat, routePlaces[i].lng);
@@ -259,7 +259,7 @@ const RouteExplorer = ({ grade, school, onClose, onPlaceSelect }: RouteExplorerP
           {/* Left: route list */}
           <div className={`p-4 overflow-auto ${showInAppMap ? 'md:w-[360px] md:border-r max-h-[38vh] md:max-h-[82vh]' : 'w-full max-h-[70vh]'}`}>
           {/* Route summary */}
-          {routePlaces.length >= 2 && (
+          {routePlaces.length >= 1 && totalDistance > 0 && (
             <div className="mb-3 p-3 rounded-xl bg-primary/10 border border-primary/20">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-bold text-foreground">총 {routePlaces.length}개 장소</span>

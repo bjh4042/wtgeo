@@ -102,11 +102,15 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
   }, [allPlaces, activeFilters]);
 
   const searchResults = useMemo(() => {
-    if (!searchTerm.trim()) return { places: [] as Place[], schools: [] as (School & { index: number })[] };
-    const places = filteredPlaces.filter(p => p.name.includes(searchTerm) || p.address?.includes(searchTerm)).slice(0, 8);
-    const schools = allSchools.filter(s => s.name.includes(searchTerm) || s.address?.includes(searchTerm) || s.district?.includes(searchTerm)).slice(0, 8);
-    return { places, schools };
-  }, [filteredPlaces, allSchools, searchTerm]);
+    const empty = { places: [] as Place[], schools: [] as (School & { index: number })[], contents: [] as MapContent[] };
+    const q = searchTerm.trim();
+    if (!q) return empty;
+    // 학생 화면 최종 병합 데이터 전체를 대상으로 검색 (카테고리 필터에 묶이지 않음)
+    const places = allPlaces.filter(p => p.name.includes(q) || p.address?.includes(q)).slice(0, 8);
+    const schools = allSchools.filter(s => s.name.includes(q) || s.address?.includes(q) || s.district?.includes(q)).slice(0, 8);
+    const contents = allContent.filter(c => c.name.includes(q) || c.description?.includes(q)).slice(0, 8);
+    return { places, schools, contents };
+  }, [allPlaces, allSchools, allContent, searchTerm]);
 
   const toggleFilter = (cat: PlaceCategory) => {
     setActiveFilters(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
@@ -440,6 +444,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const handleSearchSelectPlace = useCallback((place: Place) => {
     setSelectedSchool(null);
+    setSelectedContentItem(null);
     setEditorMode('place');
     setSelectedPlace({
       id: place.id, name: place.name, description: place.description,
@@ -457,6 +462,7 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
 
   const handleSearchSelectSchool = useCallback((school: School & { index: number }) => {
     setSelectedPlace(null);
+    setSelectedContentItem(null);
     setEditorMode('school');
     setSelectedSchool({
       index: school.index, name: school.name, address: school.address,
@@ -469,6 +475,26 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
       if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
     }
   }, []);
+
+  const handleSearchSelectContent = useCallback((item: MapContent) => {
+    setSelectedPlace(null);
+    setSelectedSchool(null);
+    setEditorMode('content');
+    setShowContent(true);
+    setSelectedContentItem({
+      id: item.id, name: item.name, contentType: item.contentType,
+      description: item.description, lat: item.lat, lng: item.lng,
+      icon: item.icon, imageUrl: item.imageUrl, oldImageUrl: item.oldImageUrl,
+      oldImageCaption: item.oldImageCaption, source: item.source,
+      grade: item.grade, referenceUrl: item.referenceUrl, youtubeUrl: item.youtubeUrl,
+    });
+    setIsEditing(false); setShowSearch(false); setSearchTerm(''); setDetailsExpanded(false);
+    if (mapInstance.current) {
+      mapInstance.current.panTo(new window.kakao.maps.LatLng(item.lat, item.lng));
+      if (mapInstance.current.getLevel() > 4) mapInstance.current.setLevel(4, { animate: true });
+    }
+  }, []);
+
 
   useEffect(() => {
     const handler = () => setRenderKey(n => n + 1);
@@ -565,28 +591,42 @@ const AdminMapEditor = ({ onClose }: AdminMapEditorProps) => {
         <div className="px-3 py-2 bg-card border-b z-10 flex-shrink-0">
           <div className="relative">
             <Search size={14} className="absolute left-2.5 top-2 text-muted-foreground" />
-            <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="장소명, 학교명 또는 주소 검색..."
+            <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="장소명, 학교명, 콘텐츠명 또는 주소 검색..."
               className="w-full pl-8 pr-3 py-1.5 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary" autoFocus />
           </div>
-          {(searchResults.places.length > 0 || searchResults.schools.length > 0) && (
+          {(searchResults.places.length > 0 || searchResults.schools.length > 0 || searchResults.contents.length > 0) && (
             <div className="mt-1 max-h-48 overflow-auto rounded-lg border bg-card">
+              {searchResults.places.length > 0 && (
+                <div className="px-3 py-1 text-[9px] text-muted-foreground font-bold bg-muted/30">📍 장소</div>
+              )}
               {searchResults.places.map(p => (
-                <button key={p.id} onClick={() => handleSearchSelectPlace(p)}
+                <button key={`place-${p.id}`} onClick={() => handleSearchSelectPlace(p)}
                   className="w-full text-left px-3 py-1.5 text-xs hover:bg-muted/50 cursor-pointer border-b last:border-b-0 flex items-center gap-2">
                   <span>{categoryIcons[p.category]}</span>
                   <span className="font-medium truncate">{p.name}</span>
                   <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-[40%]">{p.address}</span>
                 </button>
               ))}
-              {searchResults.schools.length > 0 && searchResults.places.length > 0 && (
+              {searchResults.schools.length > 0 && (
                 <div className="px-3 py-1 text-[9px] text-muted-foreground font-bold bg-muted/30">🏫 학교</div>
               )}
               {searchResults.schools.map(s => (
-                <button key={s.index} onClick={() => handleSearchSelectSchool(s)}
+                <button key={`school-${s.index}`} onClick={() => handleSearchSelectSchool(s)}
                   className="w-full text-left px-3 py-1.5 text-xs hover:bg-muted/50 cursor-pointer border-b last:border-b-0 flex items-center gap-2">
                   <span>🏫</span>
                   <span className="font-medium truncate">{s.name}</span>
                   <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-[40%]">{s.district}</span>
+                </button>
+              ))}
+              {searchResults.contents.length > 0 && (
+                <div className="px-3 py-1 text-[9px] text-muted-foreground font-bold bg-muted/30">📚 콘텐츠</div>
+              )}
+              {searchResults.contents.map(c => (
+                <button key={`content-${c.id}`} onClick={() => handleSearchSelectContent(c)}
+                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-muted/50 cursor-pointer border-b last:border-b-0 flex items-center gap-2">
+                  <span>{c.icon || contentCategoryIcons[c.contentType]}</span>
+                  <span className="font-medium truncate">{c.name}</span>
+                  <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-[40%]">{contentCategoryLabels[c.contentType]}</span>
                 </button>
               ))}
             </div>
